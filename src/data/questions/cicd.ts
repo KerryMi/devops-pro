@@ -1,0 +1,451 @@
+import { Question } from '../../types';
+
+export const CICD_QUESTIONS: Question[] = [
+  {
+    id: 'cicd-1',
+    title: 'Чем отличается подход Push-based CI/CD от Pull-based (GitOps)?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Push-based (GitLab CI, Jenkins) подключается извне к кластеру и выталкивает манифесты. Pull-based (ArgoCD, Flux) работает агентом ВНУТРИ кластера и подтягивает изменения из Git.',
+    fullAnswer: `**Push-based:**
+CI/CD пайплайн выполняет сборку, тесты и запускает утилиту типа kubectl apply или helm upgrade, подключаясь к API кластера.
+*Минусы*: требуются учетные данные с правами админа внутри CI среды, риск рассинхронизации кластера (Configuration Drift).
+
+**Pull-based (GitOps):**
+Оператор (ArgoCD / Flux) установлен ВНУТРИ кластера. Он непрерывно сравнивает текущее состояние целевого кластера с желаемым состоянием в Git-репозитории.
+*Плюсы*:
+1. Безопасность: Ключи доступа не покидают кластер.
+2. Автоматическое устранение дрифта (Self-Healing).
+3. Простой rollback: достаточно сделать git revert.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# ArgoCD Application CRD (Pull-based)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: guestbook
+spec:
+  source:
+    repoURL: 'https://github.com/argoproj/argocd-example-apps.git'
+    targetRevision: HEAD
+    path: guestbook
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true`
+    },
+    interviewTips: [
+      'Упомяните термины "Configuration Drift" и "Self-healing" как ключевые преимущества GitOps.'
+    ],
+    commonPitfalls: [
+      'Хранить секреты в открытом виде в Git-репозитории (нужно использовать SealedSecrets или Vault Secrets Operator).'
+    ],
+    tags: ['CICD', 'GitOps', 'ArgoCD', 'Flux', 'Kubernetes']
+  },
+  {
+    id: 'cicd-2',
+    title: 'Какие бывают стратегии деплоя: Blue-Green, Canary, Rolling Update, Shadow?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Rolling Update обновляет поды по очереди. Blue-Green мгновенно переключает весь трафик на новое окружение. Canary направляет % трафика на новую версию. Shadow дублирует трафик без влияния на юзеров.',
+    fullAnswer: `1. **Rolling Update**: Дефолт в K8s. Поды старой версии постепенно заменяются новыми (параметры maxSurge, maxUnavailable). Нет простоя, но в кластере одновременно работают 2 разные версии кода.
+
+2. **Blue-Green (Red-Black)**: Поднимается параллельно ВТОРОЙ изолированный стенд (Green) с новой версией. После прохождения дымовых тестов балансировщик (Ingress/Service) мгновенно переключает 100% трафика с Blue на Green. Мгновенный откат. Требует 2x ресурсов.
+
+3. **Canary (Канареечный)**: Новая версия деплоится на 5-10% пользователей. Метрики (ошибки 5xx, latency) анализируются автоматикой (Flagger/Argo Rollouts). Если метрики отличные, процент трафика повышается до 100%.
+
+4. **Shadow (Traffic Mirroring)**: Трафик копируется на L7 (через Istio/Envoy) и отправляется в новую версию. Ответы новой версии отбрасываются и не видны юзерам. Идеально для тестирования нагрузки на реальном трафике.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример стратегии RollingUpdate в Kubernetes Deployment
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 25%
+    maxUnavailable: 0`
+    },
+    interviewTips: [
+      'Упомяните инструмент Argo Rollouts или Flagger для реализации Canary деплоя на основе метрик Prometheus.'
+    ],
+    commonPitfalls: [
+      'Забывать про обратную совместимость миграций баз данных при Rolling Update!'
+    ],
+    tags: ['CICD', 'DeploymentStrategy', 'Canary', 'BlueGreen', 'Kubernetes']
+  },
+  {
+    id: 'cicd-3',
+    title: 'Как безопасно управлять секретами в CI/CD и GitOps (HashiCorp Vault, SOPS, Sealed Secrets)?',
+    category: 'cicd',
+    difficulty: 'Senior',
+    summaryAnswer: 'Секреты нельзя коммитить в Git в открытом виде. Подходы: HashiCorp Vault (динамические секреты), SOPS (PGP/KMS зашифрованные файлы), Sealed Secrets (асимметричное шифрование под K8s).',
+    fullAnswer: `1. **HashiCorp Vault**:
+   - Централизованное хранилище секретов.
+   - Поддерживает динамические секреты (выдача одноразовых токенов к БД со сроком жизни TTL).
+   - Поды авторизуются через Kubernetes Auth Method с помощью ServiceAccount токена.
+
+2. **Mozilla SOPS (Secrets OPeration Support)**:
+   - Шифрует только значения (values) в YAML/JSON файлах, оставляя ключи открытыми для удобства diff в Git.
+   - Использует ключи AWS KMS, GCP KMS или PGP.
+
+3. **Bitnami Sealed Secrets**:
+   - Специфично для K8s GitOps.
+   - Утилита kubeseal шифрует секрет публичным ключом контроллера кластера.
+   - Зашифрованный манифест SealedSecret безопасно коммитится в Git; расшифровать его может ТОЛЬКО контроллер внутри K8s.`,
+    codeSnippet: {
+      language: 'bash',
+      code: `# Зашифровать секрет через SealedSecrets:
+kubeseal --fetch-cert > pub-cert.pem
+kubeseal --format yaml --cert pub-cert.pem < secret.yaml > sealed-secret.yaml`
+    },
+    interviewTips: [
+      'Упомяните External Secrets Operator (ESO) как унифицированный инструмент синхронизации секретов из Vault/AWS Secrets Manager в K8s Secrets.'
+    ],
+    commonPitfalls: [
+      'Кодировать base64 в обычный Kubernetes Secret и думать, что это шифрование (Base64 — это просто кодирование!).'
+    ],
+    tags: ['CICD', 'Security', 'Vault', 'Secrets', 'SOPS', 'GitOps']
+  },
+  {
+    id: 'cicd-4',
+    title: 'Как устроена оптимизация времени выполнения (Speedup) CI/CD пайплайнов?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Оптимизация включает: кэширование зависимостей (npm, go, maven), Docker Layer Caching (BuildKit), параллелизацию тестов (Matrix builds), DAG пайплайны и запуск только изменившихся модулей (Monorepo tooling).',
+    fullAnswer: `Стратегии ускорения пайплайнов:
+1. **Кэширование артефактов и зависимостей**: Сохранение папок .npm, .m2, go/pkg/mod между запуском раннеров в S3 / локальном storage.
+2. **Docker BuildKit & Remote Cache**: Использование --cache-from с выгрузкой слоев кэша в Container Registry.
+3. **Параллелизация и Matrix Jobs**: Разделение юнит-тестов на N независимых потоков.
+4. **DAG (Directed Acyclic Graph)**: В GitLab CI использование needs: [] позволяет стадии деплоя не ждать завершения всех независимых задач стадии тестирования.
+5. **Monorepo инструменты (Nx, Turborepo, Bazel)**: Сборка и тестирование ТОЛЬКО тех пакетов монорепозитория, которые реально изменились в данном PR.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример GitLab CI с кэшированием и DAG
+test_job:
+  stage: test
+  cache:
+    key: \${CI_COMMIT_REF_SLUG}
+    paths:
+      - .npm/
+  script:
+    - npm ci --cache .npm --prefer-offline
+    - npm test
+
+deploy_job:
+  stage: deploy
+  needs: ["test_job"] # Не ждет остальные тяжелые тесты!`
+    },
+    interviewTips: [
+      'Назовите метрику Lead Time to Changes (из DORA metrics) как главный показатель эффективности быстрых пайплайнов.'
+    ],
+    commonPitfalls: [
+      'Запускать npm install или pip install с нуля при каждом запуске CI пайплайна.'
+    ],
+    tags: ['CICD', 'Optimization', 'Caching', 'GitLabCI', 'DORA']
+  },
+  {
+    id: 'cicd-5',
+    title: 'Что такое DORA метрики и почему они критичны для DevOps команд?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: '4 ключевые метрики эффективности DevOps (DevOps Research and Assessment): Deployment Frequency, Lead Time for Changes, Change Failure Rate, Time to Restore Service (MTTR).',
+    fullAnswer: `DORA метрики измеряют скорость и надежность доставки ПО:
+
+1. **Deployment Frequency (Частота деплоев)**: Как часто код успешного релиза попадает в продакшен. (Elite: несколько деплоев в день).
+2. **Lead Time for Changes (Время выполнения изменений)**: Время от создания коммита до его успешной работы в продакшене. (Elite: менее 1 часа).
+3. **Change Failure Rate (Процент сбоев при изменениях)**: Доля деплоев, приведших к критическим сбоям, требующим хотфикса или отката. (Elite: 0-15%).
+4. **Failed Service Recovery Time / MTTR (Время восстановления)**: Время, необходимое для восстановления работоспособности после инцидента на проде. (Elite: менее 1 часа).`,
+    codeSnippet: {
+      language: 'text',
+      code: `Скорость: Deployment Frequency + Lead Time for Changes
+Надежность: Change Failure Rate + Time to Restore Service`
+    },
+    interviewTips: [
+      'Подчеркните баланс: оптимизация скорости (Lead time) не должна ухудшать надежность (Change failure rate).'
+    ],
+    commonPitfalls: [
+      'Измерять производительность инженеров по количеству написанных строк кода или числу закрытых тасок вместо DORA.'
+    ],
+    tags: ['CICD', 'DORA', 'Metrics', 'DevOpsCulture', 'Management']
+  },
+  {
+    id: 'cicd-6',
+    title: 'Как настроить безопасные GitLab CI Runner / GitHub Actions Self-Hosted Runners?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Использовать одноразовые (Ephemeral) раннеры в K8s, разграничивать доступ к окружениям (Protected Environments) и запрещать запуск чужого кода с Fork PR.',
+    fullAnswer: `Риски Self-hosted раннеров:
+Пользователь через Pull Request может выполнить произвольный bash скрипт, прочитав секретные переменные пайплайна или захватив хост-машину.
+
+**Лучшие практики безопасности**:
+1. **Ephemeral (Одноразовые) Pods**: Использование GitLab Runner Kubernetes Executor или GitHub Actions Runner Controller (ARC). Каждый runner запускается в изолированном поде K8s и сразу уничтожается после завершения джобы.
+2. **Защищенные ветки и токены**: Ограничить доступ к прод-секретам только для защищенных тегов и веток (Protected Branches/Tags).
+3. **PULL REQUEST FROM FORKS**: Запретить автоматический запуск CI на селф-хостед раннерах для внешних Pull Request от публичных форков.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Использование короткоживущего раннера в K8s
+runners:
+  config: |
+    [[runners]]
+      executor = "kubernetes"
+      [runners.kubernetes]
+        image = "alpine:latest"`
+    },
+    interviewTips: [
+      'Упомяните GitHub Actions Runner Controller (ARC) как индустриальный стандарт управления self-hosted runner подами.'
+    ],
+    commonPitfalls: [
+      'Запускать runner с правами root и docker.sock маунтом без изоляции.'
+    ],
+    tags: ['CICD', 'GitLabCI', 'GitHubActions', 'Runners', 'Security']
+  },
+  {
+    id: 'cicd-7',
+    title: 'Что такое OIDC (OpenID Connect) авторизация в CI/CD и почему она лучше статических токенов?',
+    category: 'cicd',
+    difficulty: 'Senior',
+    summaryAnswer: 'OIDC позволяет CI/CD пайплайну получать временные короткоживущие токены от Cloud Provider (AWS, Yandex Cloud, Vault) без сохранения долгоживущих API ключей в Git.',
+    fullAnswer: `Проблема статических токенов (AWS_ACCESS_KEY_ID):
+Если разработчик или злоумышленник скомпрометирует переменные CI/CD, секретные ключи утекают навсегда до их ручного отзыва.
+
+**Как работает OIDC в CI/CD**:
+1. При запуске пайплайна CI провайдер (GitHub/GitLab) генерирует подписной JWT токен с метаданными о репозитории, ветке и комитере.
+2. Пайплайн предъявляет этот JWT токен в AWS STS или Vault.
+3. Облачный провайдер валидирует подпись JWT и выдает ВРЕМЕННЫЕ credentials со сроком жизни 15-60 минут.
+4. Долгоживущие ключи хранить в CI не нужно от слова совсем!`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# GitHub Actions OIDC для AWS
+permissions:
+  id-token: write
+  contents: read
+steps:
+- uses: aws-actions/configure-aws-credentials@v4
+  with:
+    role-to-assume: arn:aws:iam::123456789012:role/my-github-role
+    aws-region: us-east-1`
+    },
+    interviewTips: [
+      'Подчеркните принцип "Short-lived Credentials" и полное исключение человеческого фактора при ротации ключей.'
+    ],
+    commonPitfalls: [
+      'Хранить AWS/Yandex Cloud master ключи в файле .env или CI/CD Variables.'
+    ],
+    tags: ['CICD', 'OIDC', 'Security', 'AWS', 'Vault']
+  },
+  {
+    id: 'cicd-8',
+    title: 'В чем разница между Semantic Versioning (SemVer) и Calendar Versioning (CalVer)?',
+    category: 'cicd',
+    difficulty: 'Junior',
+    summaryAnswer: 'SemVer (MAJOR.MINOR.PATCH) отражает ломающие изменения в API. CalVer (YYYY.MM.MICRO) версионирует релизы по дате их выхода (Ubuntu, Python, Ubuntu).',
+    fullAnswer: `1. **SemVer (Semantic Versioning - v1.2.3)**:
+   - **MAJOR**: Содержит ломающие изменения API (Incompatible API changes).
+   - **MINOR**: Добавляет новую функциональность с обратной совместимостью (Backwards-compatible features).
+   - **PATCH**: Содержит багфиксы с обратной совместимостью (Backwards-compatible bug fixes).
+
+2. **CalVer (Calendar Versioning - 2024.04.1)**:
+   - Зависит от даты календаря (например Ubuntu 24.04).
+   - Удобно для проектов с регулярным графиком релизов (раз в месяц или раз в полгода).`,
+    codeSnippet: {
+      language: 'text',
+      code: `SemVer: v2.4.12
+CalVer: 2024.03.0`
+    },
+    interviewTips: [
+      'Упомяните инструмент Semantic Release для автоматической генерации SemVer тегов и CHANGELOG.md на основе Conventional Commits.'
+    ],
+    commonPitfalls: [
+      'Поднимать MAJOR версию при обычных багфиксах.'
+    ],
+    tags: ['CICD', 'Versioning', 'SemVer', 'CalVer', 'Git']
+  },
+  {
+    id: 'cicd-9',
+    title: 'Что такое Conventional Commits и как они автоматизируют генерацию CHANGELOG?',
+    category: 'cicd',
+    difficulty: 'Junior',
+    summaryAnswer: 'Conventional Commits — соглашение о формате коммитов (feat, fix, docs, refactor, BREAKING CHANGE). Позволяет утилитам автоматически поднимать версию и собирать чейнджлог.',
+    fullAnswer: `Формат коммита:
+<type>(<scope>): <short summary>
+
+[optional body]
+[optional footer(s)]
+
+**Типы (Type)**:
+- **feat**: Новая фича (триггерит MINOR версию в SemVer).
+- **fix**: Исправление бага (триггерит PATCH версию).
+- **BREAKING CHANGE:** в футере или восклицательный знак (feat!: ...) триггерит MAJOR версию.
+- **docs, style, refactor, test, chore**: Не меняют версию продукта.`,
+    codeSnippet: {
+      language: 'text',
+      code: `feat(auth): add OAuth2 login support
+
+BREAKING CHANGE: login endpoint moved from /login to /v2/login`
+    },
+    interviewTips: [
+      'Упомяните husky + commitlint для валидации формата коммитов на этапе git commit.'
+    ],
+    commonPitfalls: [
+      'Писать неинформативные коммиты вроде "fixed bug", "wip", "test".'
+    ],
+    tags: ['CICD', 'Git', 'ConventionalCommits', 'Automation']
+  },
+  {
+    id: 'cicd-10',
+    title: 'Как работает сканирование уязвимостей в CI/CD (SAST, DAST, SCA, Container Scanning)?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'SAST анализирует исходный код. SCA ищет уязвимые сторонние зависимости. Container Scanning ищет CVE в слоях Docker. DAST тестирует работающее приложение извне.',
+    fullAnswer: `DevSecOps конвейер безопасности:
+
+1. **SCA (Software Composition Analysis - Trivy, Dependency-Check, Snyk)**:
+   - Сканирует package.json, go.sum, requirements.txt на известные уязвимости (CVE) в сторонних библиотеках.
+
+2. **SAST (Static Application Security Testing - SonarQube, Semgrep)**:
+   - Анализирует исходный код без его запуска (SQL injections, hardcoded keys, buffer overflows).
+
+3. **Container Scanning (Trivy, Grype)**:
+   - Проверяет системные пакеты ОС базового Docker-образа и скомпилированные слои.
+
+4. **DAST (Dynamic Application Security Testing - OWASP ZAP)**:
+   - Имитирует атаки на РАБОТАЮЩИЙ тестовый стенд (XSS, CSRF, Fuzzing).`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример запуска Trivy сканера в CI
+- name: Run Trivy vulnerability scanner
+  uses: aquasecurity/trivy-action@master
+  with:
+    image-ref: 'my-app:latest'
+    exit-code: '1' # Фейлить пайплайн при найденных HIGH/CRITICAL CVE
+    severity: 'CRITICAL,HIGH'`
+    },
+    interviewTips: [
+      'Отметьте "Shift Left" подход — сдвиг проверок безопасности на самые ранние этапы создания кода.'
+    ],
+    commonPitfalls: [
+      'Игнорировать сработки сканеров или отключение проверки перед релизом.'
+    ],
+    tags: ['CICD', 'DevSecOps', 'SAST', 'DAST', 'Trivy', 'Security']
+  },
+  {
+    id: 'cicd-11',
+    title: 'Что такое Artifact Registry (Harbor, Nexus, JFrog Artifactory) и зачем нужен свой репозиторий?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Private Registry хранит собранные скомпилированные артефакты (Docker образы, Helm чарты, npm/maven пакеты) внутри собственного контура организации.',
+    fullAnswer: `Причины использования собственного Harbor / Nexus:
+1. **Безопасность**: Публичные образы могут содержать бэкдоры. Собственные прокси-реестры кэшируют и сканируют внешние зависимости.
+2. **Лимиты скачивания (Rate Limits)**: Docker Hub ограничивает 100-200 скачиваний на анонимный IP. Собственный репозиторий защищает от сбоев.
+3. **Скорость**: Скачивание образов по локальной 10-гигабитной сети кластера происходит за секунды.
+4. **Управление жизненным циклом (Retention policy)**: Автоматическая очистка старых временных веток и хранение только релизных артефактов.`,
+    codeSnippet: {
+      language: 'bash',
+      code: `docker tag my-app:v1.0.0 harbor.company.com/prod/my-app:v1.0.0
+docker push harbor.company.com/prod/my-app:v1.0.0`
+    },
+    interviewTips: [
+      'Упомяните Harbor как Open-Source CNCF Graduated проект с встроенным Trivy сканером и подписью Cosign/Notary.'
+    ],
+    commonPitfalls: [
+      'Забивать диск реестра без настройки Retention Policies (правил удаления старых тегов).'
+    ],
+    tags: ['CICD', 'Harbor', 'Registry', 'Artifacts', 'Security']
+  },
+  {
+    id: 'cicd-12',
+    title: 'Как реализовать матричные сборки (Matrix Builds) в GitHub Actions и GitLab CI?',
+    category: 'cicd',
+    difficulty: 'Junior',
+    summaryAnswer: 'Matrix strategy позволяет параллельно запускать одну и ту же задачу для множества комбинаций параметров (версии Node.js, ОС, архитектуры CPU).',
+    fullAnswer: `Matrix стратегии экономят сотни строк дублирующегося YAML кода.
+Особенно полезны для Open-Source библиотек и мультиплатформенных приложений.
+
+Пример применения:
+Протестировать приложение на Node.js версии 18, 20, 22 на операционных системах ubuntu-latest и windows-latest. GitHub Actions создаст 3 x 2 = 6 параллельных задач.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `strategy:
+  matrix:
+    node-version: [18.x, 20.x, 22.x]
+    os: [ubuntu-latest, windows-latest]
+steps:
+- uses: actions/setup-node@v4
+  with:
+    node-version: \${{ matrix.node-version }}`
+    },
+    interviewTips: [
+      'Упомяните параметр fail-fast: false, чтобы падение одной ветки матрицы не отменяло остальные.'
+    ],
+    commonPitfalls: [
+      'Запускать слишком большую матрицу, упираясь в лимиты параллелизма CI.'
+    ],
+    tags: ['CICD', 'GitHubActions', 'Matrix', 'Automation']
+  },
+  {
+    id: 'cicd-13',
+    title: 'Что такое Feature Flags и как они связаны с непрерывной доставкой (Continuous Delivery)?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Feature Flags (Флаги фич) позволяют отделить деплой кода от его активации для пользователей. Код сливается в main регулярно, а фича включается переключателем.',
+    fullAnswer: `Без Feature Flags команды вынуждены держать долгоживущие Feature Branches в Git и страдать от мега-конфликтов при слиянии (Merge Hell).
+
+**С Feature Flags**:
+1. Разработчик вливает незавершенную фичу в main под условием: if (featureFlags.isEnabled('NEW_CHECKOUT')) { ... }.
+2. Код безопасно релижится в прод без рисков для пользователей.
+3. Менеджеры или QA включают флаг через UI системы (Unleash, LaunchDarkly, Flagsmith) для 1% юзеров, затем для 10%, затем для всех.
+4. При проблемах флаг мгновенно выключается БЕЗ необходимости срочного отката или пересобирания кода!`,
+    codeSnippet: {
+      language: 'typescript',
+      code: `if (await flags.isEnabled('new-payment-gateway', userId)) {
+    return processStripePayment();
+} else {
+    return processLegacyPayment();
+}`
+    },
+    interviewTips: [
+      'Назовите класс систем: Unleash, LaunchDarkly.'
+    ],
+    commonPitfalls: [
+      'Забывать удалять устаревшие Feature Flags из кода, накапливая технический долг.'
+    ],
+    tags: ['CICD', 'FeatureFlags', 'ContinuousDelivery', 'Unleash']
+  },
+  {
+    id: 'cicd-14',
+    title: 'Что такое Helm и Kustomize? В чем их отличия при деплое в Kubernetes?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Helm — менеджер пакетов с шаблонизацией (Go templates). Kustomize — инструмент декларативного оверлея манифестов без шаблонизации.',
+    fullAnswer: `1. **Helm**:
+   - Шаблонизирует YAML файлы через {{ .Values.image.repository }}.
+   - Хранит историю релизов (Helm Release) внутри K8s Secrets и умеет делать helm rollback.
+   - Подходит для дистрибуции сторонних сложных приложений (PostgreSQL, Redis, Ingress).
+
+2. **Kustomize**:
+   - Нативно встроен в kubectl (kubectl apply -k .).
+   - Использует концепцию Base и Overlays (Dev, Staging, Prod) БЕЗ шаблонизации.
+   - Чистые YAML файлы накладываются патчами друг на друга.
+
+*Тренды*: Использование Kustomize для собственного кода приложений и Helm для сторонних чартов.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Kustomization.yaml (Overlay)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../base
+patches:
+- path: replica_count.yaml`
+    },
+    interviewTips: [
+      'Укажите, что Helm v3 убрал небезопасную серверную часть Tiller, сделав его полностью клиентской утилитой.'
+    ],
+    commonPitfalls: [
+      'Превращать Go-шаблоны Helm в монструозный нечитаемый код с глубокой вложенностью if/else.'
+    ],
+    tags: ['CICD', 'Helm', 'Kustomize', 'Kubernetes', 'Templating']
+  }
+];
