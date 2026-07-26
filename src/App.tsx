@@ -69,7 +69,7 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem('devops_pro_theme');
-    return saved !== null ? saved === 'dark' : false;
+    return saved !== null ? saved === 'dark' : true;
   });
 
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
