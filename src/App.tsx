@@ -10,6 +10,7 @@ import { ResumeGuideView } from './components/ResumeGuideView';
 import { IncidentsView } from './components/IncidentsView';
 import { CheatsheetsView } from './components/CheatsheetsView';
 import { AchievementsView } from './components/AchievementsView';
+import { Footer } from './components/Footer';
 
 import { QUESTIONS } from './data/questions';
 import { CategoryId, UserProgress, ExperienceLegend, QuizResult } from './types';
@@ -351,9 +352,7 @@ export default function App() {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-slate-200 dark:border-slate-800/80 py-6 text-center text-xs text-slate-400">
-          <p>DevOps Pro — Интерактивный тренажер и карьерный хаб для DevOps инженеров (Bento Edition)</p>
-        </footer>
+        <Footer onNavigate={handleNavigate} />
       </div>
 
     </div>

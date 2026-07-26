@@ -117,7 +117,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="space-y-4 relative z-10">
               <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
                 <Sparkles className="w-3 h-3" />
-                <span>Рекомендация ИИ</span>
+                <span>Рекомендация</span>
               </div>
               
               <div className="mobile-word-break">

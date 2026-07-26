@@ -87,7 +87,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
           <div>
             <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white font-mono">DevOps<span className="text-emerald-500">Pro</span></span>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Bento DevOps Hub</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">База знаний DevOps & SRE</p>
           </div>
         </div>
       </div>
