@@ -456,31 +456,31 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
               </div>
 
               {/* Learning Statistics Bento Card */}
-              <div className="col-span-12 lg:col-span-4 bg-[#161a23] border border-slate-800 p-6 rounded-2xl text-white flex flex-col justify-between shadow-lg relative overflow-hidden">
+              <div className="col-span-12 lg:col-span-4 bg-white dark:bg-[#161a23] border border-slate-200 dark:border-slate-800 p-6 rounded-2xl text-slate-900 dark:text-white flex flex-col justify-between shadow-sm dark:shadow-lg relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
                 
                 <div className="space-y-3 relative z-10">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-400 flex items-center space-x-1">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
                     <Activity className="w-3 h-3" />
                     <span>Статистика прогресса</span>
                   </span>
                   <div className="flex items-baseline space-x-2">
-                    <span className="text-4xl font-black tracking-tight text-white">{totalMasteredCount}</span>
-                    <span className="text-xs text-slate-400">/ {questions.length} пройдено</span>
+                    <span className="text-4xl font-black tracking-tight text-slate-900 dark:text-white">{totalMasteredCount}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">/ {questions.length} пройдено</span>
                   </div>
                 </div>
 
-                <div className="space-y-2.5 pt-4 border-t border-slate-800 relative z-10 text-xs">
+                <div className="space-y-2.5 pt-4 border-t border-slate-200 dark:border-slate-800 relative z-10 text-xs">
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-slate-400">В закладках:</span>
-                    <span className="font-bold text-amber-400 flex items-center space-x-1">
+                    <span className="text-slate-500 dark:text-slate-400">В закладках:</span>
+                    <span className="font-bold text-amber-600 dark:text-amber-400 flex items-center space-x-1">
                       <Bookmark className="w-3 h-3 fill-current" />
                       <span>{progress.bookmarkedQuestionIds.length}</span>
                     </span>
                   </div>
                   <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-slate-400">Заметок сохранено:</span>
-                    <span className="font-bold text-blue-400 flex items-center space-x-1">
+                    <span className="text-slate-500 dark:text-slate-400">Заметок сохранено:</span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400 flex items-center space-x-1">
                       <FileText className="w-3 h-3" />
                       <span>{Object.keys(progress.customNotes).length}</span>
                     </span>

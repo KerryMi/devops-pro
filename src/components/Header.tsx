@@ -11,7 +11,9 @@ import {
   Code,
   Trophy,
   Menu,
-  X
+  X,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { SearchModal } from './SearchModal';
 import { CategoryId } from '../types';
@@ -37,6 +39,8 @@ interface HeaderProps {
   totalAchievementsCount?: number;
   isSearchOpen: boolean;
   setIsSearchOpen: (val: boolean) => void;
+  isDarkMode: boolean;
+  setIsDarkMode: (val: boolean) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -48,7 +52,9 @@ export const Header: React.FC<HeaderProps> = ({
   unlockedAchievementsCount = 0,
   totalAchievementsCount = 12,
   isSearchOpen,
-  setIsSearchOpen
+  setIsSearchOpen,
+  isDarkMode,
+  setIsDarkMode
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -173,12 +179,22 @@ export const Header: React.FC<HeaderProps> = ({
               <Terminal className="w-5 h-5 text-emerald-500" />
               <span className="font-bold text-slate-900 dark:text-white font-mono">DevOps Pro Menu</span>
             </div>
-            <button 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300"
-            >
-              <X className="w-5 h-5" />
-            </button>
+            <div className="flex items-center space-x-2">
+              {/* Theme Toggle in Mobile Menu */}
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800"
+                title={isDarkMode ? 'Светлая тема' : 'Темная тема'}
+              >
+                {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-indigo-500" />}
+              </button>
+              <button 
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50 dark:bg-[#050505]">

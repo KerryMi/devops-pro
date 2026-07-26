@@ -110,19 +110,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-5 gap-4 items-stretch">
           
           {/* Main Status & Recommendation Widget (Bento Tile 1) */}
-          <div className="md:col-span-2 bg-gradient-to-br from-slate-950 to-slate-900 dark:from-slate-950 dark:to-slate-900 text-white p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden border border-slate-800 h-full mobile-word-break">
+          <div className="md:col-span-2 bg-gradient-to-br from-white to-slate-50 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-white p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden border border-slate-200 dark:border-slate-800 h-full mobile-word-break">
             {/* Ambient glows */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
             
             <div className="space-y-4 relative z-10">
-              <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
+              <div className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold border border-emerald-500/20">
                 <Sparkles className="w-3 h-3" />
                 <span>Рекомендация ИИ</span>
               </div>
               
               <div className="mobile-word-break">
-                <h3 className="text-sm font-extrabold text-slate-400 uppercase tracking-widest text-[9px]">Текущий фокус</h3>
-                <p className="text-base font-black tracking-tight mt-1 text-white leading-snug">
+                <h3 className="text-sm font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-widest text-[9px]">Текущий фокус</h3>
+                <p className="text-base font-black tracking-tight mt-1 text-slate-900 dark:text-white leading-snug">
                   {masteredCount < 10 
                     ? "Уровень 1: Теория и Стек"
                     : totalQuizzesCount === 0
@@ -131,7 +131,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         ? "Уровень 3: Аварии в Prod"
                         : "Уровень 4: Карьерная Легенда"}
                 </p>
-                <p className="text-[11px] text-slate-400 mt-1.5 leading-relaxed truncate md:whitespace-normal block max-w-full">
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed truncate md:whitespace-normal block max-w-full">
                   {masteredCount < 10 
                     ? "Освойте базовые понятия Linux, Kubernetes и CI/CD перед созданием резюме."
                     : totalQuizzesCount === 0
@@ -141,16 +141,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         : "Сформируйте профессиональное позиционирование и выберите проекты для легенды."}
                 </p>
               </div>
-
+              
               {/* Progress and Rank Info */}
-              <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between gap-2">
                 <div>
-                  <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Ваш Ранг</div>
-                  <div className="text-xs font-black text-slate-200">{rankTitle}</div>
+                  <div className="text-[9px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wide">Ваш Ранг</div>
+                  <div className="text-xs font-black text-slate-800 dark:text-slate-200">{rankTitle}</div>
                 </div>
                 <div className="text-right">
-                  <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wide">Бейджи</div>
-                  <div className="text-xs font-black text-emerald-400 font-mono">{unlockedCount} / {achievements.length}</div>
+                  <div className="text-[9px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wide">Бейджи</div>
+                  <div className="text-xs font-black text-emerald-600 dark:text-emerald-400 font-mono">{unlockedCount} / {achievements.length}</div>
                 </div>
               </div>
             </div>

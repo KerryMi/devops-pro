@@ -160,6 +160,8 @@ export default function App() {
           totalAchievementsCount={totalAchievementsCount}
           isSearchOpen={isSearchOpen}
           setIsSearchOpen={setIsSearchOpen}
+          isDarkMode={isDarkMode}
+          setIsDarkMode={setIsDarkMode}
         />
 
         {/* Main Container View Area - starts from top on desktop without top bar */}
