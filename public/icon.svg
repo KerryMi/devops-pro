@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1329" />
+      <stop offset="100%" stop-color="#111c38" />
+    </linearGradient>
+    <linearGradient id="emerald-glow" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background container with rounded corners for maskable icons -->
+  <rect width="512" height="512" rx="112" fill="url(#bg-grad)" />
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="none" stroke="#1e293b" stroke-width="8" opacity="0.6" />
+
+  <!-- Infinity DevOps Loop -->
+  <path d="M160 200 C100 200 100 312 160 312 C210 312 260 200 312 200 C372 200 372 312 312 312 C260 312 210 200 160 200 Z" 
+        fill="none" 
+        stroke="url(#emerald-glow)" 
+        stroke-width="36" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Inner Chevron Prompt (> _) -->
+  <path d="M210 226 L248 256 L210 286" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="26" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <line x1="268" y1="286" x2="304" y2="286" 
+        stroke="#34d399" 
+        stroke-width="26" 
+        stroke-linecap="round" />
+</svg>
