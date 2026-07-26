@@ -7,9 +7,6 @@ import {
   Copy, 
   Check, 
   Sparkles, 
-  Bot, 
-  TrendingUp,
-  RefreshCw,
   Plus,
   Trash2,
   FileCode,
@@ -18,7 +15,7 @@ import {
   Wrench,
   GraduationCap,
   Wand2,
-  Send
+  RefreshCw
 } from 'lucide-react';
 
 interface WorkExperience {
@@ -150,13 +147,6 @@ ${formData.certifications}
     setTimeout(() => setCopiedMarkdown(false), 2000);
   };
 
-  const handleSendToAI = () => {
-    setResumeText(generatedMarkdown);
-    // Scroll smoothly to AI section
-    const el = document.getElementById('ai-analyzer-section');
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  };
-
   const handleAddExperience = () => {
     const newExp: WorkExperience = {
       id: Date.now().toString(),
@@ -183,24 +173,6 @@ ${formData.certifications}
       ...prev,
       experiences: prev.experiences.map(exp => exp.id === id ? { ...exp, [field]: val } : exp)
     }));
-  };
-
-  const handleAnalyzeResume = async () => {
-    if (!resumeText.trim()) return;
-    setIsAnalyzing(true);
-    try {
-      const res = await fetch('/api/ai/resume-feedback', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ resumeText })
-      });
-      const data = await res.json();
-      setAiFeedback(data);
-    } catch (e) {
-      console.error('Failed to analyze resume', e);
-    } finally {
-      setIsAnalyzing(false);
-    }
   };
 
   return (
@@ -517,14 +489,6 @@ ${formData.certifications}
 
             <div className="flex items-center space-x-2">
               <button
-                onClick={handleSendToAI}
-                className="px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center space-x-1.5 transition-colors"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>Отправить в AI-Анализатор</span>
-              </button>
-
-              <button
                 onClick={handleCopyMarkdown}
                 className={`px-3.5 py-1.5 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-xs ${
                   copiedMarkdown
@@ -630,63 +594,6 @@ ${formData.certifications}
             </div>
           ))}
         </div>
-      </div>
-
-      {/* AI Resume Analyzer */}
-      <div id="ai-analyzer-section" className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm space-y-4">
-        <div className="flex items-center space-x-2">
-          <Bot className="w-5 h-5 text-indigo-500" />
-          <h3 className="font-extrabold text-slate-900 dark:text-white text-base">
-            AI-Анализ вашего резюме
-          </h3>
-        </div>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          Вставьте фрагмент текста вашего резюме (или сгенерированный выше Markdown) для проверки нейросетью:
-        </p>
-
-        <textarea
-          value={resumeText}
-          onChange={(e) => setResumeText(e.target.value)}
-          rows={6}
-          placeholder="Вставьте описание вашего опыта или весь Markdown резюме здесь..."
-          className="w-full p-3.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
-        />
-
-        <div className="flex justify-end">
-          <button
-            onClick={handleAnalyzeResume}
-            disabled={isAnalyzing || !resumeText.trim()}
-            className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center space-x-2 transition-all shadow-md shadow-indigo-600/30 disabled:opacity-50"
-          >
-            {isAnalyzing ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Анализ...</span>
-              </>
-            ) : (
-              <>
-                <TrendingUp className="w-4 h-4" />
-                <span>Проверить через AI</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Feedback Display */}
-        {aiFeedback && (
-          <div className="p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/30 space-y-3 animate-fadeIn">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-indigo-400">Анализ AI эксперта:</span>
-              <span className="text-xs font-bold px-2 py-0.5 rounded bg-indigo-500 text-white">
-                Оценка ATS: {aiFeedback.score}/100
-              </span>
-            </div>
-            <div className="text-xs text-slate-800 dark:text-slate-200 whitespace-pre-line leading-relaxed">
-              {aiFeedback.feedback}
-            </div>
-          </div>
-        )}
-
       </div>
 
     </div>

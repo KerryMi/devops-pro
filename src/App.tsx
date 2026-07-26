@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Header, TabType } from './components/Header';
+import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { QuestionsView } from './components/QuestionsView';
 import { FlashcardsView } from './components/FlashcardsView';
 import { QuizView } from './components/QuizView';
 import { LegendBuilderView } from './components/LegendBuilderView';
 import { ResumeGuideView } from './components/ResumeGuideView';
-import { MockInterviewView } from './components/MockInterviewView';
 import { IncidentsView } from './components/IncidentsView';
 import { CheatsheetsView } from './components/CheatsheetsView';
 import { AchievementsView } from './components/AchievementsView';
@@ -20,6 +20,7 @@ export default function App() {
   const [progress, setProgress] = useState<UserProgress>(() => loadUserProgress());
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<CategoryId | undefined>(undefined);
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const saved = localStorage.getItem('devops_pro_theme');
     return saved !== null ? saved === 'dark' : false;
@@ -30,13 +31,15 @@ export default function App() {
   const unlockedAchievementsCount = achievements.filter(a => a.isUnlocked).length;
   const totalAchievementsCount = achievements.length;
 
-  // Sync dark mode class on <html>
+  // Sync dark mode class and data-theme attribute on <html> and <body>
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
+      document.body.setAttribute('data-theme', 'dark');
       localStorage.setItem('devops_pro_theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.body.setAttribute('data-theme', 'light');
       localStorage.setItem('devops_pro_theme', 'light');
     }
   }, [isDarkMode]);
@@ -117,13 +120,6 @@ export default function App() {
     });
   };
 
-  const handleCompleteInterview = () => {
-    setProgress(prev => ({
-      ...prev,
-      completedInterviewSessionsCount: (prev.completedInterviewSessionsCount || 0) + 1
-    }));
-  };
-
   const handleNavigate = (tab: TabType, filterCategory?: CategoryId) => {
     setActiveTab(tab);
     if (filterCategory) {
@@ -132,99 +128,108 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen max-w-full overflow-x-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
+    <div className="min-h-screen max-w-full overflow-x-hidden bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
       
-      {/* Top Header Navigation */}
-      <Header
+      {/* Desktop Fixed Sidebar */}
+      <Sidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        readinessScore={readinessScore}
-        streak={progress.dailyStreak}
-        isDarkMode={isDarkMode}
-        setIsDarkMode={setIsDarkMode}
+        onNavigate={handleNavigate}
         masteredCount={masteredCount}
         totalQuestionsCount={totalQuestions}
         unlockedAchievementsCount={unlockedAchievementsCount}
         totalAchievementsCount={totalAchievementsCount}
+        isDarkMode={isDarkMode}
+        setIsDarkMode={setIsDarkMode}
+        onOpenSearch={() => setIsSearchOpen(true)}
       />
 
-      {/* Main Container View Area */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-24 lg:pb-12 min-w-0 overflow-x-hidden">
-        {activeTab === 'dashboard' && (
-          <Dashboard
-            progress={progress}
-            questions={QUESTIONS}
-            onNavigate={handleNavigate}
-            readinessScore={readinessScore}
-            onUpdateProgress={setProgress}
-          />
-        )}
+      {/* Top Header Navigation for Mobile Only */}
+      <div className="lg:ml-64 transition-all">
+        <Header
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          onNavigate={handleNavigate}
+          masteredCount={masteredCount}
+          totalQuestionsCount={totalQuestions}
+          unlockedAchievementsCount={unlockedAchievementsCount}
+          totalAchievementsCount={totalAchievementsCount}
+          isSearchOpen={isSearchOpen}
+          setIsSearchOpen={setIsSearchOpen}
+        />
 
-        {activeTab === 'achievements' && (
-          <AchievementsView
-            progress={progress}
-            questions={QUESTIONS}
-            onNavigate={handleNavigate}
-          />
-        )}
+        {/* Main Container View Area - starts from top on desktop without top bar */}
+        <main className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8 lg:pt-10 pb-28 lg:pb-16 min-w-0 overflow-x-hidden">
+          {activeTab === 'dashboard' && (
+            <Dashboard
+              progress={progress}
+              questions={QUESTIONS}
+              onNavigate={handleNavigate}
+              readinessScore={readinessScore}
+              onUpdateProgress={setProgress}
+            />
+          )}
 
-        {activeTab === 'questions' && (
-          <QuestionsView
-            questions={QUESTIONS}
-            progress={progress}
-            onToggleMastered={handleToggleMastered}
-            onToggleBookmark={handleToggleBookmark}
-            onSaveNote={handleSaveNote}
-            initialCategory={selectedCategoryFilter}
-          />
-        )}
+          {activeTab === 'achievements' && (
+            <AchievementsView
+              progress={progress}
+              questions={QUESTIONS}
+              onNavigate={handleNavigate}
+            />
+          )}
 
-        {activeTab === 'flashcards' && (
-          <FlashcardsView
-            questions={QUESTIONS}
-            progress={progress}
-            onUpdateFlashcardBox={handleUpdateFlashcardBox}
-          />
-        )}
+          {activeTab === 'questions' && (
+            <QuestionsView
+              questions={QUESTIONS}
+              progress={progress}
+              onToggleMastered={handleToggleMastered}
+              onToggleBookmark={handleToggleBookmark}
+              onSaveNote={handleSaveNote}
+              initialCategory={selectedCategoryFilter}
+            />
+          )}
 
-        {activeTab === 'quizzes' && (
-          <QuizView
-            onSaveQuizResult={handleSaveQuizResult}
-          />
-        )}
+          {activeTab === 'flashcards' && (
+            <FlashcardsView
+              questions={QUESTIONS}
+              progress={progress}
+              onUpdateFlashcardBox={handleUpdateFlashcardBox}
+            />
+          )}
 
-        {activeTab === 'legend' && (
-          <LegendBuilderView
-            savedLegend={progress.savedLegend}
-            onSaveLegend={handleSaveLegend}
-          />
-        )}
+          {activeTab === 'quizzes' && (
+            <QuizView
+              onSaveQuizResult={handleSaveQuizResult}
+            />
+          )}
 
-        {activeTab === 'resume' && (
-          <ResumeGuideView />
-        )}
+          {activeTab === 'legend' && (
+            <LegendBuilderView
+              savedLegend={progress.savedLegend}
+              onSaveLegend={handleSaveLegend}
+            />
+          )}
 
-        {activeTab === 'interview' && (
-          <MockInterviewView
-            onCompleteSession={handleCompleteInterview}
-          />
-        )}
+          {activeTab === 'resume' && (
+            <ResumeGuideView />
+          )}
 
-        {activeTab === 'incidents' && (
-          <IncidentsView
-            onSolveIncident={handleSolveIncident}
-          />
-        )}
+          {activeTab === 'incidents' && (
+            <IncidentsView
+              onSolveIncident={handleSolveIncident}
+              solvedIncidentIds={progress.solvedIncidentIds || []}
+            />
+          )}
 
-        {activeTab === 'cheatsheet' && (
-          <CheatsheetsView />
-        )}
-      </main>
+          {activeTab === 'cheatsheet' && (
+            <CheatsheetsView />
+          )}
+        </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-400">
-        <p>DevOps Pro — Интерактивный тренажер и карьерный хаб для DevOps инженеров</p>
-      </footer>
+        {/* Footer */}
+        <footer className="border-t border-slate-200 dark:border-slate-800/80 py-6 text-center text-xs text-slate-400">
+          <p>DevOps Pro — Интерактивный тренажер и карьерный хаб для DevOps инженеров (Bento Edition)</p>
+        </footer>
+      </div>
 
     </div>
   );

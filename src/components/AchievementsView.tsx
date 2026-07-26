@@ -15,10 +15,10 @@ import {
   Bookmark, 
   Bot,
   Lock,
-  Sparkles,
   Trophy,
-  Filter,
-  Check
+  Check,
+  Target,
+  ArrowRight
 } from 'lucide-react';
 
 interface AchievementsViewProps {
@@ -58,16 +58,44 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
 
   // User Level Title based on unlocked achievements
   const getUserLevelTitle = (count: number) => {
-    if (count >= 10) return { title: 'Senior DevOps Architect', color: 'text-emerald-400 bg-emerald-950/60 border-emerald-500/50' };
-    if (count >= 7) return { title: 'Lead DevOps Engineer', color: 'text-emerald-400 bg-emerald-950/40 border-emerald-500/40' };
-    if (count >= 4) return { title: 'Middle DevOps Engineer', color: 'text-emerald-500 bg-emerald-950/30 border-emerald-500/30' };
-    if (count >= 1) return { title: 'Junior DevOps Practitioner', color: 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800' };
-    return { title: 'DevOps Novice', color: 'text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700' };
+    if (count >= 10) return 'Senior DevOps Architect';
+    if (count >= 7) return 'Lead DevOps Engineer';
+    if (count >= 4) return 'Middle DevOps Engineer';
+    if (count >= 1) return 'Junior DevOps Practitioner';
+    return 'DevOps Novice';
   };
 
-  const userLevel = getUserLevelTitle(unlockedCount);
+  const rankTitle = getUserLevelTitle(unlockedCount);
 
-  // Filtering
+  // Active Quests / Tasks to earn rewards
+  const dailyQuests = [
+    {
+      id: 'quest-1',
+      title: 'Пройти тренировку вопросов',
+      description: 'Ответьте на вопросы по Kubernetes и CI/CD',
+      progressText: `${progress.masteredQuestionIds.length} / 5 решено`,
+      completed: progress.masteredQuestionIds.length >= 5,
+      targetTab: 'questions'
+    },
+    {
+      id: 'quest-2',
+      title: 'Ликвидировать инцидент в Prod',
+      description: 'Решите критическую ситуацию в симуляторе',
+      progressText: `${(progress.solvedIncidentIds || []).length} / 1 решено`,
+      completed: (progress.solvedIncidentIds || []).length >= 1,
+      targetTab: 'incidents'
+    },
+    {
+      id: 'quest-3',
+      title: 'Изучить карточки памяти',
+      description: 'Повторите ключевые DevOps термины',
+      progressText: `${Object.keys(progress.flashcardBoxes || {}).length} / 10 изучено`,
+      completed: Object.keys(progress.flashcardBoxes || {}).length >= 10,
+      targetTab: 'flashcards'
+    }
+  ];
+
+  // Filtering achievements
   const filteredAchievements = achievements.filter(a => {
     const matchesCat = selectedCategory === 'all' || a.category === selectedCategory;
     const matchesStatus = 
@@ -78,54 +106,109 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
   });
 
   return (
-    <div className="max-w-5xl mx-auto space-y-6 pb-12 animate-fadeIn">
+    <div className="max-w-5xl mx-auto space-y-8 pb-12 animate-fadeIn">
       
-      {/* Top Banner Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-xs space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          
-          <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 text-xs font-semibold border border-amber-200 dark:border-amber-500/20">
-              <Trophy className="w-3.5 h-3.5 text-amber-500" />
-              <span>DevOps Achievements System</span>
-            </div>
-
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Система Достижений и Бейджей
-            </h1>
-
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-              Отслеживайте свой карьерный рост, выполняйте челленджи и получайте бейджи за изучение вопросов, тесты и решение инцидентов.
-            </p>
+      {/* SECTION 1: PROGRES & RANK (Top Card) */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+        
+        {/* Left: Rank & Progress bar */}
+        <div className="flex items-center space-x-5 w-full md:w-auto">
+          <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-500 shrink-0">
+            <Trophy className="w-8 h-8" />
           </div>
-
-          {/* User Rank & Score Card */}
-          <div className="bg-slate-50/80 dark:bg-slate-950/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shrink-0 flex flex-col items-center justify-center min-w-[220px] text-center space-y-2">
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Ваш Карьерный Ранг</span>
-            <div className={`px-3 py-1 rounded-xl text-xs font-bold border ${userLevel.color}`}>
-              {userLevel.title}
-            </div>
-
-            <div className="w-full pt-2 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between text-xs">
-              <span className="text-slate-500 dark:text-slate-400">Открыто бейджей:</span>
-              <span className="font-extrabold text-amber-600 dark:text-amber-400">{unlockedCount} / {totalCount} ({overallPercent}%)</span>
-            </div>
-
-            <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-emerald-500 to-lime-400 transition-all duration-700 rounded-full"
-                style={{ width: `${overallPercent}%` }}
-              />
+          <div>
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-slate-400">Ваш карьерный ранг</span>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-0.5 tracking-tight">
+              {rankTitle}
+            </h2>
+            <div className="flex items-center space-x-3 mt-2.5">
+              <div className="w-36 h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
+                <div 
+                  className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                  style={{ width: `${overallPercent}%` }}
+                />
+              </div>
+              <span className="text-xs font-mono font-bold text-slate-500">{overallPercent}% общ. прогресса</span>
             </div>
           </div>
-
         </div>
 
-        {/* Filter Controls Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+        {/* Right: Big Bold Count */}
+        <div className="flex items-center space-x-6 shrink-0 bg-slate-50 dark:bg-slate-800/80 px-6 py-4 rounded-xl border border-slate-200 dark:border-slate-700 w-full md:w-auto justify-between md:justify-end">
+          <div className="text-center md:text-right">
+            <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white font-mono tracking-tight">
+              {unlockedCount}
+            </div>
+            <p className="text-[11px] font-semibold text-slate-400 mt-0.5">из {totalCount} бейджей открыто</p>
+          </div>
+        </div>
+
+      </div>
+
+      {/* SECTION 2: ACTIVE TASKS & QUESTS (Задания) */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center space-x-2">
+            <Target className="w-4 h-4 text-emerald-500" />
+            <h3 className="text-sm font-extrabold text-slate-900 dark:text-white tracking-wide uppercase">
+              Активные задания для новых наград
+            </h3>
+          </div>
+          <span className="text-xs text-slate-400 font-mono">Выполняйте для прокачки</span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {dailyQuests.map((quest) => (
+            <div 
+              key={quest.id}
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm flex flex-col justify-between space-y-4"
+            >
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">
+                    Квест
+                  </span>
+                  {quest.completed ? (
+                    <span className="flex items-center text-xs font-bold text-emerald-500 space-x-1">
+                      <CheckCircle2 className="w-4 h-4" />
+                      <span>Выполнено</span>
+                    </span>
+                  ) : (
+                    <span className="text-xs font-mono font-semibold text-amber-500">
+                      {quest.progressText}
+                    </span>
+                  )}
+                </div>
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm">
+                  {quest.title}
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {quest.description}
+                </p>
+              </div>
+
+              <button
+                onClick={() => onNavigate && onNavigate(quest.targetTab)}
+                className={`w-full py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-all ${
+                  quest.completed
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700'
+                    : 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-xs'
+                }`}
+              >
+                <span>{quest.completed ? 'Повторить' : 'Выполнить'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* SECTION 3: REWARDS & BADGES (Награды) */}
+      <div className="space-y-4 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2.5 rounded-2xl shadow-sm">
           
           {/* Category Tabs */}
-          <div className="flex items-center space-x-1 overflow-x-auto scrollbar-none pb-1 sm:pb-0">
+          <div className="flex items-center space-x-1 overflow-x-auto scrollbar-none">
             {[
               { id: 'all', label: 'Все категории' },
               { id: 'Learning', label: 'Обучение' },
@@ -136,10 +219,10 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
               <button
                 key={cat.id}
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all ${
                   selectedCategory === cat.id
-                    ? 'bg-emerald-500 text-slate-950 shadow-xs'
-                    : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-emerald-500 text-slate-950 font-bold shadow-xs'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
                 {cat.label}
@@ -147,128 +230,86 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
             ))}
           </div>
 
-          {/* Status Filter */}
-          <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl self-start sm:self-auto border border-slate-200/60 dark:border-slate-700/60">
-            <button
-              onClick={() => setStatusFilter('all')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                statusFilter === 'all'
-                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              Все ({achievements.length})
-            </button>
-            <button
-              onClick={() => setStatusFilter('unlocked')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                statusFilter === 'unlocked'
-                  ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              Открытые ({unlockedCount})
-            </button>
-            <button
-              onClick={() => setStatusFilter('in_progress')}
-              className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                statusFilter === 'in_progress'
-                  ? 'bg-white dark:bg-slate-900 text-amber-600 dark:text-amber-400 shadow-xs'
-                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
-              }`}
-            >
-              В процессе ({totalCount - unlockedCount})
-            </button>
+          {/* Status Filter Tabs */}
+          <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+            {[
+              { id: 'all', label: 'Все' },
+              { id: 'unlocked', label: 'Открытые' },
+              { id: 'in_progress', label: 'В процессе' }
+            ].map(status => (
+              <button
+                key={status.id}
+                onClick={() => setStatusFilter(status.id as any)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                  statusFilter === status.id
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
+                    : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                }`}
+              >
+                {status.label}
+              </button>
+            ))}
           </div>
 
         </div>
-      </div>
 
-      {/* Badges Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredAchievements.map((ach) => {
-          const IconComponent = ICON_MAP[ach.iconName] || Trophy;
-          const progressPercent = Math.round((ach.currentValue / ach.goalValue) * 100);
+        {/* Square Grid Tiles for Achievements/Rewards */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          {filteredAchievements.map((ach) => {
+            const IconComponent = ICON_MAP[ach.iconName] || Trophy;
+            const progressPercent = Math.round((ach.currentValue / ach.goalValue) * 100);
 
-          return (
-            <div
-              key={ach.id}
-              className={`p-5 rounded-2xl border transition-all duration-200 relative overflow-hidden flex flex-col justify-between space-y-4 ${
-                ach.isUnlocked
-                  ? `${ach.bgLight} border-slate-200/80 dark:border-slate-800 shadow-xs`
-                  : 'bg-white/60 dark:bg-slate-900/60 border-slate-200/60 dark:border-slate-800/60 opacity-80'
-              }`}
-            >
-              {/* Top Header Row of Card */}
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center space-x-3">
-                  {/* Badge Icon */}
-                  <div className={`p-3 rounded-2xl border transition-transform ${
-                    ach.isUnlocked
-                      ? `${ach.color} shadow-xs scale-105`
-                      : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'
-                  }`}>
-                    {ach.isUnlocked ? (
-                      <IconComponent className="w-6 h-6" />
-                    ) : (
-                      <Lock className="w-6 h-6 text-slate-400" />
-                    )}
-                  </div>
-
-                  <div>
-                    <h3 className={`font-extrabold text-sm ${
-                      ach.isUnlocked ? 'text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-400'
-                    }`}>
-                      {ach.title}
-                    </h3>
-                    <span className="inline-block text-[10px] uppercase font-bold text-slate-400">
-                      {ach.category === 'Learning' ? 'Обучение' :
-                       ach.category === 'Practice' ? 'Практика' :
-                       ach.category === 'Streak' ? 'Стрик' : 'Карьера'}
+            return (
+              <div
+                key={ach.id}
+                className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col items-center text-center justify-between aspect-square relative group bg-white dark:bg-slate-900 ${
+                  ach.isUnlocked
+                    ? 'border-emerald-500/40 shadow-sm hover:border-emerald-500'
+                    : 'border-slate-200 dark:border-slate-800 opacity-75'
+                }`}
+              >
+                {/* Corner Progress or Check */}
+                <div className="absolute top-3 right-3">
+                  {ach.isUnlocked ? (
+                    <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
+                      <Check className="w-3.5 h-3.5" />
                     </span>
-                  </div>
+                  ) : (
+                    <span className="text-[10px] font-mono font-bold text-slate-400 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
+                      {progressPercent}%
+                    </span>
+                  )}
                 </div>
 
-                {/* Status Badge Tag */}
-                {ach.isUnlocked ? (
-                  <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center space-x-1">
-                    <Check className="w-3 h-3" />
-                    <span>Получено</span>
-                  </span>
-                ) : (
-                  <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                    {progressPercent}%
-                  </span>
-                )}
+                {/* Icon */}
+                <div className={`mt-3 p-3.5 rounded-2xl border transition-transform group-hover:scale-110 ${
+                  ach.isUnlocked
+                    ? `${ach.color} shadow-xs`
+                    : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'
+                }`}>
+                  {ach.isUnlocked ? (
+                    <IconComponent className="w-6 h-6" />
+                  ) : (
+                    <Lock className="w-6 h-6 text-slate-400" />
+                  )}
+                </div>
+
+                {/* Title & Short info */}
+                <div className="w-full space-y-1">
+                  <h4 className={`text-xs font-bold truncate ${
+                    ach.isUnlocked ? 'text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'
+                  }`}>
+                    {ach.title}
+                  </h4>
+                  <p className="text-[10px] text-slate-400 font-mono">
+                    {ach.currentValue}/{ach.goalValue} {ach.unit || ''}
+                  </p>
+                </div>
+
               </div>
-
-              {/* Description */}
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                {ach.description}
-              </p>
-
-              {/* Progress Bar & Counter */}
-              <div className="space-y-1.5 pt-2 border-t border-slate-200/50 dark:border-slate-800/50">
-                <div className="flex justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                  <span>Прогресс:</span>
-                  <span className={ach.isUnlocked ? 'text-emerald-600 dark:text-emerald-400 font-extrabold' : 'text-slate-700 dark:text-slate-300'}>
-                    {ach.currentValue} / {ach.goalValue} {ach.unit || ''}
-                  </span>
-                </div>
-
-                <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-500 rounded-full ${
-                      ach.isUnlocked ? 'bg-emerald-500' : 'bg-emerald-600/70'
-                    }`}
-                    style={{ width: `${progressPercent}%` }}
-                  />
-                </div>
-              </div>
-
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
 
     </div>

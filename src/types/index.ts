@@ -33,7 +33,7 @@ export interface Question {
     code: string;
     description?: string;
   };
-  interviewTips: string[]; // E.g. "Как отвечать рекрутеру", "Что часто спрашивают на фанаг/бигтех"
+  interviewTips?: string[]; // E.g. "Как отвечать рекрутеру", "Что часто спрашивают на фанаг/бигтех"
   commonPitfalls?: string[];
   tags: string[];
 }
