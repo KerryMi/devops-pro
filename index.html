@@ -2,18 +2,23 @@
 <html lang="en" class="dark" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <script>
       (function() {
         try {
           var saved = localStorage.getItem('devops_pro_theme');
-          if (saved === 'light') {
+          var isLight = saved === 'light';
+          if (isLight) {
             document.documentElement.classList.remove('dark');
-            document.documentElement.removeAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', 'light');
           } else {
             document.documentElement.classList.add('dark');
             document.documentElement.setAttribute('data-theme', 'dark');
           }
+          var themeMeta = document.getElementById('theme-color-meta');
+          if (themeMeta) themeMeta.setAttribute('content', isLight ? '#f8fafc' : '#0b1329');
+          var statusMeta = document.getElementById('status-bar-style-meta');
+          if (statusMeta) statusMeta.setAttribute('content', isLight ? 'default' : 'black-translucent');
         } catch (e) {}
       })();
     </script>
@@ -24,15 +29,22 @@
     <!-- iOS & Android Standalone Mode Support -->
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" id="status-bar-style-meta" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="DevOpsPro" />
     <meta name="application-name" content="DevOpsPro" />
-    <meta name="theme-color" content="#0b1329" />
+    
+    <!-- Dynamic Theme Colors for Mobile Header / Status Bar -->
+    <meta name="theme-color" id="theme-color-meta" content="#0b1329" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b1329" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f8fafc" />
 
-    <!-- Application Icons -->
+    <!-- Application Icons (iOS Safari & PWA) -->
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="icon" type="image/png" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/pwa-512x512.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
 
     <title>DevOps-Pro</title>
   </head>

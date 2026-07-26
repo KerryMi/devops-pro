@@ -105,16 +105,27 @@ export default function App() {
   const unlockedAchievementsCount = achievements.filter(a => a.isUnlocked).length;
   const totalAchievementsCount = achievements.length;
 
-  // Sync dark mode class and data-theme attribute on <html> and <body>
+  // Sync dark mode class and data-theme attribute on <html> and <body>, plus mobile meta tags
   useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
+      document.documentElement.setAttribute('data-theme', 'dark');
       document.body.setAttribute('data-theme', 'dark');
       localStorage.setItem('devops_pro_theme', 'dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.documentElement.setAttribute('data-theme', 'light');
       document.body.setAttribute('data-theme', 'light');
       localStorage.setItem('devops_pro_theme', 'light');
+    }
+
+    const themeMeta = document.getElementById('theme-color-meta');
+    if (themeMeta) {
+      themeMeta.setAttribute('content', isDarkMode ? '#0b1329' : '#f8fafc');
+    }
+    const statusMeta = document.getElementById('status-bar-style-meta');
+    if (statusMeta) {
+      statusMeta.setAttribute('content', isDarkMode ? 'black-translucent' : 'default');
     }
   }, [isDarkMode]);
 
@@ -263,7 +274,7 @@ export default function App() {
         />
 
         {/* Main Container View Area - starts from top on desktop without top bar */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8 lg:pt-10 pb-28 lg:pb-16 min-w-0 overflow-x-hidden">
+        <main className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8 lg:pt-10 pb-[calc(7.5rem+env(safe-area-inset-bottom,16px))] lg:pb-16 min-w-0 overflow-x-hidden">
           {activeTab === 'dashboard' && (
             <Dashboard
               progress={progress}

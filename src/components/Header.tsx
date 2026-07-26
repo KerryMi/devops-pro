@@ -116,7 +116,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <>
       {/* Mobile Top Minimalist Header */}
-      <div className="block lg:hidden px-4 pt-4 pb-2 border-b border-slate-100 dark:border-slate-800/80 bg-white dark:bg-[#121927] transition-colors">
+      <div className="block lg:hidden px-4 pt-[calc(1rem+env(safe-area-inset-top,0px))] pb-2 border-b border-slate-100 dark:border-slate-800/80 bg-white dark:bg-[#121927] transition-colors">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2 select-none cursor-pointer" onClick={() => handleSelectTab('dashboard')}>
             <Terminal className="w-4 h-4 text-emerald-500" />
@@ -136,8 +136,8 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
       </div>
 
-      {/* Mobile Sticky Bottom Navigation Bar (No AI interview, added Menu button on the right) */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#121927]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 py-2 flex items-center justify-around text-[10px] font-medium text-slate-500 dark:text-slate-400 shadow-2xl transition-colors">
+      {/* Mobile Sticky Bottom Navigation Bar (Lifted above home gesture bar / bottom toolbar) */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#121927]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-3 pt-2.5 pb-[calc(0.85rem+env(safe-area-inset-bottom,16px))] flex items-center justify-around text-[10px] font-medium text-slate-500 dark:text-slate-400 shadow-2xl transition-colors">
         <button
           onClick={() => handleSelectTab('dashboard')}
           className={`flex flex-col items-center space-y-1 p-1.5 rounded-xl transition-colors ${
@@ -189,7 +189,7 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Drawer Menu Modal */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-slate-900/60 dark:bg-slate-950/90 backdrop-blur-md animate-fadeIn">
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-slate-900/60 dark:bg-slate-950/90 backdrop-blur-md animate-fadeIn pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
           <div className="bg-white dark:bg-[#121927] p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Terminal className="w-5 h-5 text-emerald-500" />
