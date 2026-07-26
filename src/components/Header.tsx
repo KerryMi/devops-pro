@@ -137,23 +137,23 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
 
         <button
-          onClick={() => handleSelectTab('incidents')}
+          onClick={() => handleSelectTab('flashcards')}
           className={`flex flex-col items-center space-y-1 p-1.5 rounded-xl transition-colors ${
-            activeTab === 'incidents' ? 'text-rose-600 dark:text-rose-400 font-bold' : 'hover:text-slate-900 dark:hover:text-white'
+            activeTab === 'flashcards' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'hover:text-slate-900 dark:hover:text-white'
           }`}
         >
-          <AlertTriangle className="w-5 h-5" />
-          <span>Аварии</span>
+          <Bookmark className="w-5 h-5" />
+          <span>Карточки</span>
         </button>
 
         <button
-          onClick={() => handleSelectTab('achievements')}
+          onClick={() => handleSelectTab('quizzes')}
           className={`flex flex-col items-center space-y-1 p-1.5 rounded-xl transition-colors ${
-            activeTab === 'achievements' ? 'text-amber-600 dark:text-amber-400 font-bold' : 'hover:text-slate-900 dark:hover:text-white'
+            activeTab === 'quizzes' ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'hover:text-slate-900 dark:hover:text-white'
           }`}
         >
-          <Trophy className="w-5 h-5" />
-          <span>Награды</span>
+          <CheckCircle2 className="w-5 h-5" />
+          <span>Тесты</span>
         </button>
 
         <button

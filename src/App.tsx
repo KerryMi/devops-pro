@@ -49,6 +49,11 @@ export default function App() {
     saveUserProgress(progress);
   }, [progress]);
 
+  // Scroll to top on tab transition
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' as any });
+  }, [activeTab]);
+
   // Readiness Score % calculation
   const totalQuestions = QUESTIONS.length;
   const masteredCount = progress.masteredQuestionIds.length;

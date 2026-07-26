@@ -692,7 +692,8 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                               return (
                                 <div
                                   key={q.id}
-                                  className={`p-5 rounded-2xl bg-white dark:bg-[#121620] border transition-all flex flex-col justify-between h-[240px] shadow-xs group relative hover:shadow-md ${
+                                  onClick={() => setSelectedQuestion(q)}
+                                  className={`p-5 rounded-2xl bg-white dark:bg-[#121620] border transition-all flex flex-col justify-between h-[240px] shadow-xs group relative hover:shadow-md cursor-pointer ${
                                     isMastered 
                                       ? 'border-emerald-500/40 bg-emerald-500/[0.015]' 
                                       : 'border-slate-200 dark:border-slate-800/80 hover:border-emerald-500/30'
