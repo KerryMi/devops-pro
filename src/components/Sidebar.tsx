@@ -73,7 +73,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className="hidden lg:flex fixed top-0 bottom-0 left-0 w-64 z-30 flex-col bg-white dark:bg-[#131823] border-r border-slate-200 dark:border-slate-800/80 transition-colors">
+    <aside className="hidden lg:flex fixed top-0 bottom-0 left-0 w-64 z-30 flex-col bg-white dark:bg-[#121927] border-r border-slate-200 dark:border-slate-800/80 transition-colors">
       
       {/* Brand Header */}
       <div className="p-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between cursor-pointer" onClick={() => onNavigate('dashboard')}>
@@ -148,11 +148,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Footer Info & Theme Toggle in Sidebar */}
-      <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 bg-slate-50/50 dark:bg-slate-950/30">
+      <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 bg-slate-50/50 dark:bg-[#0b1120]/30">
         <span className="text-[11px] font-mono">DevOpsPro v2.5</span>
         <button
           onClick={() => setIsDarkMode(!isDarkMode)}
-          className="p-2 rounded-xl bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 shadow-xs transition-colors"
+          className="p-2 rounded-xl bg-white dark:bg-[#121927] text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 shadow-xs transition-colors"
           title={isDarkMode ? 'Светлая тема' : 'Темная тема'}
         >
           {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-600" />}

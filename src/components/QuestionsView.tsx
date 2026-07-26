@@ -422,7 +422,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                 </div>
 
                 {/* Live Dynamic Details Card */}
-                <div className="bg-slate-50/50 dark:bg-[#0c0f16]/30 border border-slate-100 dark:border-slate-800/40 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300 min-h-[84px]">
+                <div className="bg-slate-50/50 dark:bg-[#0b1120]/30 border border-slate-100 dark:border-slate-800/40 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300 min-h-[84px]">
                   <div className="space-y-1 max-w-xl">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/20">
@@ -456,11 +456,11 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
               </div>
 
               {/* Learning Statistics Bento Card */}
-              <div className="col-span-12 lg:col-span-4 bg-white dark:bg-[#161a23] border border-slate-200 dark:border-slate-800 p-6 rounded-2xl text-slate-900 dark:text-white flex flex-col justify-between shadow-sm dark:shadow-lg relative overflow-hidden">
+              <div className="col-span-12 lg:col-span-4 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-2xl text-slate-900 dark:text-white flex flex-col justify-between shadow-sm dark:shadow-lg relative overflow-hidden">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent pointer-events-none" />
                 
-                <div className="space-y-3 relative z-10">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+                 <div className="space-y-3 relative z-10">
+                   <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
                     <Activity className="w-3 h-3" />
                     <span>Статистика прогресса</span>
                   </span>
@@ -491,7 +491,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
             </div>
 
             {/* ================= 3. STICKY FILTER & SEARCH HUB ================= */}
-            <div className="sticky top-14 sm:top-16 z-30 bg-white/95 dark:bg-[#0c0f16]/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-md space-y-3 transition-colors duration-200">
+            <div className="sticky top-14 sm:top-16 z-30 bg-white/95 dark:bg-[#121927]/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-md space-y-3 transition-colors duration-200">
               
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
                 
@@ -503,7 +503,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Искать по ключевым терминам (OOM, Namespace, Helm, cgroups, Systemd)..."
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-[#121620] border border-slate-200 dark:border-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800/80 text-slate-900 dark:text-white placeholder-slate-400 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   {searchTerm && (
                     <button 
@@ -520,7 +520,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   <select
                     value={selectedDifficulty}
                     onChange={(e) => setSelectedDifficulty(e.target.value as any)}
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#121620] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                    className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                   >
                     <option value="all">Сложность: Все</option>
                     <option value="Junior">Junior</option>
@@ -531,7 +531,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#121620] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                    className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
                   >
                     <option value="all">Статус: Все</option>
                     <option value="unmastered">Не изучено</option>
@@ -548,7 +548,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   className={`px-3.5 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition-colors flex items-center space-x-1.5 cursor-pointer ${
                     selectedStageFilter === 'all'
                       ? 'bg-emerald-500 text-slate-950 shadow-xs'
-                      : 'bg-slate-50 hover:bg-slate-100 dark:bg-[#121620] dark:hover:bg-[#1a202e] text-slate-600 dark:text-slate-400'
+                      : 'bg-slate-50 hover:bg-slate-100 dark:bg-[#0b1120] dark:hover:bg-[#1a2333] text-slate-600 dark:text-slate-400'
                   }`}
                 >
                   <span>Все этапы</span>
@@ -575,7 +575,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center space-x-1.5 cursor-pointer ${
                         isSel
                           ? 'bg-emerald-500 text-slate-950 shadow-xs'
-                          : 'bg-slate-50 hover:bg-slate-100 dark:bg-[#121620] dark:hover:bg-[#1a202e] text-slate-600 dark:text-slate-400'
+                          : 'bg-slate-50 hover:bg-slate-100 dark:bg-[#0b1120] dark:hover:bg-[#1a2333] text-slate-600 dark:text-slate-400'
                       }`}
                     >
                       <span>Шаг {st.id}: {st.title.split(' & ')[0]}</span>
@@ -612,7 +612,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   <div
                     id={`stage-panel-${st.id}`}
                     key={st.id}
-                    className={`bg-white dark:bg-[#111520] border rounded-2xl shadow-xs p-5 sm:p-6 transition-all space-y-4 ${
+                    className={`bg-white dark:bg-[#121927] border rounded-2xl shadow-xs p-5 sm:p-6 transition-all space-y-4 ${
                       isCompleted
                         ? 'border-emerald-500/35 dark:border-emerald-500/20 bg-emerald-500/[0.015]'
                         : 'border-slate-200 dark:border-slate-800/80'
@@ -626,7 +626,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                     >
                       <div className="space-y-1.5 flex-1">
                         <div className="flex items-center space-x-2">
-                          <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded ${
+                           <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded ${
                             isCompleted
                               ? 'bg-emerald-500/15 text-emerald-500'
                               : 'bg-emerald-500/10 text-emerald-500'
@@ -640,7 +640,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                         </div>
        
                         <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white flex items-center gap-2 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
-                          <span className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
+                          <span className="p-1.5 rounded-lg bg-slate-50 dark:bg-[#0b1120] text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800">
                             {renderStageIcon(st.iconName, "w-4 h-4")}
                           </span>
                           <span>{st.title}</span>
@@ -656,12 +656,12 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                           <span className="text-xs font-black text-slate-500 dark:text-slate-400">
                             {masteredInStage} из {totalInStage} изучено ({pct}%)
                           </span>
-                          <div className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 bg-slate-50 dark:bg-[#0c0f16] border border-slate-200 dark:border-slate-800 rounded-lg">
+                          <div className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 rounded-lg">
                             {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </div>
                         </div>
 
-                        <div className="w-full md:w-48 h-2 bg-slate-100 dark:bg-slate-950 rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
+                        <div className="w-full md:w-48 h-2 bg-slate-100 dark:bg-[#0b1120] rounded-full overflow-hidden border border-slate-200 dark:border-slate-800">
                           <div 
                             className={`h-full transition-all duration-300 ${
                               isCompleted ? 'bg-emerald-500' : 'bg-emerald-400'
@@ -676,7 +676,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                     {expanded && (
                       <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 animate-fadeIn space-y-4">
                         {filteredStageQuestions.length === 0 ? (
-                          <div className="text-center py-12 bg-slate-50/50 dark:bg-slate-950/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
+                          <div className="text-center py-12 bg-slate-50/50 dark:bg-[#0b1120]/20 rounded-2xl border border-dashed border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400">
                             {searchTerm || selectedDifficulty !== 'all' || statusFilter !== 'all' ? (
                               <span>Нет вопросов, соответствующих вашим поисковым фильтрам.</span>
                             ) : (
@@ -693,7 +693,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                                 <div
                                   key={q.id}
                                   onClick={() => setSelectedQuestion(q)}
-                                  className={`p-5 rounded-2xl bg-white dark:bg-[#121620] border transition-all flex flex-col justify-between h-[240px] shadow-xs group relative hover:shadow-md cursor-pointer ${
+                                  className={`p-5 rounded-2xl bg-white dark:bg-[#121927] border transition-all flex flex-col justify-between h-[240px] shadow-xs group relative hover:shadow-md cursor-pointer ${
                                     isMastered 
                                       ? 'border-emerald-500/40 bg-emerald-500/[0.015]' 
                                       : 'border-slate-200 dark:border-slate-800/80 hover:border-emerald-500/30'
@@ -826,7 +826,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
             </div>
 
             {/* Core Question Header Card */}
-            <div className="bg-white dark:bg-[#111520] border border-slate-200 dark:border-slate-800/80 p-6 rounded-2xl shadow-xs space-y-3">
+            <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800/80 p-6 rounded-2xl shadow-xs space-y-3">
               <span className="text-[10px] font-black uppercase text-emerald-500 tracking-wider block">РАЗБОР ВОПРОСА</span>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                 {selectedQuestion.title}
@@ -849,7 +849,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
               <div className="col-span-12 lg:col-span-8 space-y-5">
                 
                 {/* TL;DR Quick Summary Box */}
-                <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-2.5">
+                <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-2.5">
                   <span className="font-black text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider block">
                     Краткая выжимка (TL;DR):
                   </span>
@@ -859,7 +859,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                 </div>
 
                 {/* Extensive Technical Breakdown Box */}
-                <div className="p-6 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-3.5">
+                <div className="p-6 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-3.5">
                   <span className="font-black text-[10px] text-emerald-500 tracking-wider block">
                     РАЗВЕРНУТЫЙ ТЕХНИЧЕСКИЙ ОТВЕТ:
                   </span>
@@ -971,7 +971,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                 )}
 
                 {/* Fully functional personal notes box */}
-                <div className="p-5 rounded-2xl bg-white dark:bg-[#111520] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-3">
+                <div className="p-5 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-slate-800/80 shadow-xs space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="font-bold text-slate-700 dark:text-slate-300 flex items-center space-x-2">
                       <FileText className="w-4 h-4 text-slate-400" />
@@ -993,7 +993,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                         value={noteText}
                         onChange={(e) => setNoteText(e.target.value)}
                         placeholder="Запишите сюда свои шпаргалки, команды консоли или нюансы настройки..."
-                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-950 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-950 dark:text-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
                         rows={4}
                       />
                       <div className="flex justify-end space-x-1.5">
@@ -1013,7 +1013,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                     </div>
                   ) : (
                     progress.customNotes[selectedQuestion.id] ? (
-                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/40 border border-slate-150 dark:border-slate-850/60 text-xs text-slate-600 dark:text-slate-300 italic whitespace-pre-line leading-relaxed">
+                      <div className="p-3 rounded-xl bg-slate-50 dark:bg-[#0b1120]/40 border border-slate-150 dark:border-slate-850/60 text-xs text-slate-600 dark:text-slate-300 italic whitespace-pre-line leading-relaxed">
                         {progress.customNotes[selectedQuestion.id]}
                       </div>
                     ) : (
@@ -1027,7 +1027,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
             </div>
 
             {/* Sticky/Stable Bottom Navigation Control Panel */}
-            <div className="sticky bottom-4 z-20 bg-white/95 dark:bg-[#111520]/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="sticky bottom-4 z-20 bg-white/95 dark:bg-[#121927]/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
               
               {/* Previous / Next Question Selectors */}
               <div className="flex items-center space-x-2 w-full sm:w-auto justify-between sm:justify-start">

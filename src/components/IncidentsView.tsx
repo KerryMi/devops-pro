@@ -118,7 +118,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
               className={`p-4 rounded-2xl text-left transition-all border cursor-pointer flex flex-col justify-between space-y-3 relative overflow-hidden ${
                 isSelected
                   ? 'bg-rose-500/10 border-rose-500 text-slate-900 dark:text-white shadow-md'
-                  : 'bg-white dark:bg-[#161b26] border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 text-slate-800 dark:text-slate-200'
+                  : 'bg-white dark:bg-[#121927] border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-700 text-slate-800 dark:text-slate-200'
               }`}
             >
               {/* Top corner status indicator */}
@@ -161,7 +161,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
       </div>
 
       {/* Selected Incident Interactive Workbench */}
-      <div className="bg-white dark:bg-[#161b26] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
+      <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
         
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100 dark:border-slate-800">
           <div className="space-y-1">
@@ -244,7 +244,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
                       ? fix.isCorrect
                         ? 'bg-emerald-500/10 border-emerald-500 text-emerald-900 dark:text-emerald-200'
                         : 'bg-rose-500/10 border-rose-500 text-rose-900 dark:text-rose-200'
-                      : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-emerald-500/50'
+                      : 'bg-slate-50 dark:bg-[#0b1120] border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-emerald-500/50'
                   }`}
                 >
                   <div className="font-semibold flex items-center justify-between">

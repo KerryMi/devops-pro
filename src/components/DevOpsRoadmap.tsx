@@ -156,7 +156,7 @@ export const DevOpsRoadmap: React.FC<DevOpsRoadmapProps> = ({
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
+    <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 rounded-2xl p-6 sm:p-8 shadow-sm space-y-6">
       
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
@@ -174,7 +174,7 @@ export const DevOpsRoadmap: React.FC<DevOpsRoadmapProps> = ({
         </div>
 
         {/* Total Roadmap Stats Badge */}
-        <div className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 p-3.5 rounded-xl flex items-center space-x-4 shrink-0">
+        <div className="bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 p-3.5 rounded-xl flex items-center space-x-4 shrink-0">
           <div className="text-center">
             <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">
               {completedStagesCount}/{ROADMAP_STAGES.length}
@@ -232,7 +232,7 @@ export const DevOpsRoadmap: React.FC<DevOpsRoadmapProps> = ({
                       ? 'bg-emerald-500 border-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/30 scale-110 ring-4 ring-emerald-500/20'
                       : isComplete
                         ? 'bg-emerald-500 border-emerald-400 text-slate-950 shadow-xs'
-                        : 'bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 group-hover:border-emerald-400 group-hover:scale-105'
+                        : 'bg-white dark:bg-[#121927] border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 group-hover:border-emerald-400'
                   }`}>
                     <Icon className="w-5 h-5" />
                     {isComplete && (
@@ -305,7 +305,7 @@ export const DevOpsRoadmap: React.FC<DevOpsRoadmapProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           
           {/* Key Topics to Master */}
-          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs p-4 rounded-xl border border-slate-200/60 dark:border-slate-800/80 space-y-2">
+          <div className="bg-white/80 dark:bg-[#121927]/80 backdrop-blur-xs p-4 rounded-xl border border-slate-200/60 dark:border-slate-800/80 space-y-2">
             <div className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-1.5">
               <Sparkles className="w-4 h-4 text-emerald-500" />
               <span>Ключевые темы для изучения:</span>
@@ -321,7 +321,7 @@ export const DevOpsRoadmap: React.FC<DevOpsRoadmapProps> = ({
           </div>
 
           {/* Key Tools & Technologies */}
-          <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xs p-4 rounded-xl border border-slate-200/60 dark:border-slate-800/80 space-y-2 flex flex-col justify-between">
+          <div className="bg-white/80 dark:bg-[#121927]/80 backdrop-blur-xs p-4 rounded-xl border border-slate-200/60 dark:border-slate-800/80 space-y-2 flex flex-col justify-between">
             <div>
               <div className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-1.5 mb-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-500" />

@@ -66,7 +66,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
     <div className="max-w-4xl mx-auto space-y-8 pb-12 animate-fadeIn">
       
       {/* Page Title Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-3">
+      <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-3">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 text-xs font-semibold border border-amber-500/20">
           <Award className="w-3.5 h-3.5" />
           <span>Карьерный Модуль</span>
@@ -83,7 +83,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
       {/* Guide Rules */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {LEGEND_RULES.map((r, idx) => (
-          <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 text-xs space-y-1">
+          <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-[#121927]/60 border border-slate-200 dark:border-slate-800 text-xs space-y-1">
             <div className="font-bold text-indigo-600 dark:text-indigo-400">{r.step}</div>
             <div className="text-slate-600 dark:text-slate-300 leading-relaxed">{r.rule}</div>
           </div>
@@ -100,7 +100,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
             <button
               key={tpl.id}
               onClick={() => handleApplyTemplate(tpl.id)}
-              className="px-3 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 text-slate-800 dark:text-slate-200 text-xs font-semibold transition-all shadow-sm flex items-center space-x-1.5"
+              className="px-3 py-2 rounded-xl bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 hover:border-amber-500/50 text-slate-800 dark:text-slate-200 text-xs font-semibold transition-all shadow-sm flex items-center space-x-1.5"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
               <span>{tpl.title}</span>
@@ -110,7 +110,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
       </div>
 
       {/* Interactive Form */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
+      <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm space-y-6">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1.5">
@@ -119,7 +119,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
               type="text"
               value={company}
               onChange={(e) => setCompany(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
             />
           </div>
 
@@ -129,7 +129,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
               type="text"
               value={role}
               onChange={(e) => setRole(e.target.value)}
-              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+              className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
             />
           </div>
         </div>
@@ -140,7 +140,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
             type="text"
             value={stack}
             onChange={(e) => setStack(e.target.value)}
-            className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+            className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
           />
         </div>
 
@@ -150,7 +150,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
             value={architecture}
             onChange={(e) => setArchitecture(e.target.value)}
             rows={3}
-            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
@@ -161,7 +161,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
             onChange={(e) => setIncidentStory(e.target.value)}
             rows={3}
             placeholder="Опишите ситуацию, проблему в Prod и как вы ее локализовали..."
-            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
@@ -171,7 +171,7 @@ export const LegendBuilderView: React.FC<LegendBuilderViewProps> = ({
             value={metrics}
             onChange={(e) => setMetrics(e.target.value)}
             rows={3}
-            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
+            className="w-full p-3 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 font-mono"
           />
         </div>
 

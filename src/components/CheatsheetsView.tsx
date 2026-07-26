@@ -35,7 +35,7 @@ export const CheatsheetsView: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6 pb-12 animate-fadeIn">
       
       {/* Title Card */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-3">
+      <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-3">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-xs font-semibold border border-emerald-500/20">
           <Code className="w-3.5 h-3.5" />
           <span>Быстрый справочник</span>
@@ -49,7 +49,7 @@ export const CheatsheetsView: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm space-y-3">
+      <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm space-y-3">
         
         <div className="relative">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -58,7 +58,7 @@ export const CheatsheetsView: React.FC = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Поиск команды по названию или тегам (например: logs, clean, state, network)..."
-            className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
           />
           {searchTerm && (
             <button
@@ -93,7 +93,7 @@ export const CheatsheetsView: React.FC = () => {
         {filteredCommands.map((item, idx) => (
           <div
             key={idx}
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 shadow-sm transition-all space-y-2"
+            className="p-4 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 hover:border-emerald-500/40 shadow-sm transition-all space-y-2"
           >
             <div className="flex items-center justify-between text-xs">
               <span className="font-semibold text-slate-800 dark:text-slate-200">{item.description}</span>

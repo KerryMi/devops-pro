@@ -113,15 +113,29 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      {/* Mobile Top Minimalist Logo */}
-      <div className="block lg:hidden pt-4 pb-2 text-center select-none cursor-pointer" onClick={() => handleSelectTab('dashboard')}>
-        <span className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white font-mono">
-          DevOps<span className="text-emerald-500">Pro</span>
-        </span>
+      {/* Mobile Top Minimalist Header */}
+      <div className="block lg:hidden px-4 pt-4 pb-2 border-b border-slate-100 dark:border-slate-800/80 bg-white dark:bg-[#121927] transition-colors">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2 select-none cursor-pointer" onClick={() => handleSelectTab('dashboard')}>
+            <Terminal className="w-4 h-4 text-emerald-500" />
+            <span className="font-extrabold text-sm tracking-tight text-slate-900 dark:text-white font-mono">
+              DevOps<span className="text-emerald-500">Pro</span>
+            </span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setIsDarkMode(!isDarkMode)}
+              className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+              title={isDarkMode ? 'Светлая тема' : 'Темная тема'}
+            >
+              {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-500" />}
+            </button>
+          </div>
+        </div>
       </div>
 
       {/* Mobile Sticky Bottom Navigation Bar (No AI interview, added Menu button on the right) */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#121212]/95 backdrop-blur-md border-t border-slate-200 dark:border-[#1f1f1f] px-2 py-2 flex items-center justify-around text-[10px] font-medium text-slate-500 dark:text-slate-400 shadow-2xl transition-colors">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 dark:bg-[#121927]/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-2 py-2 flex items-center justify-around text-[10px] font-medium text-slate-500 dark:text-slate-400 shadow-2xl transition-colors">
         <button
           onClick={() => handleSelectTab('dashboard')}
           className={`flex flex-col items-center space-y-1 p-1.5 rounded-xl transition-colors ${
@@ -174,13 +188,13 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Mobile Drawer Menu Modal */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-slate-900/60 dark:bg-slate-950/90 backdrop-blur-md animate-fadeIn">
-          <div className="bg-white dark:bg-[#121212] p-4 border-b border-slate-200 dark:border-[#1f1f1f] flex items-center justify-between">
+          <div className="bg-white dark:bg-[#121927] p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Terminal className="w-5 h-5 text-emerald-500" />
               <span className="font-bold text-slate-900 dark:text-white font-mono">DevOps Pro Menu</span>
             </div>
             <div className="flex items-center space-x-2">
-              {/* Theme Toggle in Mobile Menu */}
+              {/* Theme Toggle in Mobile Menu header too */}
               <button
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 className="p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800"
@@ -197,7 +211,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50 dark:bg-[#050505]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50 dark:bg-[#0b1120]">
             {navGroups.map((group, gIdx) => (
               <div key={gIdx} className="space-y-2">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-2">
@@ -213,7 +227,7 @@ export const Header: React.FC<HeaderProps> = ({
                         className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${
                           isActive 
                             ? 'bg-emerald-500 text-slate-950 font-extrabold shadow-md' 
-                            : 'bg-white dark:bg-[#121212] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900 border border-slate-200 dark:border-[#1f1f1f]'
+                            : 'bg-white dark:bg-[#121927] text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900/60 border border-slate-200 dark:border-slate-800'
                         }`}
                       >
                         <div className="flex items-center space-x-3">
@@ -221,7 +235,7 @@ export const Header: React.FC<HeaderProps> = ({
                           <span>{item.label}</span>
                         </div>
                         {item.badge && (
-                          <span className="px-2 py-0.5 rounded-md text-[10px] bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-[#1f1f1f]">
+                          <span className="px-2 py-0.5 rounded-md text-[10px] bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">
                             {item.badge}
                           </span>
                         )}
@@ -231,6 +245,27 @@ export const Header: React.FC<HeaderProps> = ({
                 </div>
               </div>
             ))}
+
+            {/* Quick action theme toggle row in drawer list */}
+            <div className="p-3 bg-white dark:bg-[#121927] rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Цветовая тема</span>
+              <button
+                onClick={() => setIsDarkMode(!isDarkMode)}
+                className="flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 transition-colors"
+              >
+                {isDarkMode ? (
+                  <>
+                    <Sun className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Светлая</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>Темная</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}

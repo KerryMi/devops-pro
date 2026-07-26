@@ -142,7 +142,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs relative overflow-hidden space-y-5">
+    <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs relative overflow-hidden space-y-5">
       
       {/* Background Accent Mesh */}
       <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-amber-500/10 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -229,7 +229,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
 
       {/* ACTIVE QUIZ STATE */}
       {mode === 'active' && currentQ && (
-        <div className="space-y-4 relative z-10 bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-5 rounded-2xl animate-fadeIn">
+        <div className="space-y-4 relative z-10 bg-slate-50/80 dark:bg-[#0b1120]/60 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl animate-fadeIn">
           
           {/* Progress Header */}
           <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-bold">
@@ -271,7 +271,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
               const isAnswered = userSelection !== undefined;
               const isCorrectOpt = optIdx === currentQ.correctAnswerIndex;
 
-              let btnStyle = 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-emerald-400 dark:hover:border-emerald-500';
+              let btnStyle = 'bg-white dark:bg-[#121927] border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-emerald-400 dark:hover:border-emerald-500';
 
               if (isAnswered) {
                 if (isCorrectOpt) {
@@ -279,7 +279,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
                 } else if (isSelected) {
                   btnStyle = 'bg-rose-500/10 border-rose-500/50 text-rose-800 dark:text-rose-300 font-bold';
                 } else {
-                  btnStyle = 'bg-white/40 dark:bg-slate-900/40 border-slate-200/40 dark:border-slate-800/40 opacity-50';
+                  btnStyle = 'bg-white/40 dark:bg-[#121927]/40 border-slate-200/40 dark:border-slate-800/40 opacity-50';
                 }
               }
 
@@ -336,7 +336,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
 
       {/* SUMMARY RESULT STATE */}
       {mode === 'summary' && (
-        <div className="space-y-4 relative z-10 bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 p-5 rounded-2xl text-center animate-fadeIn space-y-4">
+        <div className="space-y-4 relative z-10 bg-slate-50/80 dark:bg-[#0b1120]/60 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl text-center animate-fadeIn space-y-4">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 mx-auto flex items-center justify-center">
             <Award className="w-6 h-6" />
           </div>

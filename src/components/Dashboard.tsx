@@ -110,7 +110,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-5 gap-4 items-stretch">
           
           {/* Main Status & Recommendation Widget (Bento Tile 1) */}
-          <div className="md:col-span-2 bg-gradient-to-br from-white to-slate-50 dark:from-slate-950 dark:to-slate-900 text-slate-900 dark:text-white p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden border border-slate-200 dark:border-slate-800 h-full mobile-word-break">
+          <div className="md:col-span-2 bg-white dark:bg-[#121927] text-slate-900 dark:text-white p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden border border-slate-200 dark:border-slate-800 h-full mobile-word-break transition-colors duration-200">
             {/* Ambient glows */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
             
@@ -167,7 +167,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   onNavigate('legend');
                 }
               }}
-              className="mt-4 w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center space-x-1.5 shadow-sm hover:scale-[1.01] active:scale-95 transition-all cursor-pointer relative z-10"
+              className="mt-4 w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs flex items-center justify-center space-x-1.5 shadow-sm transition-all cursor-pointer relative z-10"
             >
               <span>Продолжить путь</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -175,7 +175,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
 
           {/* Interactive Bento Levels Navigation Map (Bento Tile 2 - spanning 3 columns) */}
-          <div className="md:col-span-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden h-full mobile-word-break">
+          <div className="md:col-span-3 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden h-full mobile-word-break">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">ИНТЕРАКТИВНЫЙ ТРЕКЕР</span>
@@ -244,7 +244,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
                       }
                     }}
-                    className="p-2 sm:p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 text-left cursor-pointer transition-all hover:border-emerald-500/40 hover:bg-emerald-500/[0.02] dark:hover:bg-emerald-500/[0.02] hover:scale-[1.01] active:scale-95 group/item flex flex-col justify-between h-[64px] sm:h-[92px]"
+                    className="p-2 sm:p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-[#121927]/50 text-left cursor-pointer transition-all hover:border-emerald-500/40 hover:bg-emerald-500/[0.02] dark:hover:bg-emerald-500/[0.02] active:scale-95 group/item flex flex-col justify-between h-[64px] sm:h-[92px]"
                   >
                     <div className="flex items-center justify-between w-full">
                       <div className={`p-1 rounded-lg border ${step.colorClass}`}>
@@ -279,7 +279,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Readiness Circular Meter Panel (Bento Analytics) */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden h-full mobile-word-break">
+        <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-4 sm:p-5 md:p-6 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden h-full mobile-word-break">
           <div className="flex flex-col h-full justify-between">
             <div>
               {/* Header */}
@@ -349,45 +349,61 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
               {/* Micro KPI Grid */}
               <div className="flex md:grid md:grid-cols-2 gap-2 mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/60 overflow-x-auto md:overflow-x-visible pb-1.5 md:pb-0 scrollbar-none snap-x snap-mandatory">
-                <div className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100/50 dark:border-slate-800/50">
+                <button
+                  onClick={() => onNavigate('questions')}
+                  className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-[#121927]/40 border border-slate-100/50 dark:border-slate-800/50 text-left hover:border-blue-500/40 hover:bg-blue-500/[0.01] dark:hover:bg-blue-500/[0.01] transition-all cursor-pointer"
+                >
                   <div className="flex items-center space-x-1 text-slate-400">
                     <BookOpen className="w-3 h-3 text-blue-500 shrink-0" />
                     <span className="text-[9px] font-semibold uppercase tracking-wider truncate">Теория</span>
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1">
-                    {masteredCount}/{totalQuestions}
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1 flex items-center justify-between">
+                    <span>{masteredCount}/{totalQuestions}</span>
+                    <span className="text-[8px] text-blue-500 font-extrabold group-hover:underline">→</span>
                   </div>
-                </div>
+                </button>
 
-                <div className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100/50 dark:border-slate-800/50">
+                <button
+                  onClick={() => onNavigate('incidents')}
+                  className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-[#121927]/40 border border-slate-100/50 dark:border-slate-800/50 text-left hover:border-rose-500/40 hover:bg-rose-500/[0.01] dark:hover:bg-rose-500/[0.01] transition-all cursor-pointer"
+                >
                   <div className="flex items-center space-x-1 text-slate-400">
                     <AlertTriangle className="w-3 h-3 text-rose-500 shrink-0" />
                     <span className="text-[9px] font-semibold uppercase tracking-wider truncate">Сбои Prod</span>
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1">
-                    {solvedIncidentsCount}/{totalIncidents}
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1 flex items-center justify-between">
+                    <span>{solvedIncidentsCount}/{totalIncidents}</span>
+                    <span className="text-[8px] text-rose-500 font-extrabold group-hover:underline">→</span>
                   </div>
-                </div>
+                </button>
 
-                <div className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100/50 dark:border-slate-800/50">
+                <button
+                  onClick={() => onNavigate('flashcards')}
+                  className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-[#121927]/40 border border-slate-100/50 dark:border-slate-800/50 text-left hover:border-amber-500/40 hover:bg-amber-500/[0.01] dark:hover:bg-amber-500/[0.01] transition-all cursor-pointer"
+                >
                   <div className="flex items-center space-x-1 text-slate-400">
                     <BrainCircuit className="w-3 h-3 text-amber-500 shrink-0" />
                     <span className="text-[9px] font-semibold uppercase tracking-wider truncate">Интервалы</span>
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1">
-                    {Object.keys(progress.flashcardBoxes || {}).length} шт.
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1 flex items-center justify-between">
+                    <span>{Object.keys(progress.flashcardBoxes || {}).length} шт.</span>
+                    <span className="text-[8px] text-amber-500 font-extrabold group-hover:underline">→</span>
                   </div>
-                </div>
+                </button>
 
-                <div className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-100/50 dark:border-slate-800/50">
+                <button
+                  onClick={() => onNavigate('quizzes')}
+                  className="shrink-0 snap-start w-[110px] md:w-auto p-2 rounded-xl bg-slate-50 dark:bg-[#121927]/40 border border-slate-100/50 dark:border-slate-800/50 text-left hover:border-emerald-500/40 hover:bg-emerald-500/[0.01] dark:hover:bg-emerald-500/[0.01] transition-all cursor-pointer"
+                >
                   <div className="flex items-center space-x-1 text-slate-400">
                     <Target className="w-3 h-3 text-emerald-500 shrink-0" />
                     <span className="text-[9px] font-semibold uppercase tracking-wider truncate">Тесты</span>
                   </div>
-                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1">
-                    {totalQuizzesCount} раз
+                  <div className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono mt-1 flex items-center justify-between">
+                    <span>{totalQuizzesCount} раз</span>
+                    <span className="text-[8px] text-emerald-500 font-extrabold group-hover:underline">→</span>
                   </div>
-                </div>
+                </button>
               </div>
 
             </div>
@@ -420,18 +436,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* LEVEL 1 NODE */}
           <div id="roadmap-level-1" className="relative group">
             {/* Mimo Milestone Circle on the Path Line */}
-            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform group-hover:scale-110 z-10 ${
+            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform z-10 ${
               masteredCount === totalQuestions
                 ? 'bg-emerald-500 text-slate-950 ring-4 ring-emerald-500/20'
                 : masteredCount > 0
                   ? 'bg-blue-500 text-white ring-4 ring-blue-500/20 animate-pulse'
-                  : 'bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  : 'bg-white dark:bg-[#121927] border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
             }`}>
               {masteredCount === totalQuestions ? <CheckCircle2 className="w-4 h-4" /> : '1'}
             </div>
 
             {/* Card Content */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
+            <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20 shrink-0">
@@ -488,16 +504,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* LEVEL 2 NODE */}
           <div id="roadmap-level-2" className="relative group">
             {/* Mimo Milestone Circle on the Path Line */}
-            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform group-hover:scale-110 z-10 ${
+            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform z-10 ${
               totalQuizzesCount > 0
                 ? 'bg-emerald-500 text-slate-950 ring-4 ring-emerald-500/20'
-                : 'bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                : 'bg-white dark:bg-[#121927] border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
             }`}>
               {totalQuizzesCount > 0 ? <CheckCircle2 className="w-4 h-4" /> : '2'}
             </div>
 
             {/* Card Content */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
+            <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="p-2.5 rounded-xl bg-purple-500/10 text-purple-500 border border-purple-500/20 shrink-0">
@@ -542,18 +558,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* LEVEL 3 NODE */}
           <div id="roadmap-level-3" className="relative group">
             {/* Mimo Milestone Circle on the Path Line */}
-            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform group-hover:scale-110 z-10 ${
+            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform z-10 ${
               solvedIncidentsCount === totalIncidents
                 ? 'bg-emerald-500 text-slate-950 ring-4 ring-emerald-500/20'
                 : solvedIncidentsCount > 0
                   ? 'bg-rose-500 text-white ring-4 ring-rose-500/20 animate-pulse'
-                  : 'bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  : 'bg-white dark:bg-[#121927] border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
             }`}>
               {solvedIncidentsCount === totalIncidents ? <CheckCircle2 className="w-4 h-4" /> : '3'}
             </div>
 
             {/* Card Content */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
+            <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-500 border border-rose-500/20 shrink-0">
@@ -604,18 +620,18 @@ export const Dashboard: React.FC<DashboardProps> = ({
           {/* LEVEL 4 NODE */}
           <div id="roadmap-level-4" className="relative group">
             {/* Mimo Milestone Circle on the Path Line */}
-            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform group-hover:scale-110 z-10 ${
+            <div className={`absolute -left-8 sm:-left-10 top-5 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-mono font-black text-xs sm:text-sm shadow-md transition-transform z-10 ${
               hasLegend
                 ? 'bg-emerald-500 text-slate-950 ring-4 ring-emerald-500/20'
                 : solvedIncidentsCount > 0
                   ? 'bg-blue-500 text-white ring-4 ring-blue-500/20 animate-pulse'
-                  : 'bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
+                  : 'bg-white dark:bg-[#121927] border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
             }`}>
               {hasLegend ? <CheckCircle2 className="w-4 h-4" /> : '4'}
             </div>
 
             {/* Card Content */}
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
+            <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-5 sm:p-6 rounded-2xl shadow-sm hover:border-emerald-500/40 transition-all">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
                 <div className="flex items-center space-x-3">
                   <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 shrink-0">

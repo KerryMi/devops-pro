@@ -109,7 +109,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
     <div className="max-w-5xl mx-auto space-y-8 pb-12 animate-fadeIn">
       
       {/* SECTION 1: PROGRES & RANK (Top Card) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
         
         {/* Left: Rank & Progress bar */}
         <div className="flex items-center space-x-5 w-full md:w-auto">
@@ -161,7 +161,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
           {dailyQuests.map((quest) => (
             <div 
               key={quest.id}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm flex flex-col justify-between space-y-4"
+              className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm flex flex-col justify-between space-y-4"
             >
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
@@ -205,7 +205,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
 
       {/* SECTION 3: REWARDS & BADGES (Награды) */}
       <div className="space-y-4 pt-2">
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-2.5 rounded-2xl shadow-sm">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-2.5 rounded-2xl shadow-sm">
           
           {/* Category Tabs */}
           <div className="flex items-center space-x-1 overflow-x-auto scrollbar-none">
@@ -262,7 +262,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
             return (
               <div
                 key={ach.id}
-                className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col items-center text-center justify-between aspect-square relative group bg-white dark:bg-slate-900 ${
+                className={`p-4 rounded-2xl border transition-all duration-200 flex flex-col items-center text-center justify-between aspect-square relative group bg-white dark:bg-[#121927] ${
                   ach.isUnlocked
                     ? 'border-emerald-500/40 shadow-sm hover:border-emerald-500'
                     : 'border-slate-200 dark:border-slate-800 opacity-75'
@@ -282,7 +282,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                 </div>
 
                 {/* Icon */}
-                <div className={`mt-3 p-3.5 rounded-2xl border transition-transform group-hover:scale-110 ${
+                <div className={`mt-3 p-3.5 rounded-2xl border transition-all ${
                   ach.isUnlocked
                     ? `${ach.color} shadow-xs`
                     : 'bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-400'

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Markdown from 'react-markdown';
 import { Question, UserProgress } from '../types';
 import { CATEGORIES } from '../data/categories';
 import { 
@@ -56,44 +57,26 @@ const CloudIcon = ({ className }: { className: string }) => <svg className={clas
 const SettingsIcon = ({ className }: { className: string }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
 const ServerIcon = ({ className }: { className: string }) => <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" /></svg>;
 
-// Simple custom Markdown formatter for inline formatting (**bold**, *italic*, `code`, and newlines)
+// Simple custom Markdown formatter for robust formatting
 const renderTextWithMarkdown = (text: string): React.ReactNode => {
   if (!text) return null;
-  const lines = text.split('\n');
-  return lines.map((line, lineIdx) => {
-    const regex = /(\*\*.*?\*\*|\*.*?\*|`.*?`)/g;
-    const parts = line.split(regex);
-    const elements = parts.map((part, partIdx) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return (
-          <strong key={partIdx} className="font-extrabold text-slate-900 dark:text-white">
-            {part.slice(2, -2)}
-          </strong>
-        );
-      }
-      if (part.startsWith('*') && part.endsWith('*')) {
-        return (
-          <em key={partIdx} className="italic text-slate-800 dark:text-slate-200">
-            {part.slice(1, -1)}
-          </em>
-        );
-      }
-      if (part.startsWith('`') && part.endsWith('`')) {
-        return (
-          <code key={partIdx} className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-rose-500 dark:text-rose-400 font-mono text-xs font-semibold">
-            {part.slice(1, -1)}
-          </code>
-        );
-      }
-      return part;
-    });
-    return (
-      <React.Fragment key={lineIdx}>
-        {elements}
-        {lineIdx < lines.length - 1 && <br />}
-      </React.Fragment>
-    );
-  });
+  return (
+    <div className="select-text inline-block w-full text-left font-medium">
+      <Markdown
+        components={{
+          p: ({node, ...props}) => <span className="inline" {...props} />,
+          strong: ({node, ...props}) => <strong className="font-extrabold text-slate-900 dark:text-white" {...props} />,
+          em: ({node, ...props}) => <em className="italic text-slate-800 dark:text-slate-200" {...props} />,
+          code: ({node, ...props}) => <code className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-rose-500 dark:text-rose-400 font-mono text-xs font-semibold" {...props} />,
+          ul: ({node, ...props}) => <ul className="list-disc pl-5 my-1.5 space-y-1 marker:text-emerald-500 text-left" {...props} />,
+          ol: ({node, ...props}) => <ol className="list-decimal pl-5 my-1.5 space-y-1 marker:text-emerald-500 text-left" {...props} />,
+          li: ({node, ...props}) => <li className="pl-0.5 text-left" {...props} />,
+        }}
+      >
+        {text}
+      </Markdown>
+    </div>
+  );
 };
 
 interface FlashcardsViewProps {
@@ -423,7 +406,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-1">
-              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
+              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
                 <Brain className="w-3.5 h-3.5 mr-1" />
                 <span>Лейтнер</span>
               </span>
@@ -436,7 +419,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               <div className="pt-2">
                 <button
                   onClick={scrollToStudyStage}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-indigo-600/15 dark:shadow-none hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  className="inline-flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/15 dark:shadow-none hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Начать изучение карточек</span>
@@ -445,12 +428,12 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             </div>
 
             {/* Overall stats progress badge */}
-            <div className="bg-indigo-50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/30 px-4 py-2.5 rounded-2xl flex items-center space-x-3 self-start">
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 px-4 py-2.5 rounded-2xl flex items-center space-x-3 self-start">
               <div className="text-right">
                 <div className="text-[10px] font-bold text-slate-400 uppercase">Освоено в выборке</div>
-                <div className="text-lg font-black text-indigo-600 dark:text-indigo-400">{box5InFilter} / {totalInFilter} <span className="text-xs font-normal text-slate-400">({masteryPercentage}%)</span></div>
+                <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">{box5InFilter} / {totalInFilter} <span className="text-xs font-normal text-slate-400">({masteryPercentage}%)</span></div>
               </div>
-              <div className="w-10 h-10 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-extrabold text-sm border border-indigo-500/20">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-sm border border-emerald-500/20">
                 {masteryPercentage}%
               </div>
             </div>
@@ -464,7 +447,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             </div>
             <div className="w-full bg-slate-100 dark:bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-800">
               <div 
-                className="bg-indigo-600 dark:bg-indigo-500 h-full rounded-full transition-all duration-500" 
+                className="bg-emerald-600 dark:bg-emerald-500 h-full rounded-full transition-all duration-500" 
                 style={{ width: `${masteryPercentage}%` }}
               />
             </div>
@@ -480,7 +463,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               {selectedBoxFilter !== 'all' && (
                 <button 
                   onClick={() => setSelectedBoxFilter('all')}
-                  className="text-xs text-indigo-500 hover:underline font-bold"
+                  className="text-xs text-emerald-500 hover:underline font-bold"
                 >
                   Сбросить фильтр коробок
                 </button>
@@ -537,7 +520,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           
           <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3">
             <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5">
-              <Timer className="w-4 h-4 text-indigo-500 animate-pulse" />
+              <Timer className="w-4 h-4 text-emerald-500 animate-pulse" />
               <span>Текущая Сессия</span>
             </span>
             <div className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-mono text-sm font-extrabold flex items-center space-x-1">
@@ -606,7 +589,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           {/* BENTO CARD: Directory & Category Selector */}
           <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-4">
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5">
-              <Sliders className="w-4 h-4 text-indigo-500" />
+              <Sliders className="w-4 h-4 text-emerald-500" />
               <span>Разделы знаний</span>
             </h3>
 
@@ -616,18 +599,18 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 onClick={() => { setSelectedCategory('all'); setCurrentIndex(0); setIsFlipped(false); }}
                 className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border ${
                   selectedCategory === 'all'
-                    ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/10'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/10'
                     : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                 }`}
               >
                 <div className="flex items-center space-x-2.5">
-                  <div className="w-6 h-6 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
                     <Award className="w-3.5 h-3.5" />
                   </div>
                   <span className="truncate">Все категории</span>
                 </div>
                 <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${
-                  selectedCategory === 'all' ? 'bg-indigo-700 text-indigo-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                  selectedCategory === 'all' ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                 }`}>
                   {questions.length}
                 </span>
@@ -642,7 +625,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                     onClick={() => { setSelectedCategory(cat.id); setCurrentIndex(0); setIsFlipped(false); }}
                     className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border ${
                       isCatActive
-                        ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/10'
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/10'
                         : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
                   >
@@ -655,7 +638,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       <span className="truncate">{cat.title}</span>
                     </div>
                     <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ml-1 whitespace-nowrap ${
-                      isCatActive ? 'bg-indigo-700 text-indigo-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      isCatActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                     }`}>
                       {totalInCat}
                     </span>
@@ -681,7 +664,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       onClick={() => { setSelectedDifficulty(diff); setCurrentIndex(0); setIsFlipped(false); }}
                       className={`py-1.5 rounded-lg text-[10px] font-black uppercase text-center transition-all ${
                         isActive
-                          ? 'bg-indigo-600 text-white shadow-sm'
+                          ? 'bg-emerald-600 text-white shadow-sm'
                           : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                       }`}
                     >
@@ -702,7 +685,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 onClick={() => setIsShuffled(!isShuffled)}
                 className={`p-2 rounded-xl border transition-all ${
                   isShuffled 
-                    ? 'bg-indigo-500/10 border-indigo-500 text-indigo-600 dark:text-indigo-400 font-extrabold' 
+                    ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold' 
                     : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600'
                 }`}
               >
@@ -733,22 +716,22 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           {/* BENTO CARD: Keyboard Shortcuts Help */}
           <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-3 hidden sm:block">
             <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5 border-b border-slate-100 dark:border-slate-800/80 pb-2">
-              <Keyboard className="w-4 h-4 text-indigo-500" />
+              <Keyboard className="w-4 h-4 text-emerald-500" />
               <span>Горячие клавиши</span>
             </span>
             <div className="space-y-2 text-xs">
               <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium">
                 <span>Перевернуть</span>
-                <kbd className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-indigo-600 font-black">Space</kbd>
+                <kbd className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">Space</kbd>
               </div>
               <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium">
                 <span>Следующая / Прошлая</span>
                 <div className="space-x-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-indigo-600 font-black">A</kbd>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-indigo-600 font-black">D</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">A</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">D</kbd>
                   <span className="text-slate-300">или</span>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-indigo-600 font-black">←</kbd>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-indigo-600 font-black">→</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">←</kbd>
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">→</kbd>
                 </div>
               </div>
               <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium pt-1 border-t border-slate-100 dark:border-slate-800/50">
@@ -790,7 +773,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                     {filteredQuestions.length}
                   </span>
                   {selectedBoxFilter !== 'all' && (
-                    <span className="inline-flex items-center px-2 py-1 rounded-lg bg-indigo-500/10 text-indigo-500 text-[10px] font-black uppercase border border-indigo-500/10">
+                    <span className="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase border border-emerald-500/10">
                       Коробка {selectedBoxFilter}
                     </span>
                   )}
@@ -821,16 +804,16 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 className={`relative w-full rounded-3xl bg-white dark:bg-[#121927] border-2 ${
                   isFlipped 
                     ? 'border-emerald-500/30 dark:border-emerald-500/20 shadow-emerald-500/5' 
-                    : 'border-indigo-500/30 dark:border-indigo-500/20 shadow-indigo-500/5'
-                } p-6 sm:p-9 shadow-2xl cursor-pointer hover:shadow-indigo-500/10 dark:hover:shadow-indigo-400/5 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[380px] max-w-full`}
+                    : 'border-emerald-500/30 dark:border-emerald-500/20 shadow-emerald-500/5'
+                } p-6 sm:p-9 shadow-2xl cursor-pointer hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/5 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[380px] max-w-full`}
               >
                 {/* Backlighting effect */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-500/5 to-transparent rounded-full filter blur-2xl group-hover:scale-125 transition-transform" />
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-full filter blur-2xl group-hover:scale-125 transition-transform" />
 
                 {/* CARD UPPER BAR */}
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3.5 z-10">
                   <div className="flex items-center space-x-2">
-                    <span className="px-2.5 py-1 rounded-lg bg-indigo-500/10 text-indigo-500 text-[10px] font-black uppercase tracking-wider">
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-wider">
                       {CATEGORIES.find(c => c.id === currentCard.category)?.title || currentCard.category}
                     </span>
                     <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-[10px] font-extrabold uppercase">
@@ -845,15 +828,15 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       className={`p-1.5 rounded-lg border transition-all hover:bg-slate-100 dark:hover:bg-slate-800 ${
                         isSpeaking 
                           ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600' 
-                          : 'border-slate-200 dark:border-slate-800 text-slate-400 hover:text-indigo-500'
+                          : 'border-slate-200 dark:border-slate-800 text-slate-400 hover:text-emerald-500'
                       }`}
                       title={isSpeaking ? "Остановить чтение" : "Озвучить карточку голосом"}
                     >
                       {isSpeaking ? <VolumeX className="w-3.5 h-3.5 animate-bounce" /> : <Volume2 className="w-3.5 h-3.5" />}
                     </button>
 
-                    <span className="inline-flex items-center space-x-1 ml-1 font-bold text-[10px] tracking-wider uppercase text-indigo-500">
-                      <Sparkles className="w-3 h-3 text-indigo-400" />
+                    <span className="inline-flex items-center space-x-1 ml-1 font-bold text-[10px] tracking-wider uppercase text-emerald-500">
+                      <Sparkles className="w-3 h-3 text-emerald-400" />
                       <span>{isFlipped ? 'ОТВЕТ' : 'ВОПРОС'}</span>
                     </span>
                   </div>
@@ -865,7 +848,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   {!isFlipped ? (
                     /* Question side */
                     <div className="space-y-2 animate-fadeIn text-center sm:text-left">
-                      <div className="text-[10px] font-black uppercase text-indigo-500/70 tracking-widest">ВОПРОС</div>
+                      <div className="text-[10px] font-black uppercase text-emerald-500/70 tracking-widest">ВОПРОС</div>
                       <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug mobile-word-break">
                         {renderTextWithMarkdown(currentCard.title)}
                       </h3>
@@ -986,7 +969,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 {/* CARD FOOTER BAR */}
                 <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-medium">
                   <span>{isFlipped ? 'Оцените уровень владения ниже' : 'Кликните на карту, чтобы посмотреть ответ'}</span>
-                  <span className="font-extrabold text-indigo-500 group-hover:underline flex items-center space-x-1.5">
+                  <span className="font-extrabold text-emerald-500 group-hover:underline flex items-center space-x-1.5">
                     <span>Клик = Flip</span>
                   </span>
                 </div>
@@ -1047,7 +1030,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             /* EMPTY STATE FOR CARD FILTERS */
             <div className="text-center py-16 bg-white dark:bg-[#121927] rounded-3xl border border-slate-200 dark:border-slate-800 p-8 space-y-4">
               <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-400">
-                <Info className="w-8 h-8 text-indigo-500" />
+                <Info className="w-8 h-8 text-emerald-500" />
               </div>
               <div className="space-y-1">
                 <h3 className="font-black text-slate-800 dark:text-slate-200 text-lg">Нет карточек в выбранной категории</h3>
@@ -1058,7 +1041,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               <div className="pt-2">
                 <button
                   onClick={handleClearAllFilters}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-md transition-all flex items-center space-x-2 mx-auto"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center space-x-2 mx-auto"
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
                   <span>Сбросить все фильтры</span>
