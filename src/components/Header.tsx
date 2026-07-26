@@ -13,7 +13,8 @@ import {
   Menu,
   X,
   Sun,
-  Moon
+  Moon,
+  User
 } from 'lucide-react';
 import { SearchModal } from './SearchModal';
 import { CategoryId } from '../types';
@@ -27,7 +28,8 @@ export type TabType =
   | 'resume' 
   | 'incidents' 
   | 'cheatsheet'
-  | 'achievements';
+  | 'achievements'
+  | 'profile';
 
 interface HeaderProps {
   activeTab: TabType;
@@ -212,6 +214,25 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50 dark:bg-[#0b1120]">
+            {/* Личный кабинет quick access link */}
+            <div className="p-3 bg-white dark:bg-[#121927] rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-xs">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+                  <User className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Личный кабинет</h4>
+                  <p className="text-[10px] text-slate-400">Синхронизация прогресса</p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleSelectTab('profile')}
+                className="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-600 text-[10px] font-bold shadow-xs transition-all cursor-pointer"
+              >
+                Перейти
+              </button>
+            </div>
+
             {navGroups.map((group, gIdx) => (
               <div key={gIdx} className="space-y-2">
                 <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 px-2">

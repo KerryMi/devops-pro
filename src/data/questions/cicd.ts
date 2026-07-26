@@ -447,5 +447,108 @@ patches:
       'Превращать Go-шаблоны Helm в монструозный нечитаемый код с глубокой вложенностью if/else.'
     ],
     tags: ['CICD', 'Helm', 'Kustomize', 'Kubernetes', 'Templating']
+  },
+  {
+    id: 'cicd-15',
+    title: 'В чем разница между GitOps-инструментами ArgoCD и FluxCD при непрерывной доставке в Kubernetes?',
+    category: 'cicd',
+    difficulty: 'Senior',
+    summaryAnswer: 'ArgoCD предоставляет мощный веб-интерфейс (UI), ориентирован на управление множеством кластеров (Multi-tenant) и использует pull-модель. FluxCD — более легковесный инструмент, глубоко интегрированный с Kubernetes-native экосистемой (через Custom Resources) без выделенного UI.',
+    fullAnswer: `Оба инструмента реализуют методологию **GitOps** в Kubernetes: они отслеживают репозиторий Git (Source of Truth) и автоматически синхронизируют желаемое состояние с реальным состоянием кластера, устраняя ручной запуск \`kubectl apply\`.
+
+**Ключевые различия**:
+
+1. **Пользовательский интерфейс (UI)**:
+   - **ArgoCD**: Имеет красивый, функциональный веб-UI, показывающий граф ресурсов кластера в реальном времени, статус синхронизации и логи подов. Это делает его крайне популярным среди разработчиков и QA.
+   - **FluxCD**: Веб-интерфейса из коробки нет (управляется строго через CLI \`flux\` и Custom Resources). Вся настройка происходит декларативно.
+
+2. **Архитектура и мультикластерность**:
+   - **ArgoCD**: Может работать как централизованный сервер управления, который подключается к десяткам удаленных внешних кластеров (через kubeconfig) и деплоит в них.
+   - **FluxCD**: Следует микросервисной философии Unix. Рекомендуемый подход — устанавливать Flux локально в каждый кластер. Он состоит из набора независимых K8s контроллеров (source-controller, helm-controller, kustomize-controller).
+
+3. **Гибкость интеграций**:
+   - **ArgoCD**: Поддерживает Argo Rollouts для сложных стратегий канареечного релиза (Canary/Blue-Green deployments).
+   - **FluxCD**: Отлично работает с Flagger для прогрессивной доставки и более нативно встраивается в kustomize/helm потоки.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример ресурса ArgoCD Application
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: myapp-prod
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/myorg/myapp-gitops.git'
+    targetRevision: HEAD
+    path: envs/prod
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: prod
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true`
+    },
+    interviewTips: [
+      'Упомяните свойство selfHeal (самолечение) в GitOps: если кто-то вручную изменит конфигурацию пода через kubectl, GitOps-контроллер обнаружит дрейф конфигураций (Configuration Drift) и автоматически перезапишет ручные изменения конфигурацией из Git.'
+    ],
+    commonPitfalls: [
+      'Использовать GitOps для сред разработки (Dev), где разработчикам требуется мгновенный цикл деплоя без необходимости коммитить каждое мелкое изменение кода в Git.'
+    ],
+    tags: ['CICD', 'GitOps', 'ArgoCD', 'FluxCD', 'Kubernetes']
+  },
+  {
+    id: 'cicd-16',
+    title: 'Что такое концепция «Shift Left» в безопасности CI/CD и какие инструменты применяются на каждом этапе?',
+    category: 'cicd',
+    difficulty: 'Senior',
+    summaryAnswer: '«Shift Left» — это подход в DevSecOps, при котором проверки безопасности переносятся на самые ранние этапы разработки (налево по шкале жизненного цикла), включая проверку кода при коммите, а не перед релизом.',
+    fullAnswer: `Традиционный подход ("безопасность в конце") приводил к тому, что уязвимости обнаруживались перед самым релизом во время пентеста, блокируя запуск продукта.
+**Shift Left** переносит безопасность прямо в руки разработчика.
+
+**Этапы и инструменты DevSecOps**:
+
+1. **Код (Static Application Security Testing — SAST)**:
+   - Анализ исходного кода на наличие уязвимостей, SQL-инъекций, небезопасного шифрования.
+   - *Инструменты*: SonarQube, Semgrep, Snyk.
+
+2. **Зависимости (Software Composition Analysis — SCA)**:
+   - Проверка сторонних open-source библиотек и пакетов (npm, pip, maven) на известные уязвимости (CVE).
+   - *Инструменты*: Snyk, OWASP Dependency-Check, GitHub Dependabot.
+
+3. **Секреты (Secret Detection)**:
+   - Поиск жестко закодированных в коде паролей, токенов, приватных ключей до отправки в Git.
+   - *Инструменты*: GitLeaks, Trufflehog.
+
+4. **Образы контейнеров (Container Scanning)**:
+   - Анализ слоев Docker-образов на уязвимости системных пакетов ОС.
+   - *Инструменты*: Trivy, Clair, Anchore Engine.
+
+5. **Инфраструктура как код (IaC Scanning)**:
+   - Проверка Terraform, Ansible и Helm манифестов на ошибки конфигурации (например, открытые наружу порты 22 или запуск привилегированных контейнеров).
+   - *Инструменты*: Checkov, tfsec, Terrascan.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Шаг сканирования Docker-образа в GitLab CI с помощью Trivy
+scan_image:
+  stage: test
+  image: docker:stable
+  services:
+    - docker:dind
+  script:
+    - docker build -t myapp:$CI_COMMIT_SHA .
+    - wget https://github.com/aquasecurity/trivy/releases/download/v0.40.0/trivy_0.40.0_Linux-64bit.tar.gz
+    - tar -xzf trivy_0.40.0_Linux-64bit.tar.gz
+    - ./trivy image --exit-code 1 --severity HIGH,CRITICAL myapp:$CI_COMMIT_SHA`
+    },
+    interviewTips: [
+      'Упомяните разницу между SAST (статический анализ исходного кода без запуска) и DAST (динамический анализ запущенного веб-приложения путем отправки вредоносных запросов типа SQLi, XSS). В Shift Left всегда доминирует SAST/SCA.'
+    ],
+    commonPitfalls: [
+      'Настраивать жесткое падение сборки (fail build) при обнаружении любых мелких CVE. Это парализует работу команд разработки, так как многие CVE являются ложноположительными (False Positive) или не влияют на рантайм. Начинать нужно с блокировки только Critical уязвимостей.'
+    ],
+    tags: ['CICD', 'DevSecOps', 'ShiftLeft', 'SAST', 'SCA', 'Trivy']
   }
 ];

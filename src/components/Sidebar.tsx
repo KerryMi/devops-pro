@@ -12,10 +12,12 @@ import {
   Trophy,
   Search,
   Sun,
-  Moon
+  Moon,
+  User
 } from 'lucide-react';
 import { TabType } from './Header';
 import { CategoryId } from '../types';
+import { User as FirebaseUser } from 'firebase/auth';
 
 interface SidebarProps {
   activeTab: TabType;
@@ -27,6 +29,7 @@ interface SidebarProps {
   isDarkMode: boolean;
   setIsDarkMode: (val: boolean) => void;
   onOpenSearch: () => void;
+  currentUser: FirebaseUser | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -38,7 +41,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   totalAchievementsCount,
   isDarkMode,
   setIsDarkMode,
-  onOpenSearch
+  onOpenSearch,
+  currentUser
 }) => {
   const navGroups = [
     {
@@ -145,6 +149,30 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           </div>
         ))}
+      </div>
+
+      {/* User Profile Card in Sidebar */}
+      <div className="px-4 py-3 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/20 dark:bg-[#0b1120]/10 shrink-0">
+        <button
+          onClick={() => onNavigate('profile')}
+          className={`w-full flex items-center space-x-3 p-2.5 rounded-xl text-left border transition-all cursor-pointer ${
+            activeTab === 'profile'
+              ? 'bg-emerald-50 dark:bg-emerald-500/15 border-emerald-200 dark:border-emerald-500/30'
+              : 'bg-white dark:bg-[#121927] border-slate-200 dark:border-slate-800 hover:border-emerald-500/40'
+          }`}
+        >
+          <div className="w-8 h-8 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs shrink-0">
+            {currentUser ? (currentUser.displayName ? currentUser.displayName.slice(0, 2).toUpperCase() : <User className="w-4 h-4" />) : <User className="w-4 h-4" />}
+          </div>
+          <div className="min-w-0 flex-1">
+            <span className="block text-[11px] font-extrabold text-slate-800 dark:text-slate-200 truncate leading-none">
+              {currentUser ? currentUser.displayName || 'DevOps Инженер' : 'Личный кабинет'}
+            </span>
+            <span className="block text-[10px] text-slate-400 truncate mt-1 leading-none">
+              {currentUser ? currentUser.email : 'Синхронизация'}
+            </span>
+          </div>
+        </button>
       </div>
 
       {/* Footer Info & Theme Toggle in Sidebar */}

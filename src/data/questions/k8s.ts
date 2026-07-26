@@ -510,5 +510,100 @@ spec:
       'Делать кластер с 2 или 4 нодами Control Plane.'
     ],
     tags: ['Kubernetes', 'etcd', 'Raft', 'Consensus', 'HighAvailability']
+  },
+  {
+    id: 'k8s-16',
+    title: 'Что такое Ingress и Ingress Controller? Чем они отличаются от Service типа LoadBalancer или NodePort?',
+    category: 'k8s',
+    difficulty: 'Middle',
+    summaryAnswer: 'Ingress — это объект-описание правил маршрутизации L7-трафика (HTTP/HTTPS) к сервисам. Ingress Controller — это запущенный под-прокси (например, Nginx, Traefik), который эти правила физически выполняет. Service типа LoadBalancer — это L4 балансировщик облачного провайдера.',
+    fullAnswer: `Для предоставления доступа к приложениям извне в Kubernetes есть несколько способов:
+
+1. **NodePort**:
+   - Открывает фиксированный порт (30000-32767) на ВСЕХ нодах кластера. Запрос на IP любой ноды с этим портом перенаправляется на нужный под.
+   - *Минус*: Неудобно для продакшна (пользователю нужно знать IP нод и нестандартный порт).
+
+2. **LoadBalancer**:
+   - Напрямую интегрируется с облаком (AWS, GCP). Автоматически заказывает физический балансировщик (L4) у провайдера, выделяя внешний статический IP.
+   - *Минус*: На каждый сервис создается отдельный дорогой облачный балансировщик. Нет маршрутизации по путям (например, \`/api\` на один под, \`/static\` — на другой).
+
+3. **Ingress + Ingress Controller (L7 маршрутизация)**:
+   - **Ingress**: Декларативный ресурс, где вы пишете: "Если запрос пришел на домен \`app.com/api\`, перенаправить в сервис \`api-service\`".
+   - **Ingress Controller**: Фактический сервер (часто Nginx, Envoy или Traefik), запущенный внутри кластера в одном экземпляре. Он слушает порты 80/443 и проксирует трафик внутри кластера.
+   - Вы заказываете ровно ОДИН Service типа LoadBalancer, который указывает на Ingress Controller. Все домены и пути вы бесплатно маршрутизируете через Ingress-ресурсы!`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример Ingress-правила
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minimal-ingress
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: myapp.ru
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: api-service
+            port:
+              number: 80`
+    },
+    interviewTips: [
+      'Укажите на разницу L4 (LoadBalancer, оперирует IP и портами) и L7 (Ingress, понимает заголовки HTTP, куки, домены, пути и SSL).'
+    ],
+    commonPitfalls: [
+      'Создавать Ingress-ресурс, но забывать установить в кластер Ingress Controller. Сам по себе Ingress — это просто конфиг в etcd, без контроллера он работать не будет.'
+    ],
+    tags: ['Kubernetes', 'Ingress', 'Service', 'LoadBalancer', 'Nginx']
+  },
+  {
+    id: 'k8s-17',
+    title: 'Как работают сетевые политики (Network Policies) в Kubernetes? Как ограничить доступ между подами?',
+    category: 'k8s',
+    difficulty: 'Senior',
+    summaryAnswer: 'Network Policy — это аналог встроенного фаервола в Kubernetes. По умолчанию в кластере разрешен любой сетевой трафик между всеми подами (All-Allow). Сетевые политики позволяют настроить правила фильтрации L3/L4 (Ingress/Egress) на основе селекторов.',
+    fullAnswer: `По умолчанию сеть Kubernetes плоская: любой под из пространства имен \`dev\` может свободно слать запросы поду в пространство имен \`prod\`.
+
+**Как работают Network Policies**:
+1. Сетевые политики применяются к подам с помощью меток (Labels).
+2. Вы указываете селектор подов (\`podSelector\`), на которые действует политика.
+3. Описываете правила:
+   - **Ingress** (входящий трафик): откуда разрешено принимать пакеты (по селекторам подов, пространств имен или IP-блокам CIDR).
+   - **Egress** (исходящий трафик): куда разрешено слать пакеты.
+4. **Важное свойство**: как только к поду применяется хотя бы одна NetworkPolicy, этот под переходит в режим "Default Deny" для неподходящего трафика. Все неразрешенные соединения будут блокироваться!
+
+**Важное требование — CNI**:
+Сетевые политики — это чисто декларативные абстракции API. Чтобы они работали, CNI-плагин кластера должен поддерживать спецификацию NetworkPolicy (например, **Calico**, **Cilium**, **Weave Net**). Стандартный плагин **Flannel сетевые политики НЕ поддерживает** (они будут молча игнорироваться).`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Блокировать весь входящий трафик к базе данных, кроме пода бэкенда
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: db-netpolicy
+  namespace: app-prod
+spec:
+  podSelector:
+    matchLabels:
+      role: db
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: backend`
+    },
+    interviewTips: [
+      'Подчеркните: "Если в кластере используется Flannel CNI, сетевые политики будут создаваться без ошибок, но фактически работать не будут". Этот нюанс показывает глубокие практические знания сетевого рантайма.'
+    ],
+    commonPitfalls: [
+      'Думать, что Network Policy может фильтровать трафик по доменным именам на уровне L7. Стандартные сетевые политики K8s работают только на уровнях L3 (IP) и L4 (Port/Protocol). Для L7 фильтрации (например, разрешить доступ только к \`api.stripe.com\`) используют Service Mesh (Istio, Linkerd) или продвинутый Cilium CNI.'
+    ],
+    tags: ['Kubernetes', 'NetworkPolicy', 'Security', 'CNI', 'Calico', 'Cilium']
   }
 ];

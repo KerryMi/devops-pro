@@ -1,0 +1,35 @@
+{
+  "entities": {
+    "UserProgress": {
+      "title": "UserProgress",
+      "description": "User profile and detailed application progress data",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique user ID" },
+        "email": { "type": "string", "description": "The user's email address" },
+        "masteredQuestionIds": { "type": "array", "description": "List of mastered question IDs" },
+        "bookmarkedQuestionIds": { "type": "array", "description": "List of bookmarked question IDs" },
+        "flashcardBoxes": { "type": "object", "description": "Flashcard boxes map for Leitner system" },
+        "flashcardLastReview": { "type": "object", "description": "Flashcard last review dates map" },
+        "quizResults": { "type": "array", "description": "History of completed quiz results" },
+        "dailyStreak": { "type": "number", "description": "Current consecutive active days count" },
+        "lastActiveDate": { "type": "string", "description": "Last active date in YYYY-MM-DD format" },
+        "customNotes": { "type": "object", "description": "User notes mapped by question ID" },
+        "savedLegend": { "type": "object", "description": "Customized DevOps legend profile details" },
+        "solvedIncidentIds": { "type": "array", "description": "List of successfully debugged incident IDs" },
+        "completedInterviewSessionsCount": { "type": "number", "description": "Total interview simulator runs" },
+        "lastDailyBlitzDate": { "type": "string", "description": "Last date daily blitz was played" },
+        "dailyBlitzHistory": { "type": "object", "description": "Blitz scoring history by date" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp when the user was created" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp when the profile was last updated" }
+      },
+      "required": ["uid", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProgress",
+      "description": "Stores user-specific progress and preferences, accessible only by the owner"
+    }
+  }
+}

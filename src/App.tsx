@@ -15,6 +15,52 @@ import { QUESTIONS } from './data/questions';
 import { CategoryId, UserProgress, ExperienceLegend, QuizResult } from './types';
 import { loadUserProgress, saveUserProgress } from './utils/storage';
 import { evaluateAchievements } from './data/achievements';
+import { ProfileView } from './components/ProfileView';
+import { auth, loadProgressFromFirestore, saveProgressToFirestore } from './firebase';
+import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+
+function mergeProgress(local: UserProgress, cloud: any): UserProgress {
+  const masteredQuestionIds = Array.from(new Set([
+    ...(local.masteredQuestionIds || []),
+    ...(cloud.masteredQuestionIds || [])
+  ]));
+  
+  const bookmarkedQuestionIds = Array.from(new Set([
+    ...(local.bookmarkedQuestionIds || []),
+    ...(cloud.bookmarkedQuestionIds || [])
+  ]));
+
+  const solvedIncidentIds = Array.from(new Set([
+    ...(local.solvedIncidentIds || []),
+    ...(cloud.solvedIncidentIds || [])
+  ]));
+
+  const flashcardBoxes = { ...(local.flashcardBoxes || {}), ...(cloud.flashcardBoxes || {}) };
+  const flashcardLastReview = { ...(local.flashcardLastReview || {}), ...(cloud.flashcardLastReview || {}) };
+  const customNotes = { ...(local.customNotes || {}), ...(cloud.customNotes || {}) };
+  const dailyBlitzHistory = { ...(local.dailyBlitzHistory || {}), ...(cloud.dailyBlitzHistory || {}) };
+
+  const allResults = [...(local.quizResults || []), ...(cloud.quizResults || [])];
+  const uniqueResultsMap = new Map();
+  allResults.forEach(r => {
+    if (r && r.id) uniqueResultsMap.set(r.id, r);
+  });
+  const quizResults = Array.from(uniqueResultsMap.values())
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  return {
+    ...local,
+    ...cloud,
+    masteredQuestionIds,
+    bookmarkedQuestionIds,
+    solvedIncidentIds,
+    flashcardBoxes,
+    flashcardLastReview,
+    customNotes,
+    dailyBlitzHistory,
+    quizResults
+  };
+}
 
 export default function App() {
   const [progress, setProgress] = useState<UserProgress>(() => loadUserProgress());
@@ -25,6 +71,34 @@ export default function App() {
     const saved = localStorage.getItem('devops_pro_theme');
     return saved !== null ? saved === 'dark' : false;
   });
+
+  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
+  const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  // Sync Authentication state on mount
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      setCurrentUser(user);
+      if (user) {
+        setIsSyncing(true);
+        try {
+          const cloudProgress = await loadProgressFromFirestore(user.uid);
+          if (cloudProgress) {
+            setProgress(prev => mergeProgress(prev, cloudProgress));
+          } else {
+            // New cloud account: Seed it with local progress
+            const localProgress = loadUserProgress();
+            await saveProgressToFirestore(user.uid, localProgress, true);
+          }
+        } catch (err) {
+          console.error('Error loading/merging progress from cloud:', err);
+        } finally {
+          setIsSyncing(false);
+        }
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Calculate Achievements
   const achievements = evaluateAchievements(progress, QUESTIONS);
@@ -47,7 +121,30 @@ export default function App() {
   // Persist progress changes
   useEffect(() => {
     saveUserProgress(progress);
-  }, [progress]);
+    if (currentUser) {
+      saveProgressToFirestore(currentUser.uid, progress).catch(err => {
+        console.error('Failed to sync progress to Firestore:', err);
+      });
+    }
+  }, [progress, currentUser]);
+
+  const handleManualSync = async () => {
+    if (!currentUser) return;
+    setIsSyncing(true);
+    try {
+      const cloudProgress = await loadProgressFromFirestore(currentUser.uid);
+      if (cloudProgress) {
+        setProgress(prev => mergeProgress(prev, cloudProgress));
+      } else {
+        await saveProgressToFirestore(currentUser.uid, progress, true);
+      }
+    } catch (err) {
+      console.error('Manual sync error:', err);
+      throw err;
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Scroll to top on tab transition
   useEffect(() => {
@@ -146,6 +243,7 @@ export default function App() {
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
         onOpenSearch={() => setIsSearchOpen(true)}
+        currentUser={currentUser}
       />
 
       {/* Top Header Navigation for Mobile Only */}
@@ -229,6 +327,15 @@ export default function App() {
 
           {activeTab === 'cheatsheet' && (
             <CheatsheetsView />
+          )}
+
+          {activeTab === 'profile' && (
+            <ProfileView
+              user={currentUser}
+              progress={progress}
+              isSyncing={isSyncing}
+              onSyncManual={handleManualSync}
+            />
           )}
         </main>
 
