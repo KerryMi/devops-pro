@@ -20,6 +20,8 @@ import {
 import { SearchModal } from './SearchModal';
 import { CategoryId } from '../types';
 
+import { User as FirebaseUser } from 'firebase/auth';
+
 export type TabType = 
   | 'dashboard' 
   | 'questions' 
@@ -45,6 +47,7 @@ interface HeaderProps {
   setIsSearchOpen: (val: boolean) => void;
   isDarkMode: boolean;
   setIsDarkMode: (val: boolean) => void;
+  currentUser?: FirebaseUser | null;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -58,7 +61,8 @@ export const Header: React.FC<HeaderProps> = ({
   isSearchOpen,
   setIsSearchOpen,
   isDarkMode,
-  setIsDarkMode
+  setIsDarkMode,
+  currentUser = null
 }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -133,6 +137,24 @@ export const Header: React.FC<HeaderProps> = ({
             </span>
           </div>
           <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handleSelectTab('profile')}
+              className={`p-1.5 px-2 rounded-lg border text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                currentUser 
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' 
+                  : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300'
+              }`}
+              title={currentUser ? currentUser.email || 'Профиль' : 'Войти в личный кабинет'}
+            >
+              <div className="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-black text-[10px]">
+                {currentUser?.email ? currentUser.email[0].toUpperCase() : <User className="w-3 h-3" />}
+              </div>
+              {currentUser && (
+                <span className="max-w-[110px] truncate text-[11px] font-bold">
+                  {currentUser.displayName || currentUser.email?.split('@')[0]}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => setIsDarkMode(!isDarkMode)}
               className="p-1.5 rounded-lg bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
@@ -223,21 +245,50 @@ export const Header: React.FC<HeaderProps> = ({
 
           <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50 dark:bg-[#0b1120]">
             {/* Личный кабинет quick access link */}
-            <div className="p-3 bg-white dark:bg-[#121927] rounded-xl border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-xs">
-              <div className="flex items-center space-x-3">
-                <div className="w-9 h-9 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
-                  <User className="w-4 h-4" />
+            <div 
+              onClick={() => handleSelectTab('profile')}
+              className="p-3.5 bg-white dark:bg-[#121927] rounded-2xl border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-xs cursor-pointer hover:border-emerald-500/40 transition-all"
+            >
+              <div className="flex items-center space-x-3 min-w-0 flex-1 mr-2">
+                <div className="relative shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center font-black text-sm">
+                    {currentUser?.email ? (
+                      currentUser.email[0].toUpperCase()
+                    ) : currentUser?.displayName ? (
+                      currentUser.displayName[0].toUpperCase()
+                    ) : (
+                      <User className="w-5 h-5" />
+                    )}
+                  </div>
+                  {currentUser && (
+                    <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white dark:border-[#121927]"></span>
+                  )}
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">Личный кабинет</h4>
-                  <p className="text-[10px] text-slate-400">Синхронизация прогресса</p>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center space-x-1.5">
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                      {currentUser ? (currentUser.displayName || currentUser.email?.split('@')[0] || 'DevOps Инженер') : 'Личный кабинет'}
+                    </h4>
+                    {currentUser && (
+                      <span className="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+                        В сети
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 font-medium">
+                    {currentUser ? currentUser.email : 'Синхронизация прогресса'}
+                  </p>
                 </div>
               </div>
               <button
-                onClick={() => handleSelectTab('profile')}
-                className="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-600 text-[10px] font-bold shadow-xs transition-all cursor-pointer"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleSelectTab('profile');
+                }}
+                className="px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-600 text-[10px] font-extrabold shadow-xs transition-all cursor-pointer shrink-0"
               >
-                Перейти
+                {currentUser ? 'Профиль' : 'Войти'}
               </button>
             </div>
 

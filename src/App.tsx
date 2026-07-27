@@ -309,6 +309,7 @@ export default function App() {
           setIsSearchOpen={setIsSearchOpen}
           isDarkMode={isDarkMode}
           setIsDarkMode={setIsDarkMode}
+          currentUser={currentUser}
         />
 
         {/* Main Container View Area - starts from top on desktop without top bar */}

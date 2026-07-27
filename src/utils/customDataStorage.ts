@@ -78,9 +78,10 @@ export function saveQuizzes(quizzes: Quiz[]): void {
 
 export function getAdminState(): boolean {
   try {
-    return localStorage.getItem(ADMIN_AUTH_KEY) === 'true';
+    const val = localStorage.getItem(ADMIN_AUTH_KEY);
+    return val !== 'false'; // Default to open access (true)
   } catch (e) {
-    return false;
+    return true;
   }
 }
 
