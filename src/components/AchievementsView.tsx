@@ -126,14 +126,13 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
           
           {/* Main Rank Title & Badge */}
-          <div className="flex items-start space-x-4">
-            <RankAvatar rank={rank} size="xl" />
-            <div className="space-y-1">
-              <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 font-mono">
+          <div className="flex flex-col-reverse sm:flex-row items-start sm:items-center justify-between gap-6 flex-1 w-full">
+            <div className="space-y-1.5 flex-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 font-mono whitespace-nowrap">
                   Уровень {rank.level} из 10
                 </span>
-                <span className="text-xs font-bold text-slate-400">
+                <span className="text-xs font-bold text-slate-400 whitespace-nowrap">
                   {totalXP} XP Набрано
                 </span>
               </div>
@@ -146,6 +145,9 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
               <p className="text-xs text-slate-400 max-w-xl leading-relaxed pt-1">
                 {rank.description}
               </p>
+            </div>
+            <div className="self-center sm:self-auto shrink-0">
+              <RankAvatar rank={rank} size="2xl" />
             </div>
           </div>
 
@@ -238,7 +240,6 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
               Активные квесты для заработка XP
             </h3>
           </div>
-          <span className="text-xs text-slate-400 font-mono">Выполняйте для поднятия ранга</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

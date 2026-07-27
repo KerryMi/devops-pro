@@ -466,19 +466,20 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // =========================================================
   if (isStudySessionActive) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#080d1a] text-slate-100 flex flex-col p-4 sm:p-6 lg:p-8 overflow-y-auto animate-fadeIn">
+      <div className="fixed inset-0 z-50 bg-[#080d1a] text-slate-100 flex flex-col pt-16 sm:pt-8 pb-4 px-4 sm:p-6 lg:p-8 overflow-y-auto animate-fadeIn">
         
         {/* TOP BAR NAVIGATION & METRICS */}
-        <div className="max-w-5xl w-full mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-slate-800 shrink-0">
+        <div className="max-w-5xl w-full mx-auto flex flex-row items-center justify-between gap-3 pb-4 border-b border-slate-800 shrink-0">
           
           <div className="flex items-center space-x-3">
             <button
               onClick={exitStudySession}
-              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-sm"
+              className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center space-x-1.5 sm:space-x-2 cursor-pointer shadow-sm shrink-0"
               title="Завершить сессию [Esc]"
             >
-              <ArrowLeft className="w-4 h-4 text-emerald-400" />
-              <span>Назад к настройкам</span>
+              <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
+              <span className="sm:hidden">Назад</span>
+              <span className="hidden sm:inline">Назад к настройкам</span>
             </button>
 
             <div className="hidden md:flex items-center space-x-2 text-xs">
@@ -499,14 +500,14 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </div>
 
           {/* SESSION METRICS */}
-          <div className="flex items-center justify-between sm:justify-end space-x-4">
-            <div className="flex items-center space-x-3 bg-slate-900/80 px-3.5 py-1.5 rounded-xl border border-slate-800/80 text-xs font-mono">
-              <div className="flex items-center space-x-1.5 text-slate-300">
+          <div className="flex items-center space-x-3 shrink-0">
+            <div className="flex items-center space-x-2 sm:space-x-3 bg-slate-900/80 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl border border-slate-800/80 text-[11px] sm:text-xs font-mono">
+              <div className="flex items-center space-x-1 text-slate-300">
                 <Timer className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
                 <span>{formatTimer(timerSeconds)}</span>
               </div>
               <div className="w-px h-3 bg-slate-800" />
-              <div className="flex items-center space-x-1.5 text-orange-400 font-extrabold">
+              <div className="flex items-center space-x-1 text-orange-400 font-extrabold">
                 <Flame className="w-3.5 h-3.5 fill-orange-500" />
                 <span>{currentStreak}</span>
               </div>
@@ -514,10 +515,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               <div className="text-emerald-400 font-extrabold">
                 {sessionReviewed > 0 ? `${Math.round((sessionCorrect / sessionReviewed) * 100)}%` : '100%'}
               </div>
-            </div>
-
-            <div className="text-xs font-extrabold text-slate-400">
-              <span className="text-white font-mono text-sm">{currentIndex + 1}</span> / {filteredQuestions.length}
             </div>
           </div>
 
@@ -637,34 +634,13 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 )}
 
                 {/* CARD UPPER BAR */}
-                <div className="flex items-center justify-between border-b border-slate-800 pb-4 z-10">
-                  <div className="flex items-center space-x-2">
-                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 text-xs font-black uppercase tracking-wider border border-emerald-500/20">
-                      {CATEGORIES.find(c => c.id === currentCard.category)?.title || currentCard.category}
-                    </span>
-                    <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 text-xs font-extrabold uppercase border border-slate-700/80">
-                      {currentCard.difficulty}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-2 text-xs">
-                    <button
-                      onClick={toggleSpeaking}
-                      className={`p-1.5 rounded-lg border transition-all hover:bg-slate-800 ${
-                        isSpeaking 
-                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' 
-                          : 'border-slate-800 text-slate-400 hover:text-emerald-400'
-                      }`}
-                      title={isSpeaking ? "Остановить чтение" : "Озвучить карточку голосом"}
-                    >
-                      {isSpeaking ? <VolumeX className="w-4 h-4 animate-bounce" /> : <Volume2 className="w-4 h-4" />}
-                    </button>
-
-                    <span className="inline-flex items-center space-x-1 font-bold text-xs tracking-wider uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
-                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>{isFlipped ? 'ОТВЕТ' : 'ВОПРОС'}</span>
-                    </span>
-                  </div>
+                <div className="flex flex-wrap items-center justify-start gap-2 border-b border-slate-800 pb-3 sm:pb-4 z-10">
+                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-500/15 text-emerald-400 text-[10px] sm:text-xs font-black uppercase tracking-wider border border-emerald-500/20 whitespace-nowrap">
+                    {CATEGORIES.find(c => c.id === currentCard.category)?.title || currentCard.category}
+                  </span>
+                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-slate-800 text-slate-400 text-[10px] sm:text-xs font-extrabold uppercase border border-slate-700/80 whitespace-nowrap">
+                    {currentCard.difficulty}
+                  </span>
                 </div>
 
                 {/* CARD CENTER AREA */}
@@ -790,9 +766,11 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 </div>
 
                 {/* CARD FOOTER BAR */}
-                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-medium select-none">
-                  <span>{isFlipped ? 'Оцените знания кнопками ниже или свайпом' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}</span>
-                  <span className="font-mono text-xs text-slate-400 font-bold">
+                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-[10px] sm:text-xs text-slate-400 font-medium select-none pointer-events-none">
+                  <span className="truncate mr-2">
+                    {isFlipped ? 'Оцените кнопками или свайпом' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}
+                  </span>
+                  <span className="font-mono text-[10px] sm:text-xs text-slate-400 font-bold shrink-0">
                     {currentIndex + 1} / {filteredQuestions.length}
                   </span>
                 </div>
@@ -883,196 +861,60 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
         </div>
       )}
 
-      {/* TOP HEADER BENTO GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      {/* Header section with Title */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
+        <div className="space-y-1.5">
+          <div className="flex items-center space-x-2">
+            <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider flex items-center">
+              <Brain className="w-3.5 h-3.5 mr-1" />
+              <span>Система Лейтнера</span>
+            </span>
+          </div>
+          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            Интервальное повторение
+          </h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
+            Метод интервальных повторений помогает закрепить сложные концепции в долгосрочной памяти. Выберите категорию, сложность и запустите сессию.
+          </p>
+        </div>
         
-        {/* LEITNER METHOD OVERVIEW */}
-        <div className="bento-card lg:col-span-8 flex flex-col justify-between space-y-6 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800">
+        {/* Quick Mastery Badge in header */}
+        <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 px-4 py-2.5 rounded-2xl flex items-center space-x-3 self-start md:self-auto shrink-0 shadow-sm">
+          <div className="text-right">
+            <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Освоено (Коробка 5)</div>
+            <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">
+              {box5InFilter} / {totalInFilter}
+            </div>
+          </div>
+          <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-sm border border-emerald-500/20">
+            {masteryPercentage}%
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* LEFT/MAIN COLUMN: SELECTION FLOW */}
+        <div className="lg:col-span-7 space-y-6">
           
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-            <div className="space-y-1">
-              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
-                <Brain className="w-3.5 h-3.5 mr-1" />
-                <span>Система Лейтнера</span>
-              </span>
-              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center space-x-2 mt-1">
-                <span>Интервальные карточки</span>
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                Настройте категорию и параметры ниже, затем откройте полноэкранный режим заучивания.
-              </p>
-            </div>
-
-            {/* Mastery percentage badge */}
-            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 px-4 py-2.5 rounded-2xl flex items-center space-x-3 self-start shrink-0">
-              <div className="text-right">
-                <div className="text-[10px] font-bold text-slate-400 uppercase">Освоено в выборке</div>
-                <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">{box5InFilter} / {totalInFilter} <span className="text-xs font-normal text-slate-400">({masteryPercentage}%)</span></div>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-600 dark:text-emerald-400 font-extrabold text-sm border border-emerald-500/20">
-                {masteryPercentage}%
-              </div>
-            </div>
-          </div>
-
-          {/* Visual Progress Bar */}
-          <div className="space-y-1.5">
-            <div className="flex justify-between items-center text-xs text-slate-500 font-bold">
-              <span>Доля полностью проработанных карт (Коробка 5)</span>
-              <span>{masteryPercentage}%</span>
-            </div>
-            <div className="w-full bg-slate-100 dark:bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-800">
-              <div 
-                className="bg-emerald-600 dark:bg-emerald-500 h-full rounded-full transition-all duration-500" 
-                style={{ width: `${masteryPercentage}%` }}
-              />
-            </div>
-          </div>
-
-          {/* INTERACTIVE LEITNER BOX CHIPS */}
-          <div className="space-y-3 pt-1">
+          {/* STEP 1: CATEGORY SELECTION */}
+          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center space-x-1.5">
-                <Filter className="w-3.5 h-3.5 text-emerald-500" />
-                <span>Фильтр по коробкам Лейтнера</span>
-              </span>
-              {selectedBoxFilter !== 'all' && (
+              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-2">
+                <Sliders className="w-4 h-4 text-emerald-500" />
+                <span>1. Выберите категорию знаний</span>
+              </h3>
+              {selectedCategory !== 'all' && (
                 <button 
-                  onClick={() => setSelectedBoxFilter('all')}
-                  className="text-xs text-emerald-500 hover:underline font-bold"
+                  onClick={() => setSelectedCategory('all')}
+                  className="text-xs text-emerald-500 hover:underline font-semibold"
                 >
-                  Сбросить фильтр
+                  Сбросить
                 </button>
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              {[1, 2, 3, 4, 5].map((boxNum) => {
-                const isActive = selectedBoxFilter === boxNum;
-                const count = boxesCount[boxNum - 1];
-                
-                const boxColors = [
-                  { border: 'hover:border-rose-500/40', active: 'border-rose-500 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400' },
-                  { border: 'hover:border-amber-500/40', active: 'border-amber-500 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400' },
-                  { border: 'hover:border-blue-500/40', active: 'border-blue-500 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400' },
-                  { border: 'hover:border-indigo-500/40', active: 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400' },
-                  { border: 'hover:border-emerald-500/40', active: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' },
-                ];
-
-                const currentStyle = boxColors[boxNum - 1];
-
-                return (
-                  <button
-                    key={boxNum}
-                    onClick={() => setSelectedBoxFilter(isActive ? 'all' : boxNum)}
-                    className={`p-3 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
-                      isActive 
-                        ? `${currentStyle.active} border-2 shadow-sm`
-                        : `border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-900 ${currentStyle.border}`
-                    }`}
-                  >
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">Коробка {boxNum}</div>
-                    <div className="flex items-baseline justify-between mt-1">
-                      <span className="text-xl font-extrabold text-slate-900 dark:text-white leading-none">
-                        {count}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-medium ml-1">карт</span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-        </div>
-
-        {/* LAUNCH CONFIGURATION CARD */}
-        <div className="bento-card lg:col-span-4 flex flex-col justify-between space-y-4 bg-gradient-to-b from-emerald-950/20 to-slate-900/90 border-2 border-emerald-500/30 dark:border-emerald-500/30 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-          
-          <div className="space-y-3 relative z-10">
-            <div className="flex items-center space-x-2">
-              <div className="p-2 rounded-xl bg-emerald-500 text-slate-950 font-black">
-                <Play className="w-5 h-5 fill-current" />
-              </div>
-              <div>
-                <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider block">
-                  ГОТОВО К СТАРТУ
-                </span>
-                <h3 className="text-lg font-black text-white">
-                  Запустить тренировку
-                </h3>
-              </div>
-            </div>
-
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Карточки откроются на весь экран в режиме концентрации без отвлекающих элементов.
-            </p>
-
-            {/* Summary Configuration List */}
-            <div className="space-y-2 pt-2 border-t border-slate-800/80 text-xs font-medium text-slate-300">
-              <div className="flex justify-between">
-                <span className="text-slate-400">Категория:</span>
-                <span className="font-bold text-emerald-400">{selectedCatObj ? selectedCatObj.title : 'Все категории'}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Сложность:</span>
-                <span className="font-bold text-white">{selectedDifficulty === 'all' ? 'Все уровни' : selectedDifficulty}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Коробка:</span>
-                <span className="font-bold text-white">{selectedBoxFilter === 'all' ? 'Все коробки' : `Коробка ${selectedBoxFilter}`}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Порядок:</span>
-                <span className="font-bold text-white">{isShuffled ? 'Случайный' : 'По порядку'}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-slate-800 relative z-10 space-y-2">
-            <button
-              onClick={startStudySession}
-              disabled={filteredQuestions.length === 0}
-              className={`w-full py-3.5 px-5 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer ${
-                filteredQuestions.length > 0
-                  ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]'
-                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
-              }`}
-            >
-              <Maximize2 className="w-4 h-4" />
-              <span>
-                {filteredQuestions.length > 0 
-                  ? `Открыть карточки (${filteredQuestions.length} шт)` 
-                  : 'Нет карточек в фильтре'}
-              </span>
-            </button>
-
-            {filteredQuestions.length === 0 && (
-              <button
-                onClick={handleClearAllFilters}
-                className="w-full text-center text-xs text-amber-400 hover:underline font-bold"
-              >
-                Сбросить фильтры для просмотра карточек
-              </button>
-            )}
-          </div>
-
-        </div>
-
-      </div>
-
-      {/* CONFIGURATION SELECTION GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        
-        {/* LEFT COLUMN: Categories selection */}
-        <div className="lg:col-span-6 space-y-6">
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-4">
-            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5">
-              <Sliders className="w-4 h-4 text-emerald-500" />
-              <span> Выбор категории знаний</span>
-            </h3>
-
-            <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[350px] overflow-y-auto pr-1">
               <button
                 onClick={() => { setSelectedCategory('all'); }}
                 className={`w-full px-4 py-3 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${
@@ -1125,16 +967,13 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               })}
             </div>
           </div>
-        </div>
 
-        {/* RIGHT COLUMN: Difficulty, Shuffle, Hotkeys & Reset */}
-        <div className="lg:col-span-6 space-y-6">
-          
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-5">
+          {/* STEP 2: DIFFICULTY & SHUFFLING */}
+          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl space-y-5">
             
             {/* Difficulty Selection */}
             <div className="space-y-3">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Уровень сложности</span>
+              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">2. Выберите уровень сложности</span>
               
               <div className="grid grid-cols-4 gap-1.5 p-1.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-900">
                 {['all', 'Junior', 'Middle', 'Senior'].map((diff) => {
@@ -1192,7 +1031,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </div>
 
           {/* Keyboard Shortcuts Helper */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-3">
+          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-5 rounded-3xl space-y-3">
             <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5 border-b border-slate-100 dark:border-slate-800/80 pb-2">
               <Keyboard className="w-4 h-4 text-emerald-500" />
               <span>Горячие клавиши в окне просмотра</span>
@@ -1215,6 +1054,157 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-emerald-500 font-black">3</kbd>
               </div>
             </div>
+          </div>
+
+        </div>
+
+        {/* RIGHT COLUMN: PROGRESS METRICS, LEITNER FILTER & LAUNCH BUTTON */}
+        <div className="lg:col-span-5 space-y-6">
+          
+          {/* LEITNER METHOD BOXES (STEP 3) */}
+          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl space-y-5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center space-x-1.5">
+                <Filter className="w-3.5 h-3.5 text-emerald-500" />
+                <span>3. Коробки Лейтнера (Фильтр)</span>
+              </span>
+              {selectedBoxFilter !== 'all' && (
+                <button 
+                  onClick={() => setSelectedBoxFilter('all')}
+                  className="text-xs text-emerald-500 hover:underline font-semibold"
+                >
+                  Все коробки
+                </button>
+              )}
+            </div>
+
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Коробка отражает степень запоминания. Новые карты попадают в Коробку 1, а изученные продвигаются до Коробки 5. Выберите коробку для фокусной тренировки.
+            </p>
+
+            <div className="grid grid-cols-5 gap-2 pt-1">
+              {[1, 2, 3, 4, 5].map((boxNum) => {
+                const isActive = selectedBoxFilter === boxNum;
+                const count = boxesCount[boxNum - 1];
+                
+                const boxColors = [
+                  { border: 'hover:border-rose-500/40', active: 'border-rose-500 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400' },
+                  { border: 'hover:border-amber-500/40', active: 'border-amber-500 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400' },
+                  { border: 'hover:border-blue-500/40', active: 'border-blue-500 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-400' },
+                  { border: 'hover:border-indigo-500/40', active: 'border-indigo-500 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-700 dark:text-indigo-400' },
+                  { border: 'hover:border-emerald-500/40', active: 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400' },
+                ];
+
+                const currentStyle = boxColors[boxNum - 1];
+
+                return (
+                  <button
+                    key={boxNum}
+                    onClick={() => setSelectedBoxFilter(isActive ? 'all' : boxNum)}
+                    className={`p-2 rounded-xl border text-center transition-all duration-200 cursor-pointer flex flex-col justify-between items-center ${
+                      isActive 
+                        ? `${currentStyle.active} border-2 shadow-sm`
+                        : `border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-900 ${currentStyle.border}`
+                    }`}
+                  >
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">К{boxNum}</div>
+                    <div className="flex items-baseline justify-center mt-1">
+                      <span className="text-base font-black text-slate-900 dark:text-white leading-none">
+                        {count}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Visual Progress Bar inside sidebar */}
+            <div className="space-y-1.5 pt-3 border-t border-slate-100 dark:border-slate-800/80">
+              <div className="flex justify-between items-center text-[11px] text-slate-500 font-bold">
+                <span>Прогресс освоения (Коробка 5)</span>
+                <span>{masteryPercentage}%</span>
+              </div>
+              <div className="w-full bg-slate-100 dark:bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-800">
+                <div 
+                  className="bg-emerald-600 dark:bg-emerald-500 h-full rounded-full transition-all duration-500" 
+                  style={{ width: `${masteryPercentage}%` }}
+                />
+              </div>
+            </div>
+
+          </div>
+
+          {/* THE LAUNCH CONFIGURATION CARD (STEP 4) */}
+          <div className="bento-card flex flex-col justify-between space-y-5 bg-gradient-to-b from-[#121c2c] to-[#0a111c] border-2 border-emerald-500/30 dark:border-emerald-500/30 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
+            
+            <div className="space-y-3 relative z-10">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-xl bg-emerald-500 text-slate-950 font-black">
+                  <Play className="w-5 h-5 fill-current" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider block">
+                    4. ПОДТВЕРЖДЕНИЕ
+                  </span>
+                  <h3 className="text-lg font-black text-white">
+                    Запустить сессию
+                  </h3>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Карточки откроются на весь экран в режиме концентрации без отвлекающих элементов.
+              </p>
+
+              {/* Summary Configuration List */}
+              <div className="space-y-2 pt-3 border-t border-slate-800/80 text-xs font-medium text-slate-300">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Категория:</span>
+                  <span className="font-bold text-emerald-400">{selectedCatObj ? selectedCatObj.title : 'Все категории'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Сложность:</span>
+                  <span className="font-bold text-white">{selectedDifficulty === 'all' ? 'Все уровни' : selectedDifficulty}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Коробка Лейтнера:</span>
+                  <span className="font-bold text-white">{selectedBoxFilter === 'all' ? 'Все коробки' : `Коробка ${selectedBoxFilter}`}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Порядок карт:</span>
+                  <span className="font-bold text-white">{isShuffled ? 'Случайный' : 'По порядку'}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-800/80 relative z-10 space-y-2">
+              <button
+                onClick={startStudySession}
+                disabled={filteredQuestions.length === 0}
+                className={`w-full py-3.5 px-5 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer ${
+                  filteredQuestions.length > 0
+                    ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]'
+                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                }`}
+              >
+                <Maximize2 className="w-4 h-4" />
+                <span>
+                  {filteredQuestions.length > 0 
+                    ? `Открыть карточки (${filteredQuestions.length} шт)` 
+                    : 'Нет карточек в фильтре'}
+                </span>
+              </button>
+
+              {filteredQuestions.length === 0 && (
+                <button
+                  onClick={handleClearAllFilters}
+                  className="w-full text-center text-xs text-amber-400 hover:underline font-bold"
+                >
+                  Сбросить фильтры для просмотра карточек
+                </button>
+              )}
+            </div>
+
           </div>
 
         </div>

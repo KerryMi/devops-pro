@@ -26,6 +26,8 @@ import {
   resetAllDataToDefault 
 } from './utils/customDataStorage';
 import { evaluateAchievements } from './data/achievements';
+import { calculateUserGamification, ITRank } from './utils/gamification';
+import { RankUpModal } from './components/RankUpModal';
 import { ProfileView } from './components/ProfileView';
 import { AdminView } from './components/AdminView';
 import { ToastNotificationContainer, ToastItem } from './components/ToastNotificationContainer';
@@ -94,6 +96,7 @@ export default function App() {
 
   // Toast notifications & Gamification trackers
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [celebratedRank, setCelebratedRank] = useState<ITRank | null>(null);
   const [seenAchievementIds, setSeenAchievementIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('devops_pro_seen_achievements');
@@ -164,11 +167,30 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Calculate Achievements
-  const achievements = evaluateAchievements(progress, questions);
-  const unlockedAchievementsCount = achievements.filter(a => a.isUnlocked).length;
-  const totalAchievementsCount = achievements.length;
+  // Calculate Achievements & Gamification Stats
+  const gamification = calculateUserGamification(progress, questions);
+  const achievements = gamification.achievements;
+  const unlockedAchievementsCount = gamification.unlockedAchievementsCount;
+  const totalAchievementsCount = gamification.totalAchievementsCount;
   const unseenAchievementsCount = achievements.filter(a => a.isUnlocked && !seenAchievementIds.includes(a.id)).length;
+
+  // Detect level up & open celebration modal
+  const prevLevelRef = React.useRef<number>(0);
+  useEffect(() => {
+    const currentLevel = gamification.level;
+    // Set initial level on first load without triggering modal
+    if (prevLevelRef.current === 0) {
+      prevLevelRef.current = currentLevel;
+      return;
+    }
+
+    if (currentLevel > prevLevelRef.current) {
+      const newRank = gamification.rank;
+      setCelebratedRank(newRank);
+    }
+
+    prevLevelRef.current = currentLevel;
+  }, [gamification.level]);
 
   // Mark achievements as seen when viewing achievements tab
   useEffect(() => {
@@ -356,6 +378,9 @@ export default function App() {
       
       {/* Toast Notifications */}
       <ToastNotificationContainer toasts={toasts} onDismiss={handleDismissToast} />
+
+      {/* Rank Up Celebration Modal */}
+      <RankUpModal rank={celebratedRank} onClose={() => setCelebratedRank(null)} />
 
       {/* Desktop Fixed Sidebar */}
       <Sidebar
