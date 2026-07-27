@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserProgress, Question } from '../types';
 import { calculateUserGamification } from '../utils/gamification';
+import { RankAvatar } from './RankAvatar';
 import { 
   Trophy, 
   Sparkles, 
@@ -55,7 +56,7 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
           <div>
             <div className="flex items-center space-x-1.5">
               <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">
-                Прогресс & Ранг
+                Ранг
               </span>
               {unseenAchievementsCount > 0 && (
                 <span className="px-1.5 py-0.2 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 text-[9px] font-black animate-pulse">
@@ -63,8 +64,8 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
                 </span>
               )}
             </div>
-            <h3 className="text-base font-black tracking-tight text-white flex items-center space-x-1.5 mt-0.5">
-              <span>{rank.icon}</span>
+            <h3 className="text-base font-black tracking-tight text-white flex items-center space-x-2 mt-0.5">
+              <RankAvatar rank={rank} size="sm" />
               <span className="truncate">{rank.title}</span>
             </h3>
           </div>
@@ -109,9 +110,12 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
         </div>
 
         {rank.level < 10 && (
-          <p className="text-[10px] text-slate-400 font-medium truncate">
-            След: <strong className="text-white font-bold">{nextRank.icon} {nextRank.title}</strong> ({xpSpanInRank - currentXPInRank} XP)
-          </p>
+          <div className="text-[10px] text-slate-400 font-medium truncate flex items-center space-x-1">
+            <span>След:</span>
+            <RankAvatar rank={nextRank} size="xs" className="inline-block" />
+            <strong className="text-white font-bold">{nextRank.title}</strong>
+            <span>({xpSpanInRank - currentXPInRank} XP)</span>
+          </div>
         )}
       </div>
 

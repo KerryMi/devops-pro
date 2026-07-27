@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { UserProgress, Question } from '../types';
 import { calculateUserGamification, FUNNY_IT_RANKS } from '../utils/gamification';
+import { RankAvatar } from './RankAvatar';
 import { 
   Award, 
   Zap, 
@@ -126,9 +127,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
           
           {/* Main Rank Title & Badge */}
           <div className="flex items-start space-x-4">
-            <div className="text-4xl sm:text-5xl p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 shrink-0 shadow-inner flex items-center justify-center">
-              {rank.icon}
-            </div>
+            <RankAvatar rank={rank} size="xl" />
             <div className="space-y-1">
               <div className="flex items-center space-x-2">
                 <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40 font-mono">
@@ -188,7 +187,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
           <div className="pt-4 border-t border-slate-800 space-y-3 animate-fadeIn relative z-10">
             <h3 className="text-xs font-black uppercase tracking-widest text-amber-400 flex items-center space-x-1.5">
               <Sparkles className="w-4 h-4" />
-              <span>Таблица Смешных IT Прозвищ (Ранги)</span>
+              <span>Ранги</span>
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {FUNNY_IT_RANKS.map((r) => {
@@ -206,18 +205,20 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                           : 'bg-slate-900/40 border-slate-800 text-slate-500 opacity-60'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-lg">{r.icon}</span>
-                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center space-x-2.5">
+                        <RankAvatar rank={r} size="md" />
+                        <div>
+                          <div className="text-xs font-black flex items-center space-x-1">
+                            <span>Ур. {r.level}: {r.title}</span>
+                            {isPassed && <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />}
+                          </div>
+                          <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{r.subtitle}</p>
+                        </div>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-400 shrink-0">
                         {r.minXP} XP
                       </span>
-                    </div>
-                    <div className="mt-1">
-                      <div className="text-xs font-black flex items-center space-x-1">
-                        <span>Уровень {r.level}: {r.title}</span>
-                        {isPassed && <Check className="w-3.5 h-3.5 text-emerald-400" />}
-                      </div>
-                      <p className="text-[10px] text-slate-400 line-clamp-1 mt-0.5">{r.subtitle}</p>
                     </div>
                   </div>
                 );

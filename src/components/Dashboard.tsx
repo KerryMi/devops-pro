@@ -5,6 +5,7 @@ import { DashboardAchievementsWidget } from './DashboardAchievementsWidget';
 import { SkillOfDayCard } from './SkillOfDayCard';
 import { evaluateAchievements } from '../data/achievements';
 import { calculateUserGamification } from '../utils/gamification';
+import { RankAvatar } from './RankAvatar';
 import { INCIDENT_SCENARIOS } from '../data/incidents';
 import { 
   Sparkles, 
@@ -143,9 +144,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
               
               {/* Progress and Rank Info */}
               <div className="pt-3 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between gap-2">
-                <div>
-                  <div className="text-[9px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wide">Ваш Ранг</div>
-                  <div className="text-xs font-black text-slate-800 dark:text-slate-200">{rankTitle}</div>
+                <div className="flex items-center space-x-2">
+                  <RankAvatar rank={gamification.rank} size="sm" />
+                  <div>
+                    <div className="text-[9px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wide">Ваш Ранг</div>
+                    <div className="text-xs font-black text-slate-800 dark:text-slate-200">{gamification.rank.title}</div>
+                  </div>
                 </div>
                 <div className="text-right">
                   <div className="text-[9px] font-bold text-slate-500 dark:text-slate-500 uppercase tracking-wide">Бейджи</div>
