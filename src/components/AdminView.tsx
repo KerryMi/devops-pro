@@ -1033,19 +1033,19 @@ export const AdminView: React.FC<AdminViewProps> = ({
     <div className="max-w-6xl mx-auto space-y-8 pb-16 animate-fadeIn">
       
       {/* ADMIN HEADER BANNER */}
-      <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-2xl relative overflow-hidden border border-emerald-500/30">
+      <div className="bg-gradient-to-br from-emerald-50 to-slate-100 dark:from-emerald-950 dark:via-slate-900 dark:to-indigo-950 rounded-3xl p-6 sm:p-8 text-slate-800 dark:text-white shadow-2xl relative overflow-hidden border border-emerald-500/20 dark:border-emerald-500/30">
         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
         
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black">
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30 dark:border-emerald-500/40 text-emerald-600 dark:text-emerald-400 text-xs font-black">
               <ShieldCheck className="w-4 h-4" />
               <span>РЕЖИМ АДМИНИСТРАТОРА</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black tracking-tight font-mono">
-              DevOps<span className="text-emerald-400">Pro</span> Control Center
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight font-mono text-slate-900 dark:text-white">
+              DevOps<span className="text-emerald-600 dark:text-emerald-400">Pro</span> Control Center
             </h1>
-            <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-xl">
               Управление вопросами, создание тестов, редактирование карточек и мониторинг метрик подготовки
             </p>
           </div>
@@ -1376,44 +1376,44 @@ export const AdminView: React.FC<AdminViewProps> = ({
       {activeSubTab === 'settings' && (
         <div className="space-y-6 animate-fadeIn">
           {/* DATA STORAGE & CLOUD INFO CARD */}
-          <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-900 to-indigo-950 text-white border border-slate-800 space-y-4 shadow-xl">
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-50 to-indigo-50/30 dark:from-slate-900 dark:to-indigo-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 space-y-4 shadow-xl">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 dark:border-emerald-500/30 flex items-center justify-center">
                 <Database className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-extrabold">Как сохраняются ваши отредактированные вопросы и тесты?</h3>
-                <p className="text-xs text-slate-300">Полный обзор механизмов хранения и синхронизации</p>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Как сохраняются ваши отредактированные вопросы и тесты?</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-300">Полный обзор механизмов хранения и синхронизации</p>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
-                <div className="text-xs font-black text-emerald-400 flex items-center space-x-1.5">
+              <div className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1.5 shadow-xs">
+                <div className="text-xs font-black text-emerald-600 dark:text-emerald-400 flex items-center space-x-1.5">
                   <CheckCircle2 className="w-4 h-4" />
                   <span>1. Локальное хранение</span>
                 </div>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-slate-600 dark:text-slate-300">
                   Все добавленные, отредактированные и удаленные вопросы и тесты <strong>автоматически сохраняются в браузере (LocalStorage)</strong> и остаются на месте даже при перезагрузке страницы.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
-                <div className="text-xs font-black text-indigo-400 flex items-center space-x-1.5">
+              <div className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1.5 shadow-xs">
+                <div className="text-xs font-black text-indigo-600 dark:text-indigo-400 flex items-center space-x-1.5">
                   <Download className="w-4 h-4" />
                   <span>2. Перенос базы (JSON)</span>
                 </div>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-slate-600 dark:text-slate-300">
                   Чтобы перенести созданные вопросы на другое устройство или поделиться ими, скачайте <strong>JSON-резервную копию</strong> и загрузите её на любом другом компьютере.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
-                <div className="text-xs font-black text-amber-400 flex items-center space-x-1.5">
+              <div className="p-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 space-y-1.5 shadow-xs">
+                <div className="text-xs font-black text-amber-600 dark:text-amber-400 flex items-center space-x-1.5">
                   <Sparkles className="w-4 h-4" />
                   <span>3. Облачный прогресс</span>
                 </div>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-slate-600 dark:text-slate-300">
                   Прогресс изучения (изученные вопросы, закладки, результаты тестов) синхронизируется с <strong>Firebase Firestore</strong> при входе через профиль.
                 </p>
               </div>

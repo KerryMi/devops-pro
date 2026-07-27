@@ -26,8 +26,8 @@ export const RankAvatar: React.FC<RankAvatarProps> = ({
     '2xl': 'w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 text-5xl rounded-[2rem]',
   };
 
-  const containerClasses = `${sizeMap[size]} shrink-0 relative overflow-hidden flex items-center justify-center bg-slate-800 border ${
-    showBadgeBorder ? 'border-amber-500/40 shadow-sm' : 'border-slate-700/60'
+  const containerClasses = `${sizeMap[size]} shrink-0 relative overflow-hidden flex items-center justify-center bg-slate-100 dark:bg-slate-800 border ${
+    showBadgeBorder ? 'border-amber-500/40 shadow-sm' : 'border-slate-200 dark:border-slate-700/60'
   } ${className}`;
 
   return (

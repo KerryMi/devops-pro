@@ -254,38 +254,38 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
         </div>
 
         {/* Full-Width Incident Context Header Banner */}
-        <div className="bg-gradient-to-br from-slate-900 via-[#111827] to-slate-950 text-white border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden space-y-5">
+        <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:via-[#111827] dark:to-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden space-y-5">
           <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5">
             <div className="space-y-2">
               <div className="flex items-center space-x-2.5 flex-wrap gap-y-1">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/40">
                   {severity.label}
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md bg-slate-800 text-slate-300 border border-slate-700">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                   Категория: {currentScenario.category.toUpperCase()}
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
                   Сложность: {currentScenario.difficulty}
                 </span>
-                <span className="text-[10px] font-medium text-slate-400 flex items-center space-x-1">
-                  <Clock className="w-3 h-3 text-amber-400" />
+                <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 flex items-center space-x-1">
+                  <Clock className="w-3 h-3 text-amber-500" />
                   <span>Среднее время решения: ~5-10 мин</span>
                 </span>
               </div>
 
-              <h1 className="text-xl sm:text-3xl font-black text-white tracking-tight leading-snug">
+              <h1 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                 {currentScenario.title}
               </h1>
             </div>
 
             {/* Quick Status Box */}
-            <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 shrink-0 text-right space-y-1">
+            <div className="p-4 rounded-2xl bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 shrink-0 text-right space-y-1 shadow-sm">
               <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Статус расследования</div>
-              <div className="text-sm font-black text-amber-400 flex items-center justify-end space-x-1.5">
-                <Activity className="w-4 h-4 text-amber-400 animate-pulse" />
+              <div className="text-sm font-black text-amber-600 dark:text-amber-400 flex items-center justify-end space-x-1.5">
+                <Activity className="w-4 h-4 text-amber-500 animate-pulse" />
                 <span>
                   {executedCommands.length === 0 ? 'Диагностика не начата' : `${executedCommands.length}/${currentScenario.diagnosticSteps.length} шагов выполнено`}
                 </span>
@@ -295,12 +295,12 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
 
           {/* Reported Symptoms & Initial Incident Log */}
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-5 pt-1">
-            <div className="space-y-2.5 bg-slate-950/50 p-4 rounded-2xl border border-slate-800/80">
-              <div className="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center space-x-1.5">
+            <div className="space-y-2.5 bg-white dark:bg-slate-950/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-sm">
+              <div className="text-xs font-bold text-rose-600 dark:text-rose-400 uppercase tracking-wider flex items-center space-x-1.5">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 <span>Симптомы и жалобы (User Impact):</span>
               </div>
-              <ul className="space-y-1.5 text-xs text-slate-300 font-medium">
+              <ul className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300 font-medium">
                 {currentScenario.symptoms.map((symptom, idx) => (
                   <li key={idx} className="flex items-start space-x-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0" />
@@ -311,15 +311,15 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
             </div>
 
             {currentScenario.initialLogs && (
-              <div className="space-y-2 bg-slate-950 p-4 rounded-2xl border border-slate-800 font-mono text-[11px]">
-                <div className="text-[10px] font-bold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+              <div className="space-y-2 bg-slate-100 dark:bg-slate-950 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 font-mono text-[11px] text-slate-800 dark:text-slate-300">
+                <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center justify-between">
                   <span className="flex items-center space-x-1.5">
-                    <Terminal className="w-3.5 h-3.5 text-amber-400" />
+                    <Terminal className="w-3.5 h-3.5 text-amber-500" />
                     <span>Первичный системный журнал (System Output):</span>
                   </span>
-                  <span className="text-[9px] text-slate-500">STDOUT / STDERR</span>
+                  <span className="text-[9px] text-slate-400 dark:text-slate-500">STDOUT / STDERR</span>
                 </div>
-                <div className="text-slate-300 overflow-x-auto whitespace-pre-wrap max-h-28 scrollbar-thin text-[11px] leading-tight">
+                <div className="text-slate-700 dark:text-slate-300 overflow-x-auto whitespace-pre-wrap max-h-28 scrollbar-thin text-[11px] leading-tight">
                   {currentScenario.initialLogs}
                 </div>
               </div>
@@ -399,18 +399,18 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
             </div>
 
             {/* SRE Terminal Console Window */}
-            <div className="rounded-2xl bg-[#090d16] border border-slate-800 shadow-2xl overflow-hidden">
+            <div className="rounded-2xl bg-slate-50 dark:bg-[#090d16] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
               {/* Terminal Window Header Bar */}
-              <div className="px-4 py-3 bg-[#0d1424] border-b border-slate-800 flex items-center justify-between">
+              <div className="px-4 py-3 bg-slate-100 dark:bg-[#0d1424] border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <span className="w-3 h-3 rounded-full bg-rose-500 inline-block" />
                   <span className="w-3 h-3 rounded-full bg-amber-500 inline-block" />
                   <span className="w-3 h-3 rounded-full bg-emerald-500 inline-block" />
-                  <span className="text-xs font-mono font-bold text-slate-400 pl-2">
+                  <span className="text-xs font-mono font-bold text-slate-600 dark:text-slate-400 pl-2">
                     sre-oncall@prod-bastion:~# (BASH)
                   </span>
                 </div>
-                <div className="text-[10px] font-mono text-slate-500">
+                <div className="text-[10px] font-mono text-slate-400 dark:text-slate-500">
                   SESSION ACTIVE • SSH SECURED
                 </div>
               </div>
@@ -422,22 +422,22 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
                   const isHintOpen = !!showHint[idx];
 
                   return (
-                    <div key={idx} className="space-y-3 border-b border-slate-800/80 pb-6 last:border-0 last:pb-0">
+                    <div key={idx} className="space-y-3 border-b border-slate-200 dark:border-slate-800/80 pb-6 last:border-0 last:pb-0">
                       
                       {/* Command Row */}
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-900/90 p-3 rounded-xl border border-slate-800">
-                        <div className="flex items-center space-x-2 text-slate-200 overflow-x-auto">
-                          <span className="text-emerald-400 font-bold">$</span>
-                          <span className="font-bold text-white selection:bg-amber-500/30">{step.command}</span>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-200/50 dark:bg-slate-900/90 p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div className="flex items-center space-x-2 text-slate-800 dark:text-slate-200 overflow-x-auto">
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">$</span>
+                          <span className="font-bold text-slate-900 dark:text-white selection:bg-amber-500/30">{step.command}</span>
                         </div>
 
                         <div className="flex items-center space-x-2 shrink-0">
                           <button
                             onClick={() => handleCopyCommand(step.command, idx)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                            className="p-1.5 rounded-lg bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors cursor-pointer border border-slate-200 dark:border-slate-700"
                             title="Скопировать команду"
                           >
-                            {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                            {copiedIndex === idx ? <Check className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                           </button>
 
                           {step.hint && (
@@ -445,8 +445,8 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
                               onClick={() => setShowHint(prev => ({ ...prev, [idx]: !prev[idx] }))}
                               className={`px-2.5 py-1 rounded-lg text-[10px] font-sans font-bold transition-colors cursor-pointer ${
                                 isHintOpen 
-                                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40' 
-                                  : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                                  ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40' 
+                                  : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 border border-slate-200 dark:border-slate-700'
                               }`}
                             >
                               💡 Подсказка
@@ -457,7 +457,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
                             onClick={() => handleRunCommand(idx)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-sans font-bold transition-all cursor-pointer flex items-center space-x-1.5 ${
                               isExecuted
-                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                                ? 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/40'
                                 : 'bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 shadow-sm'
                             }`}
                           >
@@ -478,8 +478,8 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
 
                       {/* Optional Hint Box */}
                       {isHintOpen && step.hint && (
-                        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-sans text-xs flex items-start space-x-2 animate-fadeIn">
-                          <Sparkles className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                        <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-sans text-xs flex items-start space-x-2 animate-fadeIn">
+                          <Sparkles className="w-4 h-4 text-amber-500 dark:text-amber-400 shrink-0 mt-0.5" />
                           <div>
                             <strong className="font-bold">Подсказка инженера:</strong> {step.hint}
                           </div>
@@ -488,12 +488,12 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
 
                       {/* Command Terminal Output Stream */}
                       {isExecuted ? (
-                        <div className="p-4 rounded-xl bg-[#04070d] border border-slate-800 text-emerald-400 leading-relaxed overflow-x-auto whitespace-pre-wrap animate-fadeIn text-xs shadow-inner">
-                          <div className="text-[10px] text-slate-600 mb-1 font-sans">--- STREAM OUTPUT (RETURN CODE 0) ---</div>
+                        <div className="p-4 rounded-xl bg-slate-950 dark:bg-[#04070d] border border-slate-200 dark:border-slate-800 text-emerald-600 dark:text-emerald-400 leading-relaxed overflow-x-auto whitespace-pre-wrap animate-fadeIn text-xs shadow-inner">
+                          <div className="text-[10px] text-slate-500 mb-1 font-sans">--- STREAM OUTPUT (RETURN CODE 0) ---</div>
                           {step.output}
                         </div>
                       ) : (
-                        <div className="text-[11px] text-slate-600 italic font-sans px-1">
+                        <div className="text-[11px] text-slate-400 dark:text-slate-600 italic font-sans px-1">
                           Нажмите "Запустить команду", чтобы получить вывод консоли...
                         </div>
                       )}
@@ -627,19 +627,19 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
         {/* TAB 3: POST-MORTEM & ROOT CAUSE */}
         {activeTab === 'postmortem' && (
           <div className="space-y-5 animate-fadeIn">
-            <div className="bg-gradient-to-br from-emerald-950/40 via-slate-900 to-slate-950 border border-emerald-500/30 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl relative overflow-hidden">
+            <div className="bg-gradient-to-br from-emerald-50/50 to-slate-100 dark:from-emerald-950/40 dark:via-slate-900 dark:to-slate-950 border border-emerald-500/30 p-6 sm:p-8 rounded-3xl space-y-6 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
               <div className="flex items-center justify-between border-b border-emerald-500/20 pb-4">
                 <div className="flex items-center space-x-3">
-                  <div className="p-3 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-400">
+                  <div className="p-3 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/40 text-emerald-600 dark:text-emerald-400">
                     <ShieldCheck className="w-6 h-6" />
                   </div>
                   <div>
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
                       Отчет об инциденте (SRE Post-Mortem)
                     </span>
-                    <h3 className="text-xl font-black text-white">
+                    <h3 className="text-xl font-black text-slate-900 dark:text-white">
                       Разбор Первопричины (Root Cause Analysis)
                     </h3>
                   </div>
@@ -652,22 +652,22 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
 
               <div className="space-y-4">
                 <div className="space-y-1.5">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Первопричина сбоя (Root Cause):
                   </h4>
-                  <p className="text-sm text-slate-200 leading-relaxed bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                  <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed bg-white dark:bg-slate-900/80 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
                     {currentScenario.rootCause}
                   </p>
                 </div>
 
                 <div className="space-y-2 pt-2">
-                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                  <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     Как предотвратить подобные инциденты в будущем:
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {currentScenario.preventionTips.map((tip, idx) => (
-                      <div key={idx} className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-800 text-xs text-slate-300 font-medium flex items-start space-x-2.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <div key={idx} className="p-3.5 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 font-medium flex items-start space-x-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0 mt-0.5" />
                         <span>{tip}</span>
                       </div>
                     ))}
@@ -710,34 +710,34 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
     <div className="max-w-7xl mx-auto space-y-6 pb-20 animate-fadeIn text-slate-900 dark:text-slate-100">
       
       {/* Hero Header Banner */}
-      <div className="bg-gradient-to-br from-slate-900 via-[#111827] to-slate-950 text-white border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden space-y-5">
+      <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:via-[#111827] dark:to-slate-950 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl relative overflow-hidden space-y-5">
         <div className="absolute top-0 right-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-rose-500/15 text-rose-400 text-xs font-extrabold border border-rose-500/30">
-              <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 text-xs font-extrabold border border-rose-500/30">
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />
               <span>Интерактивный Траблшутинг & On-Call Тренажер</span>
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
               Симулятор Аварий и Дежурств в Production
             </h1>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-normal">
               Сценарии реальных инцидентов в инфраструктуре Kubernetes, Linux, PostgreSQL, Terraform и Ansible. Открывайте любую аварию в полноразмерном терминале, выполняйте диагностику и устраняйте Root Cause!
             </p>
           </div>
 
           {/* SRE Readiness Stats Box */}
-          <div className="relative z-10 bg-slate-950/80 border border-slate-800 p-5 rounded-2xl shrink-0 space-y-3 w-full lg:w-72 shadow-inner">
+          <div className="relative z-10 bg-white dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shrink-0 space-y-3 w-full lg:w-72 shadow-sm">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-bold text-slate-400">Прогресс SRE-Дежурного</span>
-              <span className="font-mono font-black text-emerald-400">{solvedCount} / {INCIDENT_SCENARIOS.length}</span>
+              <span className="font-bold text-slate-500 dark:text-slate-400">Прогресс SRE-Дежурного</span>
+              <span className="font-mono font-black text-emerald-600 dark:text-emerald-400">{solvedCount} / {INCIDENT_SCENARIOS.length}</span>
             </div>
 
-            <div className="w-full h-2.5 bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-800">
+            <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-900 rounded-full overflow-hidden p-0.5 border border-slate-200 dark:border-slate-800">
               <div 
                 className="h-full bg-gradient-to-r from-emerald-500 to-amber-400 rounded-full transition-all duration-500"
                 style={{ width: `${progressPercent}%` }}
@@ -745,8 +745,8 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, s
             </div>
 
             <div className="flex items-center justify-between text-[11px]">
-              <span className="text-slate-400">Готовность:</span>
-              <span className="font-bold text-amber-300">
+              <span className="text-slate-500 dark:text-slate-400">Готовность:</span>
+              <span className="font-bold text-amber-600 dark:text-amber-300">
                 {progressPercent === 100 ? '🔥 Senior SRE On-Call' : progressPercent > 50 ? '⚡ Middle Incident Lead' : '🛡️ Junior Troubleshooting'}
               </span>
             </div>

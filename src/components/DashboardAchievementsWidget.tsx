@@ -27,7 +27,7 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
   const unlocked = achievements.filter(a => a.isUnlocked);
 
   return (
-    <div className="h-full flex flex-col justify-between bg-gradient-to-br from-slate-900 via-[#121927] to-slate-900 text-white border border-slate-800 p-5 rounded-2xl shadow-md relative overflow-hidden">
+    <div className="h-full flex flex-col justify-between bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-[#121927] dark:to-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
@@ -41,25 +41,25 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
         {/* Right: Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 font-mono">
+            <span className="text-[10px] font-black uppercase tracking-wider text-amber-500 dark:text-amber-400 font-mono">
               Уровень {rank.level}
             </span>
-            <span className="text-slate-600 text-[10px]">•</span>
-            <span className="text-[10px] font-bold text-slate-400 font-mono">
+            <span className="text-slate-300 dark:text-slate-600 text-[10px]">•</span>
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 font-mono">
               {totalXP} XP
             </span>
             {unseenAchievementsCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-400 text-[9px] font-black animate-pulse">
+              <span className="px-1.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-500 dark:text-rose-400 text-[9px] font-black animate-pulse">
                 +{unseenAchievementsCount}
               </span>
             )}
           </div>
           
-          <h3 className="text-lg font-black tracking-tight text-white leading-tight mt-0.5">
+          <h3 className="text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight mt-0.5">
             {rank.title}
           </h3>
           
-          <p className="text-xs text-slate-400 font-medium truncate mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
             {rank.subtitle}
           </p>
         </div>
@@ -67,14 +67,14 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
 
       {/* Progress Bar */}
       <div className="mt-5 space-y-1.5 relative z-10">
-        <div className="flex items-center justify-between text-[10px] font-bold text-slate-400">
+        <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-slate-400">
           <span>Прогресс уровня</span>
-          <span className="font-mono text-slate-300">
+          <span className="font-mono text-slate-600 dark:text-slate-300">
             {currentXPInRank}/{xpSpanInRank} XP ({progressPercent}%)
           </span>
         </div>
 
-        <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
           <div 
             className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full transition-all duration-500"
             style={{ width: `${progressPercent}%` }}
@@ -85,10 +85,10 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
       {/* Footer Navigation Link */}
       <button
         onClick={() => onNavigate('achievements')}
-        className="mt-5 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-400 hover:text-amber-300 transition-colors cursor-pointer group relative z-10"
+        className="mt-5 pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs font-bold text-amber-600 dark:text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 transition-colors cursor-pointer group relative z-10"
       >
         <span className="flex items-center gap-1.5">
-          <Trophy className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+          <Trophy className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
           <span>Все достижения ({unlocked.length}/{achievements.length})</span>
         </span>
         <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" />

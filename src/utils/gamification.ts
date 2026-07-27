@@ -20,7 +20,7 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     title: 'Эникейщик на костылях',
     subtitle: 'Нажимаю «Перезагрузить» и молюсь',
     minXP: 0,
-    maxXP: 299,
+    maxXP: 149,
     icon: '🐣',
     memeImage: '/ranks/rank-1.jpg',
     description: 'Ты только что узнал, что Linux — это не просто пингвин, а rm -rf / — не команда очистки кэша.',
@@ -31,8 +31,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 2,
     title: 'Поедатель Dockerfile',
     subtitle: '30 слоев в одном образе? Легко!',
-    minXP: 300,
-    maxXP: 599,
+    minXP: 150,
+    maxXP: 349,
     icon: '🐳',
     memeImage: '/ranks/rank-2.jpg',
     description: 'Написал свой первый FROM alpine, умеешь пробрасывать порты и перезапускать контейнеры.',
@@ -43,8 +43,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 3,
     title: 'YAML-Шаман & Копипастер',
     subtitle: 'Считаю пробелы линейкой',
-    minXP: 600,
-    maxXP: 999,
+    minXP: 350,
+    maxXP: 599,
     icon: '📜',
     memeImage: '/ranks/rank-3.jpg',
     description: 'Индейский шаманизм 21 века: один лишний пробел в YAML — и весь деплой превращается в пепел.',
@@ -55,8 +55,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 4,
     title: 'Сисадмин из 2000-х',
     subtitle: 'А у нас в серверной теплый чайник',
-    minXP: 1000,
-    maxXP: 1499,
+    minXP: 600,
+    maxXP: 899,
     icon: '📼',
     memeImage: '/ranks/rank-4.jpg',
     description: 'Помнишь свитчи на 100 Мбит и обжимку витой пары. Права 777 — твой главный секрет успеха.',
@@ -67,8 +67,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 5,
     title: 'Повелитель Bash и Cron',
     subtitle: 'Автоматизирую даже варку кофе',
-    minXP: 1500,
-    maxXP: 2099,
+    minXP: 900,
+    maxXP: 1249,
     icon: '⚡',
     memeImage: '/ranks/rank-5.jpg',
     description: 'Пишешь седые пайплайны из grep, awk и sed прямо во сне. В Cron у тебя крутится полмикросервиса.',
@@ -79,8 +79,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 6,
     title: 'Охотник за CrashLoopBackOff',
     subtitle: 'Вижу $ kubectl logs — ставлю диагноз',
-    minXP: 2100,
-    maxXP: 2799,
+    minXP: 1250,
+    maxXP: 1649,
     icon: '🔍',
     memeImage: '/ranks/rank-6.jpg',
     description: 'Падающие поды больше не вызывают паники. Ты умеешь смотреть dmesg и искать OOMKilled в 3 ночи.',
@@ -91,8 +91,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 7,
     title: 'Архитектор Оверхеда',
     subtitle: '40 микросервисов для Hello World',
-    minXP: 2800,
-    maxXP: 3599,
+    minXP: 1650,
+    maxXP: 2099,
     icon: '🏗️',
     memeImage: '/ranks/rank-7.jpg',
     description: 'Подключил Istio, Kafka, Vault, Prometheus и Grafana для вывода даты на сайт. Выглядит солидно!',
@@ -103,8 +103,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 8,
     title: 'Прод-Убийца (Деплой в Пятницу)',
     subtitle: 'Адреналин в 17:59 предвыходного дня',
-    minXP: 3600,
-    maxXP: 4499,
+    minXP: 2100,
+    maxXP: 2499,
     icon: '💣',
     memeImage: '/ranks/rank-8.jpg',
     description: 'Пушить в мастер без тестов в пятницу перед уходом домой — твое личное экстремальное хобби.',
@@ -115,8 +115,8 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 9,
     title: 'Властелин Кубернетиса',
     subtitle: 'Управляю кластерами силой мысли',
-    minXP: 4500,
-    maxXP: 5499,
+    minXP: 2500,
+    maxXP: 2899,
     icon: '☸️',
     memeImage: '/ranks/rank-9.png',
     description: 'CRD, Operator SDK, Helm-чарты и Custom CNI плагины подчиняются тебе с полуслова.',
@@ -127,7 +127,7 @@ export const FUNNY_IT_RANKS: ITRank[] = [
     level: 10,
     title: 'Бог Прод-Среды & Философ On-Call',
     subtitle: 'Прод упал? Включаю дзен и пью чай',
-    minXP: 5500,
+    minXP: 2900,
     maxXP: 999999,
     icon: '🧙‍♂️',
     memeImage: '/ranks/rank-10.png',
@@ -139,22 +139,22 @@ export const FUNNY_IT_RANKS: ITRank[] = [
 
 export function calculateUserGamification(progress: UserProgress, questions: Question[]) {
   const masteredCount = (progress.masteredQuestionIds || []).length;
-  const masteredXP = masteredCount * 25;
+  const masteredXP = masteredCount * 10;
 
-  const passedQuizzes = (progress.quizResults || []).filter(r => r.passed || (r.score / r.totalQuestions) >= 0.7);
-  const quizXP = passedQuizzes.length * 60;
+  const passedQuizzes = (progress.quizResults || []).filter(r => r.passed || (r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.7));
+  const quizXP = passedQuizzes.length * 30;
 
   const solvedIncidents = (progress.solvedIncidentIds || []).length;
-  const incidentXP = solvedIncidents * 120;
+  const incidentXP = solvedIncidents * 60;
 
-  const legendXP = progress.savedLegend ? 200 : 0;
+  const legendXP = progress.savedLegend ? 100 : 0;
 
   const blitzHistory = Object.keys(progress.dailyBlitzHistory || {}).length;
-  const blitzXP = blitzHistory * 40;
+  const blitzXP = blitzHistory * 20;
 
   const achievements = evaluateAchievements(progress, questions);
   const unlockedAchievements = achievements.filter(a => a.isUnlocked);
-  const achievementsXP = unlockedAchievements.length * 150;
+  const achievementsXP = unlockedAchievements.reduce((sum, a) => sum + (a.xpReward || 0), 0);
 
   const totalXP = masteredXP + quizXP + incidentXP + legendXP + blitzXP + achievementsXP;
 

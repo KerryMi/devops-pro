@@ -466,15 +466,15 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // =========================================================
   if (isStudySessionActive) {
     return (
-      <div className="fixed inset-0 z-50 bg-[#080d1a] text-slate-100 flex flex-col pt-16 sm:pt-8 pb-4 px-4 sm:p-6 lg:p-8 overflow-y-auto animate-fadeIn">
+      <div className="fixed inset-0 z-50 bg-slate-50 dark:bg-[#080d1a] text-slate-800 dark:text-slate-100 flex flex-col pt-16 sm:pt-8 pb-4 px-4 sm:p-6 lg:p-8 overflow-y-auto animate-fadeIn">
         
         {/* TOP BAR NAVIGATION & METRICS */}
-        <div className="max-w-5xl w-full mx-auto flex flex-row items-center justify-between gap-3 pb-4 border-b border-slate-800 shrink-0">
+        <div className="max-w-5xl w-full mx-auto flex flex-row items-center justify-between gap-3 pb-4 border-b border-slate-200 dark:border-slate-800 shrink-0">
           
           <div className="flex items-center space-x-3">
             <button
               onClick={exitStudySession}
-              className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center space-x-1.5 sm:space-x-2 cursor-pointer shadow-sm shrink-0"
+              className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-white dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-bold transition-all flex items-center space-x-1.5 sm:space-x-2 cursor-pointer shadow-sm shrink-0"
               title="Завершить сессию [Esc]"
             >
               <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
@@ -483,16 +483,16 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             </button>
 
             <div className="hidden md:flex items-center space-x-2 text-xs">
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 font-extrabold border border-emerald-500/20">
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-extrabold border border-emerald-500/20">
                 {selectedCatObj ? selectedCatObj.title : 'Все категории'}
               </span>
               {selectedDifficulty !== 'all' && (
-                <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-bold border border-slate-700">
+                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold border border-slate-200 dark:border-slate-700">
                   {selectedDifficulty}
                 </span>
               )}
               {selectedBoxFilter !== 'all' && (
-                <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-400 font-bold border border-amber-500/20">
+                <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold border border-amber-500/20">
                   Коробка {selectedBoxFilter}
                 </span>
               )}
@@ -501,28 +501,28 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
           {/* SESSION METRICS */}
           <div className="flex items-center space-x-3 shrink-0">
-            <div className="flex items-center space-x-2 sm:space-x-3 bg-slate-900/80 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl border border-slate-800/80 text-[11px] sm:text-xs font-mono">
-              <div className="flex items-center space-x-1 text-slate-300">
-                <Timer className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+            <div className="flex items-center space-x-2 sm:space-x-3 bg-white dark:bg-slate-900/80 px-2.5 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl border border-slate-200 dark:border-slate-800/80 text-[11px] sm:text-xs font-mono">
+              <div className="flex items-center space-x-1 text-slate-700 dark:text-slate-300">
+                <Timer className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400 animate-pulse" />
                 <span>{formatTimer(timerSeconds)}</span>
               </div>
-              <div className="w-px h-3 bg-slate-800" />
-              <div className="flex items-center space-x-1 text-orange-400 font-extrabold">
+              <div className="w-px h-3 bg-slate-200 dark:bg-slate-800" />
+              <div className="flex items-center space-x-1 text-orange-600 dark:text-orange-400 font-extrabold">
                 <Flame className="w-3.5 h-3.5 fill-orange-500" />
                 <span>{currentStreak}</span>
               </div>
-              <div className="w-px h-3 bg-slate-800" />
-              <div className="text-emerald-400 font-extrabold">
+              <div className="w-px h-3 bg-slate-200 dark:bg-slate-800" />
+              <div className="text-emerald-600 dark:text-emerald-400 font-extrabold">
                 {sessionReviewed > 0 ? `${Math.round((sessionCorrect / sessionReviewed) * 100)}%` : '100%'}
               </div>
             </div>
           </div>
 
-        </div>
+          </div>
 
         {/* PROGRESS BAR ACROSS TOP */}
         <div className="max-w-5xl w-full mx-auto my-3 shrink-0">
-          <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+          <div className="w-full bg-slate-200 dark:bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-300 dark:border-slate-800">
             <div 
               className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full transition-all duration-300"
               style={{ width: `${Math.round(((currentIndex + 1) / filteredQuestions.length) * 100)}%` }}
@@ -535,35 +535,35 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           
           {isSessionComplete ? (
             /* SESSION FINISHED STATE */
-            <div className="bg-slate-900/90 border border-slate-800 p-8 sm:p-10 rounded-3xl text-center space-y-6 shadow-2xl animate-scaleUp max-w-xl mx-auto my-auto">
-              <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-xl">
+            <div className="bg-white dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 p-8 sm:p-10 rounded-3xl text-center space-y-6 shadow-2xl animate-scaleUp max-w-xl mx-auto my-auto">
+              <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shadow-xl">
                 <Sparkles className="w-10 h-10 animate-bounce" />
               </div>
 
               <div className="space-y-2">
-                <h2 className="text-2xl sm:text-3xl font-black text-white">
+                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
                   Отличная работа! 🎉
                 </h2>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                   Вы успешно просмотрели все {filteredQuestions.length} карточек в этом наборе.
                 </p>
               </div>
 
               {/* STATS SUMMARY TILES */}
               <div className="grid grid-cols-3 gap-3 pt-2">
-                <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 text-center">
+                <div className="p-3 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Оценено</div>
-                  <div className="text-xl font-black text-white mt-1">{sessionReviewed}</div>
+                  <div className="text-xl font-black text-slate-900 dark:text-white mt-1">{sessionReviewed}</div>
                 </div>
-                <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 text-center">
+                <div className="p-3 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Точность</div>
-                  <div className="text-xl font-black text-emerald-400 mt-1">
+                  <div className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
                     {sessionReviewed > 0 ? `${Math.round((sessionCorrect / sessionReviewed) * 100)}%` : '100%'}
                   </div>
                 </div>
-                <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 text-center">
+                <div className="p-3 bg-slate-50 dark:bg-slate-950/60 rounded-2xl border border-slate-200 dark:border-slate-800 text-center">
                   <div className="text-[10px] font-bold text-slate-400 uppercase">Макс. стрик</div>
-                  <div className="text-xl font-black text-orange-400 mt-1">{maxStreak}</div>
+                  <div className="text-xl font-black text-orange-600 dark:text-orange-400 mt-1">{maxStreak}</div>
                 </div>
               </div>
 
@@ -577,7 +577,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 </button>
                 <button
                   onClick={exitStudySession}
-                  className="py-3 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold text-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                  className="py-3 px-5 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-extrabold text-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
                 >
                   <span>К настройкам</span>
                 </button>
@@ -604,11 +604,11 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
                   touchAction: 'pan-y'
                 }}
-                className={`relative w-full rounded-3xl bg-slate-900 border-2 ${
+                className={`relative w-full rounded-3xl bg-white dark:bg-slate-900 border-2 ${
                   isFlipped 
                     ? 'border-emerald-500/40 shadow-2xl shadow-emerald-500/5' 
-                    : 'border-slate-800 shadow-2xl'
-                } p-6 sm:p-10 cursor-pointer hover:border-slate-700 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[420px] max-w-full select-none`}
+                    : 'border-slate-200 dark:border-slate-800 shadow-2xl'
+                } p-6 sm:p-10 cursor-pointer hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[420px] max-w-full select-none`}
               >
                 {/* Backlighting effect */}
                 <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full filter blur-3xl pointer-events-none" />
@@ -634,11 +634,11 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 )}
 
                 {/* CARD UPPER BAR */}
-                <div className="flex flex-wrap items-center justify-start gap-2 border-b border-slate-800 pb-3 sm:pb-4 z-10">
-                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-500/15 text-emerald-400 text-[10px] sm:text-xs font-black uppercase tracking-wider border border-emerald-500/20 whitespace-nowrap">
+                <div className="flex flex-wrap items-center justify-start gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 sm:pb-4 z-10">
+                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] sm:text-xs font-black uppercase tracking-wider border border-emerald-500/20 whitespace-nowrap">
                     {CATEGORIES.find(c => c.id === currentCard.category)?.title || currentCard.category}
                   </span>
-                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-slate-800 text-slate-400 text-[10px] sm:text-xs font-extrabold uppercase border border-slate-700/80 whitespace-nowrap">
+                  <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] sm:text-xs font-extrabold uppercase border border-slate-200 dark:border-slate-700/80 whitespace-nowrap">
                     {currentCard.difficulty}
                   </span>
                 </div>
@@ -649,26 +649,26 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   {!isFlipped ? (
                     /* Question side */
                     <div className="space-y-4 animate-fadeIn">
-                      <div className="text-xs font-black uppercase text-emerald-400/80 tracking-widest flex items-center space-x-2">
+                      <div className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400/80 tracking-widest flex items-center space-x-2">
                         <span>НАЖМИТЕ ДЛЯ ПРОСМОТРА ОТВЕТА</span>
                       </div>
-                      <h3 className="text-2xl sm:text-3xl font-black text-white leading-snug mobile-word-break">
+                      <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white leading-snug mobile-word-break">
                         {renderTextWithMarkdown(currentCard.title)}
                       </h3>
                     </div>
                   ) : (
                     /* Answer side */
                     <div className="space-y-5 animate-fadeIn">
-                      <div className="text-xs font-black uppercase text-emerald-400 tracking-widest">
+                      <div className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-widest">
                         ПРАВИЛЬНЫЙ ОТВЕТ
                       </div>
                       
-                      <div className="text-lg sm:text-xl text-slate-100 font-extrabold leading-relaxed whitespace-pre-line mobile-word-break">
+                      <div className="text-lg sm:text-xl text-slate-900 dark:text-slate-100 font-extrabold leading-relaxed whitespace-pre-line mobile-word-break">
                         {renderTextWithMarkdown(currentCard.summaryAnswer)}
                       </div>
 
                       {currentCard.fullAnswer && currentCard.fullAnswer !== currentCard.summaryAnswer && (
-                        <div className="text-sm text-slate-300 leading-relaxed font-medium pt-2 whitespace-pre-line border-t border-slate-800/80 mt-2">
+                        <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed font-medium pt-2 whitespace-pre-line border-t border-slate-200 dark:border-slate-800/80 mt-2">
                           {renderTextWithMarkdown(currentCard.fullAnswer)}
                         </div>
                       )}
@@ -677,20 +677,20 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       {currentCard.codeSnippet && (
                         <div 
                           onClick={(e) => e.stopPropagation()}
-                          className="group/code relative mt-4 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden text-slate-200 text-xs font-mono"
+                          className="group/code relative mt-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 overflow-hidden text-slate-800 dark:text-slate-200 text-xs font-mono"
                         >
-                          <div className="bg-slate-950 px-4 py-2 flex items-center justify-between border-b border-slate-800">
-                            <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">
+                          <div className="bg-slate-100 dark:bg-slate-950 px-4 py-2 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+                            <span className="text-[10px] uppercase font-black tracking-widest text-emerald-600 dark:text-emerald-400">
                               {currentCard.codeSnippet.language}
                             </span>
                             <button
                               onClick={(e) => handleCopyCode(e, currentCard.codeSnippet?.code || '', currentCard.id)}
-                              className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors flex items-center space-x-1"
+                              className="text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white p-1 rounded hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors flex items-center space-x-1"
                             >
                               {copiedId === currentCard.id ? (
                                 <>
-                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
-                                  <span className="text-[10px] text-emerald-400 font-bold">Скопировано!</span>
+                                  <Check className="w-3.5 h-3.5 text-emerald-500" />
+                                  <span className="text-[10px] text-emerald-500 font-bold">Скопировано!</span>
                                 </>
                               ) : (
                                 <>
@@ -700,7 +700,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                               )}
                             </button>
                           </div>
-                          <pre className="p-4 overflow-x-auto select-all max-h-[260px] leading-relaxed text-emerald-300">
+                          <pre className="p-4 overflow-x-auto select-all max-h-[260px] leading-relaxed text-emerald-700 dark:text-emerald-300">
                             <code>{currentCard.codeSnippet.code}</code>
                           </pre>
                         </div>
@@ -710,21 +710,21 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       {currentCard.interviewTips && currentCard.interviewTips.length > 0 && (
                         <div 
                           onClick={(e) => { e.stopPropagation(); setShowTips(!showTips); }}
-                          className="mt-3 border border-slate-800 rounded-xl bg-slate-950/60 overflow-hidden"
+                          className="mt-3 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950/60 overflow-hidden"
                         >
                           <div className="px-4 py-3 flex items-center justify-between select-none cursor-pointer">
-                            <span className="text-xs font-bold text-amber-300 flex items-center space-x-2">
-                              <BookOpen className="w-4 h-4 text-amber-400" />
+                            <span className="text-xs font-bold text-amber-600 dark:text-amber-300 flex items-center space-x-2">
+                              <BookOpen className="w-4 h-4 text-amber-500" />
                               <span>💡 Советы для интервью</span>
                             </span>
                             <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showTips ? 'rotate-90' : ''}`} />
                           </div>
                           
                           {showTips && (
-                            <div className="px-4 pb-3 pt-1 border-t border-slate-800 text-xs text-slate-300 leading-relaxed space-y-1.5 animate-fadeIn">
+                            <div className="px-4 pb-3 pt-1 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 leading-relaxed space-y-1.5 animate-fadeIn">
                               {currentCard.interviewTips.map((tip, i) => (
                                 <div key={i} className="flex items-start space-x-1.5">
-                                  <span className="text-amber-400 font-bold mt-0.5">•</span>
+                                  <span className="text-amber-500 font-bold mt-0.5">•</span>
                                   <span className="flex-1">{renderTextWithMarkdown(tip)}</span>
                                 </div>
                               ))}
@@ -737,21 +737,21 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       {currentCard.commonPitfalls && currentCard.commonPitfalls.length > 0 && (
                         <div 
                           onClick={(e) => { e.stopPropagation(); setShowPitfalls(!showPitfalls); }}
-                          className="mt-2.5 border border-slate-800 rounded-xl bg-slate-950/60 overflow-hidden"
+                          className="mt-2.5 border border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-950/60 overflow-hidden"
                         >
                           <div className="px-4 py-3 flex items-center justify-between select-none cursor-pointer">
-                            <span className="text-xs font-bold text-rose-300 flex items-center space-x-2">
-                              <AlertTriangle className="w-4 h-4 text-rose-400" />
+                            <span className="text-xs font-bold text-rose-600 dark:text-rose-300 flex items-center space-x-2">
+                              <AlertTriangle className="w-4 h-4 text-rose-500" />
                               <span>⚠️ Опасные ловушки на собеседовании</span>
                             </span>
                             <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showPitfalls ? 'rotate-90' : ''}`} />
                           </div>
                           
                           {showPitfalls && (
-                            <div className="px-4 pb-3 pt-1 border-t border-slate-800 text-xs text-slate-300 leading-relaxed space-y-1.5 animate-fadeIn">
+                            <div className="px-4 pb-3 pt-1 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300 leading-relaxed space-y-1.5 animate-fadeIn">
                               {currentCard.commonPitfalls.map((pit, i) => (
                                 <div key={i} className="flex items-start space-x-1.5">
-                                  <span className="text-rose-400 font-bold mt-0.5">•</span>
+                                  <span className="text-rose-500 font-bold mt-0.5">•</span>
                                   <span className="flex-1">{renderTextWithMarkdown(pit)}</span>
                                 </div>
                               ))}
@@ -766,11 +766,11 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 </div>
 
                 {/* CARD FOOTER BAR */}
-                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-[10px] sm:text-xs text-slate-400 font-medium select-none pointer-events-none">
+                <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium select-none pointer-events-none">
                   <span className="truncate mr-2">
                     {isFlipped ? 'Оцените кнопками или свайпом' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}
                   </span>
-                  <span className="font-mono text-[10px] sm:text-xs text-slate-400 font-bold shrink-0">
+                  <span className="font-mono text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold shrink-0">
                     {currentIndex + 1} / {filteredQuestions.length}
                   </span>
                 </div>
@@ -783,37 +783,37 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 {/* OPTION 1: HARD / FORGOT */}
                 <button
                   onClick={(e) => { e.stopPropagation(); handleNext('hard'); }}
-                  className="p-4 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/60 text-rose-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                  className="p-4 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/60 text-rose-600 dark:text-rose-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <div className="flex items-center space-x-1.5">
-                    <X className="w-4 h-4 text-rose-400" />
+                    <X className="w-4 h-4 text-rose-500 dark:text-rose-400" />
                     <span>Забыл [1]</span>
                   </div>
-                  <span className="text-[10px] text-rose-400/80 font-bold">Вернуть в Коробку 1</span>
+                  <span className="text-[10px] text-rose-500/80 dark:text-rose-400/80 font-bold">Вернуть в Коробку 1</span>
                 </button>
 
                 {/* OPTION 2: GOOD / STRUGGLE */}
                 <button
                   onClick={(e) => { e.stopPropagation(); handleNext('good'); }}
-                  className="p-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-amber-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                  className="p-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-amber-600 dark:text-amber-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <div className="flex items-center space-x-1.5">
-                    <Zap className="w-4 h-4 text-amber-400" />
+                    <Zap className="w-4 h-4 text-amber-500 dark:text-amber-400" />
                     <span>С трудом [2]</span>
                   </div>
-                  <span className="text-[10px] text-amber-400/80 font-bold">Оставить как есть</span>
+                  <span className="text-[10px] text-amber-500/80 dark:text-amber-400/80 font-bold">Оставить как есть</span>
                 </button>
 
                 {/* OPTION 3: EASY / EXCELLENT */}
                 <button
                   onClick={(e) => { e.stopPropagation(); handleNext('easy'); }}
-                  className="p-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                  className="p-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <div className="flex items-center space-x-1.5">
-                    <Check className="w-4 h-4 text-emerald-400" />
+                    <Check className="w-4 h-4 text-emerald-500 dark:text-emerald-400" />
                     <span>Знаю отлично! [3]</span>
                   </div>
-                  <span className="text-[10px] text-emerald-400/80 font-bold">Продвинуть в Коробку +1</span>
+                  <span className="text-[10px] text-emerald-500/80 dark:text-emerald-400/80 font-bold">Продвинуть в Коробку +1</span>
                 </button>
 
               </div>
@@ -821,19 +821,19 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               {/* NAVIGATION & SHORTCUTS FOOTER */}
               <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
                 <div className="flex items-center space-x-2">
-                  <button onClick={handlePrev} className="hover:text-slate-300 flex items-center space-x-1 font-bold">
+                  <button onClick={handlePrev} className="hover:text-slate-900 dark:hover:text-slate-300 flex items-center space-x-1 font-bold">
                     <ChevronLeft className="w-4 h-4" />
                     <span>Пред. [A]</span>
                   </button>
                   <span>•</span>
-                  <button onClick={handleNextCardOnly} className="hover:text-slate-300 flex items-center space-x-1 font-bold">
+                  <button onClick={handleNextCardOnly} className="hover:text-slate-900 dark:hover:text-slate-300 flex items-center space-x-1 font-bold">
                     <span>След. [D]</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
 
-                <div className="hidden sm:flex items-center space-x-2 text-[11px] text-slate-400">
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 font-mono text-[10px] text-emerald-400">Space</kbd>
+                <div className="hidden sm:flex items-center space-x-2 text-[11px] text-slate-500 dark:text-slate-400">
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 dark:text-emerald-400">Space</kbd>
                   <span>Перевернуть</span>
                 </div>
               </div>
@@ -1135,7 +1135,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </div>
 
           {/* THE LAUNCH CONFIGURATION CARD (STEP 4) */}
-          <div className="bento-card flex flex-col justify-between space-y-5 bg-gradient-to-b from-[#121c2c] to-[#0a111c] border-2 border-emerald-500/30 dark:border-emerald-500/30 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
+          <div className="bento-card flex flex-col justify-between space-y-5 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-[#121c2c] dark:to-[#0a111c] border-2 border-slate-200 dark:border-emerald-500/30 text-slate-800 dark:text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
             
             <div className="space-y-3 relative z-10">
               <div className="flex items-center space-x-2">
@@ -1143,48 +1143,48 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   <Play className="w-5 h-5 fill-current" />
                 </div>
                 <div>
-                  <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider block">
+                  <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider block">
                     4. ПОДТВЕРЖДЕНИЕ
                   </span>
-                  <h3 className="text-lg font-black text-white">
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white">
                     Запустить сессию
                   </h3>
                 </div>
               </div>
 
-              <p className="text-xs text-slate-300 leading-relaxed">
+              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
                 Карточки откроются на весь экран в режиме концентрации без отвлекающих элементов.
               </p>
 
               {/* Summary Configuration List */}
-              <div className="space-y-2 pt-3 border-t border-slate-800/80 text-xs font-medium text-slate-300">
+              <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800/80 text-xs font-medium text-slate-600 dark:text-slate-300">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Категория:</span>
-                  <span className="font-bold text-emerald-400">{selectedCatObj ? selectedCatObj.title : 'Все категории'}</span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400">{selectedCatObj ? selectedCatObj.title : 'Все категории'}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Сложность:</span>
-                  <span className="font-bold text-white">{selectedDifficulty === 'all' ? 'Все уровни' : selectedDifficulty}</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{selectedDifficulty === 'all' ? 'Все уровни' : selectedDifficulty}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Коробка Лейтнера:</span>
-                  <span className="font-bold text-white">{selectedBoxFilter === 'all' ? 'Все коробки' : `Коробка ${selectedBoxFilter}`}</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{selectedBoxFilter === 'all' ? 'Все коробки' : `Коробка ${selectedBoxFilter}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Порядок карт:</span>
-                  <span className="font-bold text-white">{isShuffled ? 'Случайный' : 'По порядку'}</span>
+                  <span className="font-bold text-slate-900 dark:text-white">{isShuffled ? 'Случайный' : 'По порядку'}</span>
                 </div>
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-800/80 relative z-10 space-y-2">
+            <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 relative z-10 space-y-2">
               <button
                 onClick={startStudySession}
                 disabled={filteredQuestions.length === 0}
                 className={`w-full py-3.5 px-5 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer ${
                   filteredQuestions.length > 0
                     ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]'
-                    : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                    : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-700'
                 }`}
               >
                 <Maximize2 className="w-4 h-4" />
