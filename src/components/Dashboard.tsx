@@ -2,6 +2,7 @@ import React from 'react';
 import { Question, UserProgress } from '../types';
 import { DailyBlitzSection } from './DailyBlitzSection';
 import { DashboardAchievementsWidget } from './DashboardAchievementsWidget';
+import { SkillOfDayCard } from './SkillOfDayCard';
 import { evaluateAchievements } from '../data/achievements';
 import { calculateUserGamification } from '../utils/gamification';
 import { INCIDENT_SCENARIOS } from '../data/incidents';
@@ -410,19 +411,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       </div>
 
-      {/* SECTION: GAMIFICATION & ACHIEVEMENTS PANEL */}
-      <DashboardAchievementsWidget
-        progress={progress}
-        questions={questions}
-        onNavigate={onNavigate}
-        unseenAchievementsCount={unseenAchievementsCount}
-      />
+      {/* SECTION 1: GAMIFICATION & DAILY BLITZ 2-COLUMN GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-stretch">
+        <DashboardAchievementsWidget
+          progress={progress}
+          questions={questions}
+          onNavigate={onNavigate}
+          unseenAchievementsCount={unseenAchievementsCount}
+        />
 
-      {/* SECTION 2: INTERACTIVE DAILY EXERCISE */}
-      <DailyBlitzSection
-        progress={progress}
-        onUpdateProgress={onUpdateProgress}
-      />
+        <DailyBlitzSection
+          progress={progress}
+          onUpdateProgress={onUpdateProgress}
+        />
+      </div>
+
+      {/* SECTION 2: SKILL OF THE DAY (FULL-WIDTH FEATURED CARD) */}
+      <SkillOfDayCard onNavigate={onNavigate} />
 
       {/* SECTION 3: MIM0-STYLE INTERACTIVE LEVEL ROADMAP MAP */}
       <div className="space-y-6">

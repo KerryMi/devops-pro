@@ -52,14 +52,23 @@ html, body, #root, * {
   scrollbar-width: none !important;  /* Firefox */
 }
 
-/* Keyframe animations for cards and modals */
+/* Keyframe animations for cards, modals and toasts */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 .animate-fadeIn {
   animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideDown {
+  animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 /* Bento Card Style with 20px radius & generous padding */

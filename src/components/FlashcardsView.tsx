@@ -25,7 +25,13 @@ import {
   Sliders,
   Filter,
   CheckCircle2,
-  RefreshCw
+  RefreshCw,
+  Play,
+  ArrowLeft,
+  Maximize2,
+  CheckCircle,
+  XCircle,
+  BarChart2
 } from 'lucide-react';
 
 // Custom dynamic icon lookup helper for categories
@@ -90,19 +96,18 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   progress,
   onUpdateFlashcardBox,
 }) => {
-  // Filters & State
-  const studyStageRef = useRef<HTMLDivElement>(null);
-
-  const scrollToStudyStage = () => {
-    studyStageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
+  // Configuration State
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedBoxFilter, setSelectedBoxFilter] = useState<'all' | number>('all');
   const [isShuffled, setIsShuffled] = useState<boolean>(false);
   const [shuffledOrder, setShuffledOrder] = useState<number[]>([]);
 
+  // FULL SCREEN / DEDICATED WINDOW MODE STATE
+  const [isStudySessionActive, setIsStudySessionActive] = useState<boolean>(false);
+  const [isSessionComplete, setIsSessionComplete] = useState<boolean>(false);
+
+  // Active Card State
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   
@@ -127,39 +132,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   const dragStartY = useRef<number>(0);
   const hasDraggedFar = useRef<boolean>(false);
 
-  const handleDragStart = (clientX: number, clientY: number) => {
-    dragStartX.current = clientX;
-    dragStartY.current = clientY;
-    hasDraggedFar.current = false;
-    setIsDragging(true);
-  };
-
-  const handleDragMove = (clientX: number, clientY: number) => {
-    if (!isDragging) return;
-    const diffX = clientX - dragStartX.current;
-    const diffY = clientY - dragStartY.current;
-
-    if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
-      hasDraggedFar.current = true;
-      setDragOffsetX(diffX);
-    }
-  };
-
-  const handleDragEnd = () => {
-    if (!isDragging) return;
-    setIsDragging(false);
-
-    // Threshold for swipe action (65px)
-    if (dragOffsetX > 65) {
-      handleNext('easy');
-    } else if (dragOffsetX < -65) {
-      handleNext('hard');
-    }
-
-    setDragOffsetX(0);
-  };
-
-  // Success Feedback Toast / Reset States
+  // Toast / Feedback states
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
@@ -167,11 +140,14 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
   // 1. Session Timer Effect
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimerSeconds(prev => prev + 1);
-    }, 1000);
+    let interval: any;
+    if (isStudySessionActive && !isSessionComplete) {
+      interval = setInterval(() => {
+        setTimerSeconds(prev => prev + 1);
+      }, 1000);
+    }
     return () => clearInterval(interval);
-  }, []);
+  }, [isStudySessionActive, isSessionComplete]);
 
   const formatTimer = (totalSecs: number) => {
     const mins = Math.floor(totalSecs / 60);
@@ -209,7 +185,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // 5. Shuffle Handling
   useEffect(() => {
     if (isShuffled) {
-      // Create random sequence of indices
       const indices = Array.from({ length: filteredQuestions.length }, (_, i) => i);
       for (let i = indices.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -237,12 +212,67 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
   // Reset indices on bounds error
   useEffect(() => {
-    if (currentIndex >= filteredQuestions.length) {
+    if (currentIndex >= filteredQuestions.length && filteredQuestions.length > 0) {
       setCurrentIndex(0);
     }
   }, [filteredQuestions.length, currentIndex]);
 
-  // 6. Navigation Controls
+  // Launch Full-Window Study Session
+  const startStudySession = () => {
+    if (filteredQuestions.length === 0) return;
+    setIsStudySessionActive(true);
+    setIsSessionComplete(false);
+    setCurrentIndex(0);
+    setIsFlipped(false);
+    setTimerSeconds(0);
+    setSessionReviewed(0);
+    setSessionCorrect(0);
+    setCurrentStreak(0);
+    setMaxStreak(0);
+    setShowTips(false);
+    setShowPitfalls(false);
+  };
+
+  const exitStudySession = () => {
+    stopSpeaking();
+    setIsStudySessionActive(false);
+    setIsSessionComplete(false);
+  };
+
+  // Drag Gesture Handlers
+  const handleDragStart = (clientX: number, clientY: number) => {
+    dragStartX.current = clientX;
+    dragStartY.current = clientY;
+    hasDraggedFar.current = false;
+    setIsDragging(true);
+  };
+
+  const handleDragMove = (clientX: number, clientY: number) => {
+    if (!isDragging) return;
+    const diffX = clientX - dragStartX.current;
+    const diffY = clientY - dragStartY.current;
+
+    if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+      hasDraggedFar.current = true;
+      setDragOffsetX(diffX);
+    }
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    // Threshold for swipe action (65px)
+    if (dragOffsetX > 65) {
+      handleNext('easy');
+    } else if (dragOffsetX < -65) {
+      handleNext('hard');
+    }
+
+    setDragOffsetX(0);
+  };
+
+  // Navigation Controls
   const handlePrev = () => {
     if (filteredQuestions.length === 0) return;
     setIsFlipped(false);
@@ -299,17 +329,16 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
     if (currentIndex < filteredQuestions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      setCurrentIndex(0);
+      setIsSessionComplete(true);
     }
   };
 
-  // 7. Text-to-Speech API integration
+  // Text-to-Speech API integration
   const startSpeaking = (text: string) => {
     if (!('speechSynthesis' in window)) return;
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
-    // Rough language detection
     const hasCyrillic = /[а-яА-Я]/.test(text);
     utterance.lang = hasCyrillic ? 'ru-RU' : 'en-US';
 
@@ -334,7 +363,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   };
 
   const toggleSpeaking = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Avoid flipping card
+    e.stopPropagation();
     if (isSpeaking) {
       stopSpeaking();
     } else {
@@ -346,12 +375,11 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
     }
   };
 
-  // Stop speaking when moving between states
   useEffect(() => {
     stopSpeaking();
   }, [currentIndex, isFlipped]);
 
-  // 8. Keyboard Shortcuts
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -362,6 +390,13 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
       }
 
       const key = e.key.toLowerCase();
+
+      if (key === 'escape' && isStudySessionActive) {
+        exitStudySession();
+        return;
+      }
+
+      if (!isStudySessionActive || isSessionComplete) return;
 
       if (e.code === 'Space' || e.key === ' ') {
         e.preventDefault();
@@ -383,9 +418,9 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, isFlipped, filteredQuestions.length]);
+  }, [currentIndex, isFlipped, filteredQuestions.length, isStudySessionActive, isSessionComplete]);
 
-  // 9. Code copy utility
+  // Code copy utility
   const handleCopyCode = (e: React.MouseEvent, code: string, id: string) => {
     e.stopPropagation();
     navigator.clipboard.writeText(code);
@@ -393,13 +428,12 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // 10. Leitner box Reset progression handler
+  // Leitner box Reset progression handler
   const handleResetProgress = () => {
     if (!resetConfirm) {
       setResetConfirm(true);
       setTimeout(() => setResetConfirm(false), 4000);
     } else {
-      // Execute reset for ALL matching active filters
       const targetQuestions = filteredQuestions.length > 0 ? filteredQuestions : activeQuestions;
       targetQuestions.forEach(q => {
         onUpdateFlashcardBox(q.id, 1);
@@ -421,11 +455,423 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
     setIsFlipped(false);
   };
 
-  // Calculate Box 5 percentage out of total questions
+  // Stats Calculations
   const totalInFilter = filteredQuestions.length;
   const box5InFilter = filteredQuestions.filter(q => (progress.flashcardBoxes?.[q.id] || 1) === 5).length;
   const masteryPercentage = totalInFilter > 0 ? Math.round((box5InFilter / totalInFilter) * 100) : 0;
+  const selectedCatObj = CATEGORIES.find(c => c.id === selectedCategory);
 
+  // =========================================================
+  // VIEW MODE 2: DEDICATED FULL-WINDOW STUDY SESSION
+  // =========================================================
+  if (isStudySessionActive) {
+    return (
+      <div className="fixed inset-0 z-50 bg-[#080d1a] text-slate-100 flex flex-col p-4 sm:p-6 lg:p-8 overflow-y-auto animate-fadeIn">
+        
+        {/* TOP BAR NAVIGATION & METRICS */}
+        <div className="max-w-5xl w-full mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 pb-4 border-b border-slate-800 shrink-0">
+          
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={exitStudySession}
+              className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center space-x-2 cursor-pointer shadow-sm"
+              title="Завершить сессию [Esc]"
+            >
+              <ArrowLeft className="w-4 h-4 text-emerald-400" />
+              <span>Назад к настройкам</span>
+            </button>
+
+            <div className="hidden md:flex items-center space-x-2 text-xs">
+              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 font-extrabold border border-emerald-500/20">
+                {selectedCatObj ? selectedCatObj.title : 'Все категории'}
+              </span>
+              {selectedDifficulty !== 'all' && (
+                <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300 font-bold border border-slate-700">
+                  {selectedDifficulty}
+                </span>
+              )}
+              {selectedBoxFilter !== 'all' && (
+                <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-400 font-bold border border-amber-500/20">
+                  Коробка {selectedBoxFilter}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* SESSION METRICS */}
+          <div className="flex items-center justify-between sm:justify-end space-x-4">
+            <div className="flex items-center space-x-3 bg-slate-900/80 px-3.5 py-1.5 rounded-xl border border-slate-800/80 text-xs font-mono">
+              <div className="flex items-center space-x-1.5 text-slate-300">
+                <Timer className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                <span>{formatTimer(timerSeconds)}</span>
+              </div>
+              <div className="w-px h-3 bg-slate-800" />
+              <div className="flex items-center space-x-1.5 text-orange-400 font-extrabold">
+                <Flame className="w-3.5 h-3.5 fill-orange-500" />
+                <span>{currentStreak}</span>
+              </div>
+              <div className="w-px h-3 bg-slate-800" />
+              <div className="text-emerald-400 font-extrabold">
+                {sessionReviewed > 0 ? `${Math.round((sessionCorrect / sessionReviewed) * 100)}%` : '100%'}
+              </div>
+            </div>
+
+            <div className="text-xs font-extrabold text-slate-400">
+              <span className="text-white font-mono text-sm">{currentIndex + 1}</span> / {filteredQuestions.length}
+            </div>
+          </div>
+
+        </div>
+
+        {/* PROGRESS BAR ACROSS TOP */}
+        <div className="max-w-5xl w-full mx-auto my-3 shrink-0">
+          <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+            <div 
+              className="bg-gradient-to-r from-emerald-500 to-emerald-400 h-full transition-all duration-300"
+              style={{ width: `${Math.round(((currentIndex + 1) / filteredQuestions.length) * 100)}%` }}
+            />
+          </div>
+        </div>
+
+        {/* MAIN STAGE CONTENT */}
+        <div className="max-w-4xl w-full mx-auto my-auto py-4 flex flex-col justify-center">
+          
+          {isSessionComplete ? (
+            /* SESSION FINISHED STATE */
+            <div className="bg-slate-900/90 border border-slate-800 p-8 sm:p-10 rounded-3xl text-center space-y-6 shadow-2xl animate-scaleUp max-w-xl mx-auto my-auto">
+              <div className="w-20 h-20 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-xl">
+                <Sparkles className="w-10 h-10 animate-bounce" />
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="text-2xl sm:text-3xl font-black text-white">
+                  Отличная работа! 🎉
+                </h2>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  Вы успешно просмотрели все {filteredQuestions.length} карточек в этом наборе.
+                </p>
+              </div>
+
+              {/* STATS SUMMARY TILES */}
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 text-center">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase">Оценено</div>
+                  <div className="text-xl font-black text-white mt-1">{sessionReviewed}</div>
+                </div>
+                <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 text-center">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase">Точность</div>
+                  <div className="text-xl font-black text-emerald-400 mt-1">
+                    {sessionReviewed > 0 ? `${Math.round((sessionCorrect / sessionReviewed) * 100)}%` : '100%'}
+                  </div>
+                </div>
+                <div className="p-3 bg-slate-950/60 rounded-2xl border border-slate-800 text-center">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase">Макс. стрик</div>
+                  <div className="text-xl font-black text-orange-400 mt-1">{maxStreak}</div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                <button
+                  onClick={startStudySession}
+                  className="flex-1 py-3 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer"
+                >
+                  <RotateCw className="w-4 h-4" />
+                  <span>Повторить сессию</span>
+                </button>
+                <button
+                  onClick={exitStudySession}
+                  className="py-3 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-extrabold text-sm flex items-center justify-center space-x-2 transition-all cursor-pointer"
+                >
+                  <span>К настройкам</span>
+                </button>
+              </div>
+            </div>
+          ) : currentCard ? (
+            /* ACTIVE CARD DISPLAY */
+            <div className="space-y-5 animate-fadeIn">
+              
+              <div 
+                onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
+                onTouchMove={(e) => handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
+                onTouchEnd={handleDragEnd}
+                onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
+                onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+                onClick={() => {
+                  if (hasDraggedFar.current || Math.abs(dragOffsetX) > 10) return;
+                  setIsFlipped(prev => !prev);
+                }}
+                style={{
+                  transform: `translateX(${dragOffsetX}px) rotate(${dragOffsetX * 0.04}deg)`,
+                  transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                  touchAction: 'pan-y'
+                }}
+                className={`relative w-full rounded-3xl bg-slate-900 border-2 ${
+                  isFlipped 
+                    ? 'border-emerald-500/40 shadow-2xl shadow-emerald-500/5' 
+                    : 'border-slate-800 shadow-2xl'
+                } p-6 sm:p-10 cursor-pointer hover:border-slate-700 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[420px] max-w-full select-none`}
+              >
+                {/* Backlighting effect */}
+                <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full filter blur-3xl pointer-events-none" />
+
+                {/* Swipe Indicators */}
+                {dragOffsetX > 15 && (
+                  <div 
+                    style={{ opacity: Math.min(1, (dragOffsetX - 10) / 50) }}
+                    className="absolute top-6 right-6 z-30 px-3.5 py-1.5 rounded-xl bg-emerald-500 text-white font-extrabold text-xs shadow-lg flex items-center space-x-1 animate-fadeIn pointer-events-none"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Знаю!</span>
+                  </div>
+                )}
+                {dragOffsetX < -15 && (
+                  <div 
+                    style={{ opacity: Math.min(1, (-dragOffsetX - 10) / 50) }}
+                    className="absolute top-6 left-6 z-30 px-3.5 py-1.5 rounded-xl bg-rose-500 text-white font-extrabold text-xs shadow-lg flex items-center space-x-1 animate-fadeIn pointer-events-none"
+                  >
+                    <X className="w-4 h-4" />
+                    <span>Забыл</span>
+                  </div>
+                )}
+
+                {/* CARD UPPER BAR */}
+                <div className="flex items-center justify-between border-b border-slate-800 pb-4 z-10">
+                  <div className="flex items-center space-x-2">
+                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-400 text-xs font-black uppercase tracking-wider border border-emerald-500/20">
+                      {CATEGORIES.find(c => c.id === currentCard.category)?.title || currentCard.category}
+                    </span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 text-xs font-extrabold uppercase border border-slate-700/80">
+                      {currentCard.difficulty}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center space-x-2 text-xs">
+                    <button
+                      onClick={toggleSpeaking}
+                      className={`p-1.5 rounded-lg border transition-all hover:bg-slate-800 ${
+                        isSpeaking 
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-400' 
+                          : 'border-slate-800 text-slate-400 hover:text-emerald-400'
+                      }`}
+                      title={isSpeaking ? "Остановить чтение" : "Озвучить карточку голосом"}
+                    >
+                      {isSpeaking ? <VolumeX className="w-4 h-4 animate-bounce" /> : <Volume2 className="w-4 h-4" />}
+                    </button>
+
+                    <span className="inline-flex items-center space-x-1 font-bold text-xs tracking-wider uppercase text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                      <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>{isFlipped ? 'ОТВЕТ' : 'ВОПРОС'}</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* CARD CENTER AREA */}
+                <div className="my-auto py-8 space-y-4 z-10">
+                  
+                  {!isFlipped ? (
+                    /* Question side */
+                    <div className="space-y-4 animate-fadeIn">
+                      <div className="text-xs font-black uppercase text-emerald-400/80 tracking-widest flex items-center space-x-2">
+                        <span>НАЖМИТЕ ДЛЯ ПРОСМОТРА ОТВЕТА</span>
+                      </div>
+                      <h3 className="text-2xl sm:text-3xl font-black text-white leading-snug mobile-word-break">
+                        {renderTextWithMarkdown(currentCard.title)}
+                      </h3>
+                    </div>
+                  ) : (
+                    /* Answer side */
+                    <div className="space-y-5 animate-fadeIn">
+                      <div className="text-xs font-black uppercase text-emerald-400 tracking-widest">
+                        ПРАВИЛЬНЫЙ ОТВЕТ
+                      </div>
+                      
+                      <div className="text-lg sm:text-xl text-slate-100 font-extrabold leading-relaxed whitespace-pre-line mobile-word-break">
+                        {renderTextWithMarkdown(currentCard.summaryAnswer)}
+                      </div>
+
+                      {currentCard.fullAnswer && currentCard.fullAnswer !== currentCard.summaryAnswer && (
+                        <div className="text-sm text-slate-300 leading-relaxed font-medium pt-2 whitespace-pre-line border-t border-slate-800/80 mt-2">
+                          {renderTextWithMarkdown(currentCard.fullAnswer)}
+                        </div>
+                      )}
+
+                      {/* Code Snippet Box */}
+                      {currentCard.codeSnippet && (
+                        <div 
+                          onClick={(e) => e.stopPropagation()}
+                          className="group/code relative mt-4 rounded-xl bg-slate-950 border border-slate-800 overflow-hidden text-slate-200 text-xs font-mono"
+                        >
+                          <div className="bg-slate-950 px-4 py-2 flex items-center justify-between border-b border-slate-800">
+                            <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">
+                              {currentCard.codeSnippet.language}
+                            </span>
+                            <button
+                              onClick={(e) => handleCopyCode(e, currentCard.codeSnippet?.code || '', currentCard.id)}
+                              className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors flex items-center space-x-1"
+                            >
+                              {copiedId === currentCard.id ? (
+                                <>
+                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                  <span className="text-[10px] text-emerald-400 font-bold">Скопировано!</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3.5 h-3.5" />
+                                  <span className="text-[10px]">Копировать</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                          <pre className="p-4 overflow-x-auto select-all max-h-[260px] leading-relaxed text-emerald-300">
+                            <code>{currentCard.codeSnippet.code}</code>
+                          </pre>
+                        </div>
+                      )}
+
+                      {/* Interview Tips Section */}
+                      {currentCard.interviewTips && currentCard.interviewTips.length > 0 && (
+                        <div 
+                          onClick={(e) => { e.stopPropagation(); setShowTips(!showTips); }}
+                          className="mt-3 border border-slate-800 rounded-xl bg-slate-950/60 overflow-hidden"
+                        >
+                          <div className="px-4 py-3 flex items-center justify-between select-none cursor-pointer">
+                            <span className="text-xs font-bold text-amber-300 flex items-center space-x-2">
+                              <BookOpen className="w-4 h-4 text-amber-400" />
+                              <span>💡 Советы для интервью</span>
+                            </span>
+                            <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showTips ? 'rotate-90' : ''}`} />
+                          </div>
+                          
+                          {showTips && (
+                            <div className="px-4 pb-3 pt-1 border-t border-slate-800 text-xs text-slate-300 leading-relaxed space-y-1.5 animate-fadeIn">
+                              {currentCard.interviewTips.map((tip, i) => (
+                                <div key={i} className="flex items-start space-x-1.5">
+                                  <span className="text-amber-400 font-bold mt-0.5">•</span>
+                                  <span className="flex-1">{renderTextWithMarkdown(tip)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Common Pitfalls Section */}
+                      {currentCard.commonPitfalls && currentCard.commonPitfalls.length > 0 && (
+                        <div 
+                          onClick={(e) => { e.stopPropagation(); setShowPitfalls(!showPitfalls); }}
+                          className="mt-2.5 border border-slate-800 rounded-xl bg-slate-950/60 overflow-hidden"
+                        >
+                          <div className="px-4 py-3 flex items-center justify-between select-none cursor-pointer">
+                            <span className="text-xs font-bold text-rose-300 flex items-center space-x-2">
+                              <AlertTriangle className="w-4 h-4 text-rose-400" />
+                              <span>⚠️ Опасные ловушки на собеседовании</span>
+                            </span>
+                            <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showPitfalls ? 'rotate-90' : ''}`} />
+                          </div>
+                          
+                          {showPitfalls && (
+                            <div className="px-4 pb-3 pt-1 border-t border-slate-800 text-xs text-slate-300 leading-relaxed space-y-1.5 animate-fadeIn">
+                              {currentCard.commonPitfalls.map((pit, i) => (
+                                <div key={i} className="flex items-start space-x-1.5">
+                                  <span className="text-rose-400 font-bold mt-0.5">•</span>
+                                  <span className="flex-1">{renderTextWithMarkdown(pit)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                    </div>
+                  )}
+
+                </div>
+
+                {/* CARD FOOTER BAR */}
+                <div className="pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-medium select-none">
+                  <span>{isFlipped ? 'Оцените знания кнопками ниже или свайпом' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}</span>
+                  <span className="font-mono text-xs text-slate-400 font-bold">
+                    {currentIndex + 1} / {filteredQuestions.length}
+                  </span>
+                </div>
+
+              </div>
+
+              {/* ACTION RATING BUTTONS - ALWAYS VISIBLE */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                
+                {/* OPTION 1: HARD / FORGOT */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext('hard'); }}
+                  className="p-4 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/60 text-rose-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <div className="flex items-center space-x-1.5">
+                    <X className="w-4 h-4 text-rose-400" />
+                    <span>Забыл [1]</span>
+                  </div>
+                  <span className="text-[10px] text-rose-400/80 font-bold">Вернуть в Коробку 1</span>
+                </button>
+
+                {/* OPTION 2: GOOD / STRUGGLE */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext('good'); }}
+                  className="p-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-amber-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <div className="flex items-center space-x-1.5">
+                    <Zap className="w-4 h-4 text-amber-400" />
+                    <span>С трудом [2]</span>
+                  </div>
+                  <span className="text-[10px] text-amber-400/80 font-bold">Оставить как есть</span>
+                </button>
+
+                {/* OPTION 3: EASY / EXCELLENT */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext('easy'); }}
+                  className="p-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <div className="flex items-center space-x-1.5">
+                    <Check className="w-4 h-4 text-emerald-400" />
+                    <span>Знаю отлично! [3]</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-400/80 font-bold">Продвинуть в Коробку +1</span>
+                </button>
+
+              </div>
+
+              {/* NAVIGATION & SHORTCUTS FOOTER */}
+              <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+                <div className="flex items-center space-x-2">
+                  <button onClick={handlePrev} className="hover:text-slate-300 flex items-center space-x-1 font-bold">
+                    <ChevronLeft className="w-4 h-4" />
+                    <span>Пред. [A]</span>
+                  </button>
+                  <span>•</span>
+                  <button onClick={handleNextCardOnly} className="hover:text-slate-300 flex items-center space-x-1 font-bold">
+                    <span>След. [D]</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+
+                <div className="hidden sm:flex items-center space-x-2 text-[11px] text-slate-400">
+                  <kbd className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 font-mono text-[10px] text-emerald-400">Space</kbd>
+                  <span>Перевернуть</span>
+                </div>
+              </div>
+
+            </div>
+          ) : null}
+
+        </div>
+
+      </div>
+    );
+  }
+
+  // =========================================================
+  // VIEW MODE 1: CONFIGURATION & LAUNCH HUB SCREEN
+  // =========================================================
   return (
     <div className="max-w-6xl mx-auto space-y-6 pb-16 animate-fadeIn">
       
@@ -437,37 +883,28 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
         </div>
       )}
 
-      {/* TOP ROW BENTO GRID - STATS, LOGO, INFO */}
+      {/* TOP HEADER BENTO GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        {/* BENTO TILE 1: Leitner Master Progress & Quick Start (Full Left banner) */}
+        {/* LEITNER METHOD OVERVIEW */}
         <div className="bento-card lg:col-span-8 flex flex-col justify-between space-y-6 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800">
           
           <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div className="space-y-1">
               <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
                 <Brain className="w-3.5 h-3.5 mr-1" />
-                <span>Лейтнер</span>
+                <span>Система Лейтнера</span>
               </span>
               <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white flex items-center space-x-2 mt-1">
-                <span>Интервальное заучивание</span>
+                <span>Интервальные карточки</span>
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Карточки автоматически перемещаются между коробками по мере запоминания. Коробка 5 — это полное освоение!
+                Настройте категорию и параметры ниже, затем откройте полноэкранный режим заучивания.
               </p>
-              <div className="pt-2">
-                <button
-                  onClick={scrollToStudyStage}
-                  className="inline-flex items-center space-x-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-emerald-600/15 dark:shadow-none hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-                >
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Начать изучение карточек</span>
-                </button>
-              </div>
             </div>
 
-            {/* Overall stats progress badge */}
-            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 px-4 py-2.5 rounded-2xl flex items-center space-x-3 self-start">
+            {/* Mastery percentage badge */}
+            <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 px-4 py-2.5 rounded-2xl flex items-center space-x-3 self-start shrink-0">
               <div className="text-right">
                 <div className="text-[10px] font-bold text-slate-400 uppercase">Освоено в выборке</div>
                 <div className="text-lg font-black text-emerald-600 dark:text-emerald-400">{box5InFilter} / {totalInFilter} <span className="text-xs font-normal text-slate-400">({masteryPercentage}%)</span></div>
@@ -481,7 +918,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           {/* Visual Progress Bar */}
           <div className="space-y-1.5">
             <div className="flex justify-between items-center text-xs text-slate-500 font-bold">
-              <span>Доля проработанных карт</span>
+              <span>Доля полностью проработанных карт (Коробка 5)</span>
               <span>{masteryPercentage}%</span>
             </div>
             <div className="w-full bg-slate-100 dark:bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-800">
@@ -493,10 +930,10 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </div>
 
           {/* INTERACTIVE LEITNER BOX CHIPS */}
-          <div className="space-y-3 pt-2">
+          <div className="space-y-3 pt-1">
             <div className="flex items-center justify-between">
               <span className="text-xs font-extrabold text-slate-400 uppercase tracking-wider flex items-center space-x-1.5">
-                <Filter className="w-3.5 h-3.5" />
+                <Filter className="w-3.5 h-3.5 text-emerald-500" />
                 <span>Фильтр по коробкам Лейтнера</span>
               </span>
               {selectedBoxFilter !== 'all' && (
@@ -504,17 +941,16 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   onClick={() => setSelectedBoxFilter('all')}
                   className="text-xs text-emerald-500 hover:underline font-bold"
                 >
-                  Сбросить фильтр коробок
+                  Сбросить фильтр
                 </button>
               )}
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3.5">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
               {[1, 2, 3, 4, 5].map((boxNum) => {
                 const isActive = selectedBoxFilter === boxNum;
                 const count = boxesCount[boxNum - 1];
                 
-                // Color configuration per box
                 const boxColors = [
                   { border: 'hover:border-rose-500/40', active: 'border-rose-500 bg-rose-50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400' },
                   { border: 'hover:border-amber-500/40', active: 'border-amber-500 bg-amber-50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400' },
@@ -542,10 +978,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       </span>
                       <span className="text-[10px] text-slate-400 font-medium ml-1">карт</span>
                     </div>
-                    {/* Tiny visual guide */}
-                    <div className="text-[9px] text-slate-400 mt-1.5 border-t border-slate-200/50 dark:border-slate-800/50 pt-1 truncate">
-                      {boxNum === 1 ? 'Каждый день' : boxNum === 2 ? 'Раз в 2 дня' : boxNum === 3 ? 'Раз в неделю' : boxNum === 4 ? 'Раз в 2 нед.' : 'Освоено'}
-                    </div>
                   </button>
                 );
               })}
@@ -554,104 +986,111 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
         </div>
 
-        {/* BENTO TILE 2: Live Session Statistics Dashboard (Right card) */}
-        <div className="bento-card lg:col-span-4 flex flex-col justify-between space-y-4 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800">
+        {/* LAUNCH CONFIGURATION CARD */}
+        <div className="bento-card lg:col-span-4 flex flex-col justify-between space-y-4 bg-gradient-to-b from-emerald-950/20 to-slate-900/90 border-2 border-emerald-500/30 dark:border-emerald-500/30 text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
           
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3">
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5">
-              <Timer className="w-4 h-4 text-emerald-500 animate-pulse" />
-              <span>Текущая Сессия</span>
-            </span>
-            <div className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-mono text-sm font-extrabold flex items-center space-x-1">
-              <span>{formatTimer(timerSeconds)}</span>
+          <div className="space-y-3 relative z-10">
+            <div className="flex items-center space-x-2">
+              <div className="p-2 rounded-xl bg-emerald-500 text-slate-950 font-black">
+                <Play className="w-5 h-5 fill-current" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase text-emerald-400 tracking-wider block">
+                  ГОТОВО К СТАРТУ
+                </span>
+                <h3 className="text-lg font-black text-white">
+                  Запустить тренировку
+                </h3>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-300 leading-relaxed">
+              Карточки откроются на весь экран в режиме концентрации без отвлекающих элементов.
+            </p>
+
+            {/* Summary Configuration List */}
+            <div className="space-y-2 pt-2 border-t border-slate-800/80 text-xs font-medium text-slate-300">
+              <div className="flex justify-between">
+                <span className="text-slate-400">Категория:</span>
+                <span className="font-bold text-emerald-400">{selectedCatObj ? selectedCatObj.title : 'Все категории'}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Сложность:</span>
+                <span className="font-bold text-white">{selectedDifficulty === 'all' ? 'Все уровни' : selectedDifficulty}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Коробка:</span>
+                <span className="font-bold text-white">{selectedBoxFilter === 'all' ? 'Все коробки' : `Коробка ${selectedBoxFilter}`}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-400">Порядок:</span>
+                <span className="font-bold text-white">{isShuffled ? 'Случайный' : 'По порядку'}</span>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            
-            {/* Answered Stat */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-              <div className="text-[10px] font-bold text-slate-400 uppercase">Оценено карт</div>
-              <div className="text-2xl font-black text-slate-950 dark:text-white mt-1 flex items-baseline">
-                <span>{sessionReviewed}</span>
-              </div>
-            </div>
+          <div className="pt-4 border-t border-slate-800 relative z-10 space-y-2">
+            <button
+              onClick={startStudySession}
+              disabled={filteredQuestions.length === 0}
+              className={`w-full py-3.5 px-5 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer ${
+                filteredQuestions.length > 0
+                  ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]'
+                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+              }`}
+            >
+              <Maximize2 className="w-4 h-4" />
+              <span>
+                {filteredQuestions.length > 0 
+                  ? `Открыть карточки (${filteredQuestions.length} шт)` 
+                  : 'Нет карточек в фильтре'}
+              </span>
+            </button>
 
-            {/* Accuracy Rate */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800">
-              <div className="text-[10px] font-bold text-slate-400 uppercase flex items-center space-x-1">
-                <TrendingUp className="w-3 h-3 text-emerald-500" />
-                <span>Успешность</span>
-              </div>
-              <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
-                {sessionReviewed > 0 
-                  ? `${Math.round((sessionCorrect / sessionReviewed) * 100)}%` 
-                  : '—'}
-              </div>
-            </div>
-
-            {/* Streak Stat */}
-            <div className="col-span-2 p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-100/60 dark:border-amber-900/20 flex items-center justify-between">
-              <div className="space-y-0.5">
-                <div className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center space-x-1">
-                  <Flame className="w-3.5 h-3.5 text-orange-500 fill-orange-500 animate-bounce" />
-                  <span>Серия ответов</span>
-                </div>
-                <div className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                  Без ошибок подряд
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-black text-orange-600 dark:text-orange-400">
-                  {currentStreak}
-                </div>
-                <div className="text-[9px] text-slate-400">Макс: {maxStreak}</div>
-              </div>
-            </div>
-
-          </div>
-
-          <div className="text-[11px] text-slate-400 text-center italic bg-slate-50/50 dark:bg-slate-900/40 p-2 rounded-xl">
-            Совет: используйте быстрые клавиши на ПК для мгновенной оценки!
+            {filteredQuestions.length === 0 && (
+              <button
+                onClick={handleClearAllFilters}
+                className="w-full text-center text-xs text-amber-400 hover:underline font-bold"
+              >
+                Сбросить фильтры для просмотра карточек
+              </button>
+            )}
           </div>
 
         </div>
 
       </div>
 
-      {/* MAIN TWO-COLUMN DASHBOARD LAYOUT */}
+      {/* CONFIGURATION SELECTION GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        {/* LEFT COLUMN: FILTERS, CATEGORIES, CONFIGS (col-span-4) */}
-        <div className="lg:col-span-4 space-y-6">
-          
-          {/* BENTO CARD: Directory & Category Selector */}
+        {/* LEFT COLUMN: Categories selection */}
+        <div className="lg:col-span-6 space-y-6">
           <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-4">
             <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5">
               <Sliders className="w-4 h-4 text-emerald-500" />
-              <span>Разделы знаний</span>
+              <span> Выбор категории знаний</span>
             </h3>
 
-            {/* Custom styled list for Categories selection */}
-            <div className="space-y-1.5 max-h-[300px] overflow-y-auto pr-1">
+            <div className="space-y-2 max-h-[360px] overflow-y-auto pr-1">
               <button
-                onClick={() => { setSelectedCategory('all'); setCurrentIndex(0); setIsFlipped(false); }}
-                className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border ${
+                onClick={() => { setSelectedCategory('all'); }}
+                className={`w-full px-4 py-3 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${
                   selectedCategory === 'all'
                     ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/10'
                     : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                 }`}
               >
-                <div className="flex items-center space-x-2.5">
-                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                    <Award className="w-3.5 h-3.5" />
+                <div className="flex items-center space-x-3">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                    <Award className="w-4 h-4" />
                   </div>
-                  <span className="truncate">Все категории</span>
+                  <span className="font-extrabold text-sm">Все категории</span>
                 </div>
-                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ${
+                <span className={`px-2.5 py-1 rounded-md text-xs font-black ${
                   selectedCategory === 'all' ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                 }`}>
-                  {questions.length}
+                  {questions.length} карт
                 </span>
               </button>
 
@@ -661,47 +1100,50 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 return (
                   <button
                     key={cat.id}
-                    onClick={() => { setSelectedCategory(cat.id); setCurrentIndex(0); setIsFlipped(false); }}
-                    className={`w-full px-3.5 py-2.5 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border ${
+                    onClick={() => { setSelectedCategory(cat.id); }}
+                    className={`w-full px-4 py-3 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${
                       isCatActive
                         ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/10'
                         : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
                     }`}
                   >
-                    <div className="flex items-center space-x-2.5 min-w-0">
-                      <div className={`w-6 h-6 rounded-lg flex items-center justify-center ${
+                    <div className="flex items-center space-x-3 min-w-0">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
                         isCatActive ? 'bg-white/10 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
                       }`}>
-                        {renderCategoryIcon(cat.iconName, "w-3.5 h-3.5")}
+                        {renderCategoryIcon(cat.iconName, "w-4 h-4")}
                       </div>
-                      <span className="truncate">{cat.title}</span>
+                      <span className="truncate font-extrabold text-sm">{cat.title}</span>
                     </div>
-                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black ml-1 whitespace-nowrap ${
+                    <span className={`px-2.5 py-1 rounded-md text-xs font-black ml-1 whitespace-nowrap ${
                       isCatActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                     }`}>
-                      {totalInCat}
+                      {totalInCat} карт
                     </span>
                   </button>
                 );
               })}
             </div>
           </div>
+        </div>
 
-          {/* BENTO CARD: Difficulty Filter & Shuffling */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-4">
+        {/* RIGHT COLUMN: Difficulty, Shuffle, Hotkeys & Reset */}
+        <div className="lg:col-span-6 space-y-6">
+          
+          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-5">
             
+            {/* Difficulty Selection */}
             <div className="space-y-3">
               <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">Уровень сложности</span>
               
-              {/* Segmented pills selection */}
-              <div className="grid grid-cols-4 gap-1 p-1 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-900">
+              <div className="grid grid-cols-4 gap-1.5 p-1.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-900">
                 {['all', 'Junior', 'Middle', 'Senior'].map((diff) => {
                   const isActive = selectedDifficulty === diff;
                   return (
                     <button
                       key={diff}
-                      onClick={() => { setSelectedDifficulty(diff); setCurrentIndex(0); setIsFlipped(false); }}
-                      className={`py-1.5 rounded-lg text-[10px] font-black uppercase text-center transition-all ${
+                      onClick={() => { setSelectedDifficulty(diff); }}
+                      className={`py-2 rounded-xl text-xs font-black uppercase text-center transition-all cursor-pointer ${
                         isActive
                           ? 'bg-emerald-600 text-white shadow-sm'
                           : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
@@ -715,411 +1157,65 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             </div>
 
             {/* Shuffling Toggle */}
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
               <div className="space-y-0.5">
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Случайный порядок</span>
-                <span className="text-[10px] text-slate-400 block">Перемешать все карты</span>
+                <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Случайный порядок</span>
+                <span className="text-xs text-slate-400 block">Перемешать все выбранные карточки</span>
               </div>
               <button
                 onClick={() => setIsShuffled(!isShuffled)}
-                className={`p-2 rounded-xl border transition-all ${
+                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
                   isShuffled 
                     ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold' 
                     : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600'
                 }`}
               >
-                <RotateCw className={`w-4 h-4 ${isShuffled ? 'animate-spin-slow' : ''}`} />
+                <RotateCw className={`w-5 h-5 ${isShuffled ? 'animate-spin-slow' : ''}`} />
               </button>
             </div>
 
-            {/* Leitner Box Reset progression */}
+            {/* Reset Progress */}
             <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
               <button
                 onClick={handleResetProgress}
-                className={`w-full py-2.5 px-3 rounded-xl border text-xs font-bold transition-all duration-200 flex items-center justify-center space-x-2 ${
+                className={`w-full py-3 px-4 rounded-xl border text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer ${
                   resetConfirm 
                     ? 'bg-amber-500 text-white border-amber-500 shadow-md animate-pulse'
                     : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/50 dark:hover:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400'
                 }`}
               >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>{resetConfirm ? 'Вы уверены? Подтвердить' : 'Сбросить прогресс Лейтнера'}</span>
+                <RefreshCw className="w-4 h-4" />
+                <span>{resetConfirm ? 'Вы уверены? Нажмите для подтверждения' : 'Сбросить прогресс Лейтнера'}</span>
               </button>
-              <p className="text-[9px] text-slate-400 text-center mt-1">
-                Это вернет выбранные карты обратно в Коробку 1.
-              </p>
             </div>
 
           </div>
 
-          {/* BENTO CARD: Keyboard Shortcuts Help */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-3 hidden sm:block">
+          {/* Keyboard Shortcuts Helper */}
+          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 space-y-3">
             <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5 border-b border-slate-100 dark:border-slate-800/80 pb-2">
               <Keyboard className="w-4 h-4 text-emerald-500" />
-              <span>Горячие клавиши</span>
+              <span>Горячие клавиши в окне просмотра</span>
             </span>
-            <div className="space-y-2 text-xs">
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium">
-                <span>Перевернуть</span>
-                <kbd className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">Space</kbd>
+            <div className="grid grid-cols-2 gap-2 text-xs">
+              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                <span>Перевернуть:</span>
+                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-emerald-500 font-black">Space</kbd>
               </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium">
-                <span>Следующая / Прошлая</span>
-                <div className="space-x-1">
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">A</kbd>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">D</kbd>
-                  <span className="text-slate-300">или</span>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">←</kbd>
-                  <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 font-black">→</kbd>
-                </div>
+              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                <span>Выход:</span>
+                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-amber-500 font-black">Esc</kbd>
               </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium pt-1 border-t border-slate-100 dark:border-slate-800/50">
-                <span>Оценка (только с ответом):</span>
+              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                <span>Забыл [1]:</span>
+                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-rose-500 font-black">1</kbd>
               </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium pl-2">
-                <span>Забыл</span>
-                <kbd className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-rose-500 font-black">1</kbd>
-              </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium pl-2">
-                <span>С трудом</span>
-                <kbd className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-amber-500 font-black">2</kbd>
-              </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium pl-2">
-                <span>Знаю отлично!</span>
-                <kbd className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-500 font-black">3</kbd>
+              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
+                <span>Знаю отлично! [3]:</span>
+                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-emerald-500 font-black">3</kbd>
               </div>
             </div>
           </div>
-
-        </div>
-
-        {/* RIGHT COLUMN: FLASHCARD CONTAINER STAGE (col-span-8) */}
-        <div ref={studyStageRef} className="lg:col-span-8 space-y-6 scroll-mt-24">
-          
-          {currentCard ? (
-            <div className="space-y-5 animate-fadeIn">
-              
-              {/* TOP LEVEL NAVIGATION BAR */}
-              <div className="flex items-center justify-between px-3">
-                
-                {/* Active Card Numbering */}
-                <div className="text-xs font-extrabold text-slate-500 flex items-center space-x-1.5">
-                  <span className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-slate-700 dark:text-slate-300">
-                    {currentIndex + 1}
-                  </span>
-                  <span className="text-slate-400">из</span>
-                  <span className="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 px-2 py-1 rounded-lg text-slate-700 dark:text-slate-300">
-                    {filteredQuestions.length}
-                  </span>
-                  {selectedBoxFilter !== 'all' && (
-                    <span className="inline-flex items-center px-2 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase border border-emerald-500/10">
-                      Коробка {selectedBoxFilter}
-                    </span>
-                  )}
-                </div>
-
-                {/* Left-Right manual click keys */}
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={handlePrev}
-                    className="p-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Предыдущая карточка [A]"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={handleNextCardOnly}
-                    className="p-2 rounded-xl bg-white hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900 transition-colors cursor-pointer"
-                    title="Следующая карточка [D]"
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* STUDY STAGE CAROUSEL - TACTILE 3D CARD CONTAINER */}
-              <div 
-                onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
-                onTouchMove={(e) => handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
-                onTouchEnd={handleDragEnd}
-                onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
-                onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
-                onMouseUp={handleDragEnd}
-                onMouseLeave={handleDragEnd}
-                onClick={() => {
-                  if (hasDraggedFar.current || Math.abs(dragOffsetX) > 10) return;
-                  setIsFlipped(prev => !prev);
-                }}
-                style={{
-                  transform: `translateX(${dragOffsetX}px) rotate(${dragOffsetX * 0.04}deg)`,
-                  transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
-                  touchAction: 'pan-y'
-                }}
-                className={`relative w-full rounded-3xl bg-white dark:bg-[#121927] border-2 ${
-                  isFlipped 
-                    ? 'border-emerald-500/30 dark:border-emerald-500/20 shadow-emerald-500/5' 
-                    : 'border-emerald-500/30 dark:border-emerald-500/20 shadow-emerald-500/5'
-                } p-4 sm:p-8 shadow-2xl cursor-pointer hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/5 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[380px] max-w-full select-none`}
-              >
-                {/* Backlighting effect */}
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-full filter blur-2xl group-hover:scale-125 transition-transform" />
-
-                {/* Swipe Right Indicator - Know / Easy */}
-                {dragOffsetX > 15 && (
-                  <div 
-                    style={{ opacity: Math.min(1, (dragOffsetX - 10) / 50) }}
-                    className="absolute top-6 right-6 z-30 px-3.5 py-1.5 rounded-xl bg-emerald-500 text-white font-extrabold text-xs shadow-lg flex items-center space-x-1 animate-fadeIn pointer-events-none"
-                  >
-                    <Check className="w-4 h-4" />
-                    <span>Знаю!</span>
-                  </div>
-                )}
-
-                {/* Swipe Left Indicator - Forgot / Hard */}
-                {dragOffsetX < -15 && (
-                  <div 
-                    style={{ opacity: Math.min(1, (-dragOffsetX - 10) / 50) }}
-                    className="absolute top-6 left-6 z-30 px-3.5 py-1.5 rounded-xl bg-rose-500 text-white font-extrabold text-xs shadow-lg flex items-center space-x-1 animate-fadeIn pointer-events-none"
-                  >
-                    <X className="w-4 h-4" />
-                    <span>Забыл</span>
-                  </div>
-                )}
-
-                {/* CARD UPPER BAR */}
-                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3.5 z-10">
-                  <div className="flex items-center space-x-2">
-                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-black uppercase tracking-wider">
-                      {CATEGORIES.find(c => c.id === currentCard.category)?.title || currentCard.category}
-                    </span>
-                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-[10px] font-extrabold uppercase">
-                      {currentCard.difficulty}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center space-x-1.5 text-xs text-slate-400 font-black">
-                    {/* TTS Button */}
-                    <button
-                      onClick={toggleSpeaking}
-                      className={`p-1.5 rounded-lg border transition-all hover:bg-slate-100 dark:hover:bg-slate-800 ${
-                        isSpeaking 
-                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600' 
-                          : 'border-slate-200 dark:border-slate-800 text-slate-400 hover:text-emerald-500'
-                      }`}
-                      title={isSpeaking ? "Остановить чтение" : "Озвучить карточку голосом"}
-                    >
-                      {isSpeaking ? <VolumeX className="w-3.5 h-3.5 animate-bounce" /> : <Volume2 className="w-3.5 h-3.5" />}
-                    </button>
-
-                    <span className="inline-flex items-center space-x-1 ml-1 font-bold text-[10px] tracking-wider uppercase text-emerald-500">
-                      <Sparkles className="w-3 h-3 text-emerald-400" />
-                      <span>{isFlipped ? 'ОТВЕТ' : 'ВОПРОС'}</span>
-                    </span>
-                  </div>
-                </div>
-
-                {/* CARD CENTER AREA */}
-                <div className="my-auto py-6 space-y-4 z-10">
-                  
-                  {!isFlipped ? (
-                    /* Question side */
-                    <div className="space-y-3 animate-fadeIn text-center sm:text-left">
-                      <div className="flex items-center justify-between">
-                        <div className="text-[10px] font-black uppercase text-emerald-500/70 tracking-widest">ВОПРОС</div>
-                        <div className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center space-x-1 border border-emerald-500/20">
-                          <Sparkles className="w-3 h-3 text-emerald-500" />
-                          <span>Ответ по клику</span>
-                        </div>
-                      </div>
-                      <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug mobile-word-break">
-                        {renderTextWithMarkdown(currentCard.title)}
-                      </h3>
-                    </div>
-                  ) : (
-                    /* Answer side */
-                    <div className="space-y-4 animate-fadeIn">
-                      <div className="text-[10px] font-black uppercase text-emerald-500 tracking-widest">ОТВЕТ</div>
-                      
-                      <div className="text-base text-slate-800 dark:text-slate-100 font-bold leading-relaxed whitespace-pre-line mobile-word-break">
-                        {renderTextWithMarkdown(currentCard.summaryAnswer)}
-                      </div>
-
-                      {currentCard.fullAnswer && currentCard.fullAnswer !== currentCard.summaryAnswer && (
-                        <div className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed font-medium pt-1 whitespace-pre-line border-t border-slate-100 dark:border-slate-800/80 mt-2">
-                          {renderTextWithMarkdown(currentCard.fullAnswer)}
-                        </div>
-                      )}
-
-                      {/* Code Snippet Box */}
-                      {currentCard.codeSnippet && (
-                        <div 
-                          onClick={(e) => e.stopPropagation()} // Stop flip trigger when clicking inside code snippet
-                          className="group/code relative mt-4 rounded-xl bg-slate-950 border border-slate-900 overflow-hidden text-slate-200 text-xs font-mono"
-                        >
-                          {/* Code header bar */}
-                          <div className="bg-slate-900 px-4 py-1.5 flex items-center justify-between border-b border-slate-950">
-                            <span className="text-[10px] uppercase font-black tracking-widest text-slate-500">
-                              {currentCard.codeSnippet.language}
-                            </span>
-                            <button
-                              onClick={(e) => handleCopyCode(e, currentCard.codeSnippet?.code || '', currentCard.id)}
-                              className="text-slate-400 hover:text-white p-1 rounded hover:bg-slate-800 transition-colors flex items-center space-x-1"
-                              title="Копировать код"
-                            >
-                              {copiedId === currentCard.id ? (
-                                <>
-                                  <Check className="w-3 h-3 text-emerald-500" />
-                                  <span className="text-[9px] text-emerald-500 font-bold">Код скопирован!</span>
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-3 h-3" />
-                                  <span className="text-[9px]">Копировать</span>
-                                </>
-                              )}
-                            </button>
-                          </div>
-                          {/* Code area */}
-                          <pre className="p-4 overflow-x-auto select-all max-h-[220px] leading-relaxed">
-                            <code>{currentCard.codeSnippet.code}</code>
-                          </pre>
-                        </div>
-                      )}
-
-                      {/* Expandable Interview Tips Section */}
-                      {currentCard.interviewTips && currentCard.interviewTips.length > 0 && (
-                        <div 
-                          onClick={(e) => { e.stopPropagation(); setShowTips(!showTips); }}
-                          className="mt-3 border border-slate-100 dark:border-slate-800/60 rounded-xl bg-slate-50/50 dark:bg-slate-900/40 overflow-hidden"
-                        >
-                          <div className="px-4 py-2.5 flex items-center justify-between select-none">
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center space-x-2">
-                              <BookOpen className="w-4 h-4 text-amber-500" />
-                              <span>💡 Советы для интервью</span>
-                            </span>
-                            <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showTips ? 'rotate-90' : ''}`} />
-                          </div>
-                          
-                          {showTips && (
-                            <div className="px-4 pb-3 pt-1 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 leading-relaxed space-y-1.5 animate-fadeIn">
-                              {currentCard.interviewTips.map((tip, i) => (
-                                <div key={i} className="flex items-start space-x-1.5">
-                                  <span className="text-amber-500 font-bold mt-0.5">•</span>
-                                  <span className="flex-1">{renderTextWithMarkdown(tip)}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Expandable Common Pitfalls Section */}
-                      {currentCard.commonPitfalls && currentCard.commonPitfalls.length > 0 && (
-                        <div 
-                          onClick={(e) => { e.stopPropagation(); setShowPitfalls(!showPitfalls); }}
-                          className="mt-2.5 border border-slate-100 dark:border-slate-800/60 rounded-xl bg-slate-50/50 dark:bg-slate-900/40 overflow-hidden"
-                        >
-                          <div className="px-4 py-2.5 flex items-center justify-between select-none">
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center space-x-2">
-                              <AlertTriangle className="w-4 h-4 text-rose-500" />
-                              <span>⚠️ Опасные ловушки на собеседовании</span>
-                            </span>
-                            <ChevronRight className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${showPitfalls ? 'rotate-90' : ''}`} />
-                          </div>
-                          
-                          {showPitfalls && (
-                            <div className="px-4 pb-3 pt-1 border-t border-slate-100 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 leading-relaxed space-y-1.5 animate-fadeIn">
-                              {currentCard.commonPitfalls.map((pit, i) => (
-                                <div key={i} className="flex items-start space-x-1.5">
-                                  <span className="text-rose-500 font-bold mt-0.5">•</span>
-                                  <span className="flex-1">{renderTextWithMarkdown(pit)}</span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                    </div>
-                  )}
-
-                </div>
-
-                {/* CARD FOOTER BAR */}
-                <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-medium select-none">
-                  <span>{isFlipped ? 'Оцените знания кнопками ниже или свайпом' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}</span>
-                  <span className="font-mono text-[11px] text-slate-400 font-bold">
-                    {currentIndex + 1} / {filteredQuestions.length}
-                  </span>
-                </div>
-
-              </div>
-
-              {/* ACTION RATING BUTTONS - ALWAYS VISIBLE */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 animate-fadeIn">
-                
-                {/* OPTION 1: HARD / FORGOT */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleNext('hard'); }}
-                  className="p-3.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/60 text-rose-700 dark:text-rose-400 font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm hover:shadow-rose-500/10 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <div className="flex items-center space-x-1">
-                    <X className="w-4 h-4 text-rose-500" />
-                    <span>Забыл</span>
-                  </div>
-                  <span className="text-[10px] text-rose-500/80 dark:text-rose-400/80 font-bold">Вернуть в Коробку 1</span>
-                </button>
-
-                {/* OPTION 2: GOOD / STRUGGLE */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleNext('good'); }}
-                  className="p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-amber-700 dark:text-amber-400 font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm hover:shadow-amber-500/10 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <div className="flex items-center space-x-1">
-                    <Zap className="w-4 h-4 text-amber-500" />
-                    <span>С трудом</span>
-                  </div>
-                  <span className="text-[10px] text-amber-500/80 dark:text-amber-400/80 font-bold">Оставить как есть</span>
-                </button>
-
-                {/* OPTION 3: EASY / EXCELLENT */}
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleNext('easy'); }}
-                  className="p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-700 dark:text-emerald-400 font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm hover:shadow-emerald-500/10 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
-                >
-                  <div className="flex items-center space-x-1">
-                    <Check className="w-4 h-4 text-emerald-500" />
-                    <span>Знаю отлично!</span>
-                  </div>
-                  <span className="text-[10px] text-emerald-500/80 dark:text-emerald-400/80 font-bold">Коробка +1</span>
-                </button>
-
-              </div>
-
-            </div>
-          ) : (
-            /* EMPTY STATE FOR CARD FILTERS */
-            <div className="text-center py-16 bg-white dark:bg-[#121927] rounded-3xl border border-slate-200 dark:border-slate-800 p-8 space-y-4">
-              <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-400">
-                <Info className="w-8 h-8 text-emerald-500" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="font-black text-slate-800 dark:text-slate-200 text-lg">Нет карточек в выбранной категории</h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  В коробке {selectedBoxFilter !== 'all' ? selectedBoxFilter : ''} или по уровню "{selectedDifficulty}" в данный момент нет доступных карточек.
-                </p>
-              </div>
-              <div className="pt-2">
-                <button
-                  onClick={handleClearAllFilters}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-md transition-all flex items-center space-x-2 mx-auto"
-                >
-                  <RefreshCw className="w-3.5 h-3.5" />
-                  <span>Сбросить все фильтры</span>
-                </button>
-              </div>
-            </div>
-          )}
 
         </div>
 

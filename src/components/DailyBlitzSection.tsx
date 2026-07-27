@@ -5,19 +5,18 @@ import {
   Zap, 
   CheckCircle2, 
   XCircle, 
-  RotateCcw, 
   Flame, 
   Sparkles, 
   ArrowRight, 
   Award, 
   Check, 
   HelpCircle,
-  Clock,
   Play,
   CheckCircle,
   BarChart2,
   Calendar,
-  ChevronRight
+  ChevronRight,
+  Lock
 } from 'lucide-react';
 
 interface DailyBlitzSectionProps {
@@ -70,6 +69,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
   const currentQ = todayQuestions[currentIdx];
 
   const handleStartBlitz = () => {
+    if (isCompletedToday) return; // Block starting if already completed today
     setMode('active');
     setCurrentIdx(0);
     setSelectedAnswers({});
@@ -104,8 +104,12 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
       setScore(finalScore);
       setMode('summary');
 
-      // Update User Progress
+      // Update User Progress safely (only once per day)
       onUpdateProgress(prev => {
+        if (prev.dailyBlitzHistory?.[todayStr]) {
+          return prev; // Already recorded today, prevent double XP/streak
+        }
+
         const newHistory = {
           ...(prev.dailyBlitzHistory || {}),
           [todayStr]: {
@@ -162,54 +166,56 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50/50 to-amber-50/20 dark:from-[#0d1424] dark:via-[#090d16] dark:to-[#121929] border border-amber-500/20 dark:border-amber-500/30 p-5 sm:p-6 shadow-lg shadow-amber-500/5 space-y-5 backdrop-blur-sm transition-all">
+    <div className="h-full flex flex-col justify-between relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50/50 to-amber-50/20 dark:from-[#0d1424] dark:via-[#090d16] dark:to-[#121929] border border-amber-500/20 dark:border-amber-500/30 p-4 sm:p-5 shadow-lg shadow-amber-500/5 gap-3.5 backdrop-blur-sm transition-all">
       
       {/* Background Decorative Mesh Lights */}
       <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-gradient-to-br from-amber-500/15 to-orange-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-64 h-64 bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
 
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
-        <div className="flex items-start sm:items-center space-x-3.5">
+      <div className="flex flex-wrap items-center justify-between gap-2.5 relative z-10">
+        <div className="flex items-center space-x-2.5">
           <div className="relative shrink-0">
-            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 p-0.5 shadow-md shadow-amber-500/30 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 p-0.5 shadow-md shadow-amber-500/30 flex items-center justify-center">
               <div className="w-full h-full bg-amber-500 dark:bg-amber-500/90 rounded-[10px] flex items-center justify-center text-slate-950">
-                <Zap className="w-6 h-6 fill-slate-950" />
+                <Zap className="w-5 h-5 fill-slate-950" />
               </div>
             </div>
-            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border-2 border-white dark:border-[#0d1424]"></span>
-            </span>
+            {!isCompletedToday && (
+              <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500 border-2 border-white dark:border-[#0d1424]"></span>
+              </span>
+            )}
           </div>
 
           <div className="space-y-0.5">
-            <div className="flex items-center space-x-2.5 flex-wrap gap-y-1">
-              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
-                Ежедневный Блиц-Тест
+            <div className="flex items-center space-x-2 flex-wrap gap-y-0.5">
+              <h2 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
+                Ежедневный Блиц
               </h2>
-              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/15 dark:bg-amber-400/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center space-x-1">
+              <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-amber-500/15 dark:bg-amber-400/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center space-x-1">
                 <Sparkles className="w-3 h-3 text-amber-500" />
                 <span>5 вопросов • 2 мин</span>
               </span>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
-              Закрепите ключевые концепции DevOps и поддерживайте ваш ежедневный стрик
+            <p className="text-[11px] text-slate-600 dark:text-slate-400 font-medium line-clamp-1">
+              Закрепите ключевые концепции DevOps и держите стрик
             </p>
           </div>
         </div>
 
         {/* Streak & Status Pill */}
-        <div className="flex items-center space-x-2 shrink-0 self-start sm:self-auto">
-          <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center space-x-1.5 shadow-xs">
-            <Flame className="w-4 h-4 fill-amber-500 text-amber-500 animate-bounce" />
+        <div className="flex items-center space-x-2 shrink-0">
+          <div className="px-2.5 py-1 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center space-x-1 shadow-xs">
+            <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500 animate-bounce" />
             <span>Стрик: <strong>{progress.dailyStreak || 0} дн.</strong></span>
           </div>
 
           {isCompletedToday && mode === 'idle' && (
-            <div className="px-3 py-1.5 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-extrabold flex items-center space-x-1.5">
-              <CheckCircle className="w-4 h-4 text-emerald-500" />
-              <span>Сегодня пройдено ({todayResult?.score}/{todayResult?.total})</span>
+            <div className="px-2.5 py-1 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-extrabold flex items-center space-x-1">
+              <CheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Сдан ({todayResult?.score}/{todayResult?.total})</span>
             </div>
           )}
         </div>
@@ -217,41 +223,56 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
 
       {/* IDLE STATE */}
       {mode === 'idle' && (
-        <div className="bg-white/80 dark:bg-[#070b14]/70 border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-5 rounded-xl space-y-4 relative z-10 backdrop-blur-md">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-            
-            <div className="space-y-2 flex-1">
-              <div className="flex items-center space-x-2 text-xs font-bold text-slate-700 dark:text-slate-300">
-                <Calendar className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>Подборка тем на сегодня ({new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}):</span>
-              </div>
-
-              {/* Topics Pills */}
-              <div className="flex flex-wrap gap-2 pt-0.5">
-                {todayQuestions.map((q, i) => {
-                  const badge = getCategoryBadge(q.category);
-                  return (
-                    <div
-                      key={q.id || i}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold border flex items-center space-x-1.5 ${badge.bg}`}
-                    >
-                      <span className="opacity-60 text-[10px]">#{i + 1}</span>
-                      <span>{q.category}</span>
-                    </div>
-                  );
-                })}
-              </div>
+        <div className="bg-white/80 dark:bg-[#070b14]/70 border border-slate-200/80 dark:border-slate-800/80 p-3.5 rounded-xl space-y-3 relative z-10 backdrop-blur-md my-auto flex flex-col justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-700 dark:text-slate-300">
+              <Calendar className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+              <span>Темы дня ({new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' })}):</span>
             </div>
 
-            {/* CTA Button */}
-            <button
-              onClick={handleStartBlitz}
-              className="w-full lg:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-slate-950 font-black text-xs sm:text-sm tracking-wide transition-all duration-200 shadow-md shadow-amber-500/25 flex items-center justify-center space-x-2.5 shrink-0 cursor-pointer group"
-            >
-              <Play className="w-4 h-4 fill-slate-950 group-hover:scale-110 transition-transform" />
-              <span>{isCompletedToday ? 'Пройти блиц повторно' : 'Начать ежедневный блиц'}</span>
-              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+            {/* Topics Pills */}
+            <div className="flex flex-wrap gap-1.5">
+              {todayQuestions.map((q, i) => {
+                const badge = getCategoryBadge(q.category);
+                return (
+                  <div
+                    key={q.id || i}
+                    className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold border flex items-center space-x-1 ${badge.bg}`}
+                  >
+                    <span className="opacity-60 text-[9px]">#{i + 1}</span>
+                    <span className="truncate max-w-[100px]">{q.category}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CTA Button / Disabled State */}
+          <div className="pt-1">
+            {isCompletedToday ? (
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+                <button
+                  disabled
+                  className="w-full sm:w-auto px-4 py-2 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-extrabold text-xs flex items-center justify-center space-x-1.5 cursor-not-allowed opacity-90"
+                >
+                  <CheckCircle className="w-4 h-4 text-emerald-500" />
+                  <span>Пройдено сегодня ({todayResult?.score}/{todayResult?.total})</span>
+                </button>
+                <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400 flex items-center space-x-1">
+                  <Lock className="w-3 h-3 text-slate-400" />
+                  <span>Завтра откроется новый</span>
+                </span>
+              </div>
+            ) : (
+              <button
+                onClick={handleStartBlitz}
+                className="w-full px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-slate-950 font-black text-xs tracking-wide transition-all duration-200 shadow-md shadow-amber-500/25 flex items-center justify-center space-x-2 cursor-pointer group"
+              >
+                <Play className="w-4 h-4 fill-slate-950 group-hover:scale-110 transition-transform" />
+                <span>Начать ежедневный блиц</span>
+                <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            )}
           </div>
         </div>
       )}
@@ -416,19 +437,17 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
             </div>
           </div>
 
-          <div className="pt-3 flex justify-center space-x-3">
+          <div className="p-3 rounded-xl bg-slate-100/70 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-400 font-medium max-w-sm mx-auto flex items-center justify-center space-x-1.5">
+            <Lock className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+            <span>Следующий тест откроется завтра!</span>
+          </div>
+
+          <div className="pt-2 flex justify-center">
             <button
               onClick={() => setMode('idle')}
-              className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer"
+              className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-md shadow-amber-500/20 cursor-pointer"
             >
-              Вернуться на дашборд
-            </button>
-            <button
-              onClick={handleStartBlitz}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs transition-all flex items-center space-x-2 shadow-md shadow-amber-500/20 cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Пройти повторно</span>
+              Отлично, на дашборд!
             </button>
           </div>
         </div>
@@ -437,4 +456,5 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
     </div>
   );
 };
+
 
