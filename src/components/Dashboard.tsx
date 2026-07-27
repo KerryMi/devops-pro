@@ -1,7 +1,9 @@
 import React from 'react';
 import { Question, UserProgress } from '../types';
 import { DailyBlitzSection } from './DailyBlitzSection';
+import { DashboardAchievementsWidget } from './DashboardAchievementsWidget';
 import { evaluateAchievements } from '../data/achievements';
+import { calculateUserGamification } from '../utils/gamification';
 import { INCIDENT_SCENARIOS } from '../data/incidents';
 import { 
   Sparkles, 
@@ -27,6 +29,7 @@ interface DashboardProps {
   onNavigate: (tab: any, filterCategory?: string) => void;
   readinessScore: number;
   onUpdateProgress?: (updater: (prev: UserProgress) => UserProgress) => void;
+  unseenAchievementsCount?: number;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({
@@ -34,7 +37,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   questions,
   onNavigate,
   readinessScore,
-  onUpdateProgress = () => {}
+  onUpdateProgress = () => {},
+  unseenAchievementsCount = 0
 }) => {
   const masteredCount = progress.masteredQuestionIds.length;
   const totalQuestions = questions.length;
@@ -46,15 +50,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const solvedIncidentsCount = (progress.solvedIncidentIds || []).length;
   const totalQuizzesCount = (progress.quizResults || []).length;
 
-  // Determine current focus career rank
-  const getUserLevelTitle = (count: number) => {
-    if (count >= 10) return 'Senior DevOps Architect';
-    if (count >= 7) return 'Lead DevOps Engineer';
-    if (count >= 4) return 'Middle DevOps Engineer';
-    if (count >= 1) return 'Junior DevOps Practitioner';
-    return 'DevOps Novice';
-  };
-  const rankTitle = getUserLevelTitle(unlockedCount);
+  // Funny IT Rank Calculation
+  const gamification = calculateUserGamification(progress, questions);
+  const rankTitle = `${gamification.rank.icon} ${gamification.rank.title}`;
 
   // Status calculations for our 4 levels
   const level1Status = masteredCount === totalQuestions 
@@ -411,6 +409,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </div>
 
       </div>
+
+      {/* SECTION: GAMIFICATION & ACHIEVEMENTS PANEL */}
+      <DashboardAchievementsWidget
+        progress={progress}
+        questions={questions}
+        onNavigate={onNavigate}
+        unseenAchievementsCount={unseenAchievementsCount}
+      />
 
       {/* SECTION 2: INTERACTIVE DAILY EXERCISE */}
       <DailyBlitzSection

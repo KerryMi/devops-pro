@@ -550,5 +550,224 @@ scan_image:
       'Настраивать жесткое падение сборки (fail build) при обнаружении любых мелких CVE. Это парализует работу команд разработки, так как многие CVE являются ложноположительными (False Positive) или не влияют на рантайм. Начинать нужно с блокировки только Critical уязвимостей.'
     ],
     tags: ['CICD', 'DevSecOps', 'ShiftLeft', 'SAST', 'SCA', 'Trivy']
+  },
+  {
+    id: 'cicd-17',
+    title: 'Что такое Артефакты (Artifacts) и Кэш (Cache) в CI/CD пайплайнах? В чем их ключевые различия?',
+    category: 'cicd',
+    difficulty: 'Junior',
+    summaryAnswer: 'Кэш сохраняет промежуточные файлы независимых сборок (node_modules, .m2, cargo) для ускорения CI. Артефакты — это итоговые результаты работы конкретного этапа (бинари, zip, junit отчеты), передаваемые между stage или пользователю.',
+    fullAnswer: `Понимание разницы между Cache и Artifacts критично для оптимизации времени и стоимости CI/CD:
+
+1. **Кэш (Cache)**:
+   - **Назначение**: Ускорение выполнения идентичных задач за счет повторного использования зависимостей (скачанные npm-пакеты, pip wheels, maven/gradle репозиторий, ccache).
+   - **Жизненный цикл**: Кэш является не гарантированным и может удаляться сервером. Пайплайн НЕ должен падать, если кэш отсутствует или очищен (он просто перекачает пакеты заново).
+   - **Шаринг**: Обычно распределен по ключу (например, hash от \`package-lock.json\`) между всеми ветками одного репозитория.
+
+2. **Артефакты (Artifacts)**:
+   - **Назначение**: Передача готовых результатов работы одного stage в другой (например, скомпилированный файл \`dist/\` с этапа \`build\` передается на этап \`test\` или \`deploy\`), либо сохранение отчетов о покрытии кода (coverage report) для скачивания через UI.
+   - **Жизненный цикл**: Гарантированно сохраняются и привязываются строго к конкретному запуску пайплайна (Pipeline ID / Commit SHA). Имеют явный срок жизни (TTL / Expiration).`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример конфигурации Cache и Artifacts в GitLab CI:
+build_app:
+  stage: build
+  cache:
+    key: files-$CI_COMMIT_REF_SLUG
+    paths:
+      - .npm/ # Сохраняем кэш npm пакетов
+  script:
+    - npm ci --cache .npm --prefer-offline
+    - npm run build
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - dist/ # Передаем собранный бинарник/bundle далее`
+    },
+    interviewTips: [
+      'Упомяните, что кэш нельзя использовать для передачи критических бинарников на этап деплоя, так как кэш может инвалидироваться или быть поврежден соседней сборкой в другой ветке.'
+    ],
+    commonPitfalls: [
+      'Сохранять каталог node_modules/ в artifacts вместо cache, из-за чего гигабайты зависимостей скачиваются и загружаются на каждый коммит во все инстансы GitLab/GitHub.'
+    ],
+    tags: ['CICD', 'Cache', 'Artifacts', 'GitLabCI', 'GitHubActions', 'Optimization']
+  },
+  {
+    id: 'cicd-18',
+    title: 'Как безопасно передавать Секреты (API ключи, пароли) в CI/CD пайплайн и предотвратить их утечку в логи?',
+    category: 'cicd',
+    difficulty: 'Junior',
+    summaryAnswer: 'Секреты должны храниться в зашифрованных Vault/CI переменной со скрытием (Masked/Protected). Пайплайн не должен выводить переменные через set -x или echo. В прод-средах рекомендуется бесключевая OIDC-аутентификация.',
+    fullAnswer: `Утечка секретов в логи CI/CD — одна из частых причин взломов инфраструктуры.
+
+**Правила безопасной работы с секретами**:
+
+1. **Использование встроенных Secret Variables**:
+   - Вносить токены и пароли ТОЛЬКО через специальное меню CI/CD переменных (GitHub Secrets, GitLab Masked Variables).
+   - Включать атрибут **Masked** (автоматически заменяет значение ключа на \`[MASKED]\` в логах, если его случайно выведет скрипт).
+   - Включать атрибут **Protected** (секрет доступен только пайплайнам, запущенным на защищенных ветках/тегах, например \`main\`).
+
+2. **Запрет печати переменных в скриптах**:
+   - Избегать отладочных команд \`printenv\`, \`env\`, \`set -x\`, \`echo $SECRET_KEY\`.
+
+3. **Загрузка секретов на лету (HashiCorp Vault)**:
+   - В больших компаниях CI запрашивает временные динамические токены у HashiCorp Vault с коротким TTL (например, на 10 минут) прямо во время выполнения job.
+
+4. **OIDC (OpenID Connect / Keyless)**:
+   - Отказ от долгоживущих AWS_ACCESS_KEY_ID / GCP Service Account keys.
+   - CI-раннер аутентифицируется в облаке AWS/GCP/Azure напрямую через OIDC токен, получая кратковременную роль без сохранения паролей.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример использования OIDC в GitHub Actions для входа в AWS без статичных ключей:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # Требуется для OIDC
+      contents: read
+    steps:
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/my-github-ci-role
+          aws-region: us-east-1`
+    },
+    interviewTips: [
+      'Упомяните инструмент GitLeaks или Trufflehog, который запускается в pre-commit хуках или на первом этапе CI для отлавливания случайных секретов, закоммиченных в исходный код.'
+    ],
+    commonPitfalls: [
+      'Передавать секреты через `--build-arg` в `docker build`. Все `--build-arg` навсегда сохраняются в истории слоев Docker-образа и могут быть извлечены командой `docker history`!'
+    ],
+    tags: ['CICD', 'Security', 'Secrets', 'OIDC', 'Vault', 'GitHubActions']
+  },
+  {
+    id: 'cicd-19',
+    title: 'Как ускорить сборку Docker-образов в CI/CD с помощью Docker Layer Caching и BuildKit (inline-cache)?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Docker кэширует слои. Инструкции, меняющиеся реже всего (COPY package.json, RUN npm install), должны располагаться ВЫШЕ частых изменений (COPY . .). В CI кэш сохраняется через BuildKit backend или --cache-from из registry.',
+    fullAnswer: `По умолчанию каждый раннер CI/CD стартует с чистой файловой системой, поэтому локальный кэш \`docker build\` теряется.
+
+**Техники оптимизации сборки в CI**:
+
+1. **Правильный порядок инструкций в Dockerfile**:
+   - Слои инвалидируются сверху вниз. Если изменился хотя бы один файл в инструкции \`COPY\`, все последующие слои пересобираются с нуля.
+   - *Неправильно*: сначала \`COPY . .\`, потом \`RUN npm install\`.
+   - *Правильно*: сначала \`COPY package*.json .\`, затем \`RUN npm install\`, и только в самом конце \`COPY . .\`.
+
+2. **Включение Docker BuildKit & Remote Cache**:
+   - BuildKit позволяет экспортировать манифест кэша прямо в Container Registry (Docker Registry) при сборке образ-хранилища.
+   - В параметрах сборки задается \`--cache-to type=registry,ref=app:buildcache\` и \`--cache-from type=registry,ref=app:buildcache\`.
+   - Раннер перед сборкой скачивает только таблицы слоев кэша, избегая повторной прогонки тяжелых \`apt-get\` и \`pip install\`.`,
+    codeSnippet: {
+      language: 'bash',
+      code: `# Включение BuildKit и сборка с экспортом/импортом удаленного кэша в реестр:
+export DOCKER_BUILDKIT=1
+
+docker build \\
+  --build-arg BUILDKIT_INLINE_CACHE=1 \\
+  --cache-from myregistry.com/app:build-cache \\
+  -t myregistry.com/app:latest \\
+  -t myregistry.com/app:$CI_COMMIT_SHA .`
+    },
+    interviewTips: [
+      'Расскажите про Multi-stage builds: они не только уменьшают размер финального образа с 1 ГБ до 20 МБ, но и ускоряют CI, так как стадии с компиляцией можно эффективно кэшировать.'
+    ],
+    commonPitfalls: [
+      'Забывать добавлять `.dockerignore`, из-за чего изменившийся лог-файл или локальная папка `.git` нечаянно сбрасывает кэш тяжелого слоя `COPY . .`.'
+    ],
+    tags: ['CICD', 'Docker', 'BuildKit', 'Caching', 'Performance']
+  },
+  {
+    id: 'cicd-20',
+    title: 'В чем разница между стратегиями развертывания Blue-Green, Canary и Rolling Update?',
+    category: 'cicd',
+    difficulty: 'Middle',
+    summaryAnswer: 'Rolling Update постепенно заменяет старые поды новыми. Blue-Green разворачивает параллельный дублирующий окружение и мгновенно переключает трафик. Canary направляет маленький % пользователей (5-10%) на новую версию для проверки метрик.',
+    fullAnswer: `Сравнение стратегий плавного релиза приложений без простоя (Zero Downtime Deployment):
+
+1. **Rolling Update (Волновое обновление)**:
+   - Поды обновляются по очереди (например, по 25% за раз).
+   - *Плюсы*: Не требует удвоения серверных ресурсов.
+   - *Минусы*: Во время обновления в кластере одновременно живут и обрабатывают запросы обе версии кода (v1 и v2). Обратная совместимость БД обязательна.
+
+2. **Blue-Green Deployment**:
+   - Создаются два абсолютно одинаковых окружения: Blue (текущий прод v1) и Green (новое v2).
+   - Новая версия полностью поднимается и тестируется в Green. После этого роутер/балансировщик мгновенно переключает 100% трафика на Green.
+   - *Плюсы*: Мгновенный откат (Rollback) — достаточно вернуть переключатель обратно на Blue.
+   - *Минусы*: Требует x2 ресурсов инфраструктуры на время деплоя.
+
+3. **Canary Deployment (Канареечный релиз)**:
+   - Новая версия v2 разворачивается рядом с v1, но на нее направляется лишь небольшой процент пользователей (например, 5% трафика).
+   - Автоматика (например, Argo Rollouts / Service Mesh Istio) отслеживает метрики ошибок (HTTP 5xx, latency).
+   - Если за 10 минут ошибок нет, трафик плавно повышается: 25% -> 50% -> 100%. При росте ошибок трафик автоматически сбрасывается на 0%.`,
+    codeSnippet: {
+      language: 'yaml',
+      code: `# Пример Canary стратегии в Argo Rollouts для Kubernetes:
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: rollout-canary
+spec:
+  replicas: 5
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20 # Направить 20% трафика
+        - pause: { duration: 10m } # Ждать 10 минут анализа
+        - setWeight: 50
+        - pause: { duration: 10m }`
+    },
+    interviewTips: [
+      'Упомяните, что при Canary и Blue-Green всегда критично проектировать миграции схемы базы данных так, чтобы v1 и v2 версии кода могли одновременно работать с одной и той же БД (Паттерн Expand and Contract).'
+    ],
+    commonPitfalls: [
+      'Делать деструктивные изменения в БД (например, удаление столбца таблицы) до того, как Canary релиз завершится и v1 инстансы полностью завершат работу.'
+    ],
+    tags: ['CICD', 'Deployments', 'BlueGreen', 'Canary', 'Kubernetes', 'ArgoRollouts']
+  },
+  {
+    id: 'cicd-21',
+    title: 'Как организовать автоматическое версионирование (Semantic Versioning) и ченджлог в CI/CD с помощью Conventional Commits?',
+    category: 'cicd',
+    difficulty: 'Senior',
+    summaryAnswer: 'Разработчики пишут коммиты по стандарту Conventional Commits (feat:, fix:, BREAKING CHANGE:). CI-инструмент (semantic-release / release-please) анализирует коммиты, сам повышает версию SemVer (v1.2.3), генерирует CHANGELOG.md и создает Git Tag.',
+    fullAnswer: `Ручное проставление версий и ведение файлов изменений приводит к ошибкам и путанице. Автоматизация решает эту проблему через **Conventional Commits**.
+
+**Правила написания коммитов**:
+- \`fix: resolve null pointer in user auth\` -> Повышает **PATCH** версию (v1.0.0 -> v1.0.1).
+- \`feat: add dark theme toggle\` -> Повышает **MINOR** версию (v1.0.0 -> v1.1.0).
+- \`feat!: drop node 14 support\` или \`BREAKING CHANGE:\` -> Повышает **MAJOR** версию (v1.0.0 -> v2.0.0).
+
+**Автоматический пайплайн (Semantic Release / Release Please)**:
+1. Разработчик мержит PR с правильным заголовком коммита в \`main\` ветку.
+2. CI запустит утилиту \`semantic-release\` (или \`release-please\` от Google).
+3. Утилита выкачивает историю коммитов с момента последнего тега.
+4. Вычисляет новую версию по SemVer (например, \`v2.4.1\`).
+5. Генерирует/обновляет файл \`CHANGELOG.md\` со списком фич и багфиксов.
+6. Публикует Git Tag \`v2.4.1\` и GitHub/GitLab Release.
+7. Запускает сбоку и публикацию Docker-образа \`myapp:2.4.1\` и \`myapp:2.4\` в реестр.`,
+    codeSnippet: {
+      language: 'json',
+      code: `// Пример файла .releaserc.json для semantic-release
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    "@semantic-release/changelog",
+    "@semantic-release/git",
+    "@semantic-release/github"
+  ]
+}`
+    },
+    interviewTips: [
+      'Упомяните линтер коммитов (commitlint) в git pre-receive / pre-commit хуках или в pull request валидации CI. Он заблокирует мерж PR, если заголовок написан не по стандарту Conventional Commits.'
+    ],
+    commonPitfalls: [
+      'Использовать мутабельный тег `latest` на продуктивном сервере в Kubernetes вместо неизменяемых (immutable) тегов с номерами версий SemVer или Git Commit SHA.'
+    ],
+    tags: ['CICD', 'SemVer', 'Git', 'Release', 'Automation', 'ConventionalCommits']
   }
 ];
+

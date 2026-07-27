@@ -142,6 +142,7 @@ export interface Achievement {
   goalValue: number;
   unit?: string;
   isUnlocked: boolean;
+  xpReward?: number;
 }
 
 export interface UserProgress {

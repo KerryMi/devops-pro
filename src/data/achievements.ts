@@ -10,6 +10,7 @@ export interface AchievementDefinition {
   bgLight: string;
   goalValue: number;
   unit?: string;
+  xpReward: number;
   getValue: (progress: UserProgress, questions: Question[]) => number;
 }
 
@@ -24,6 +25,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-amber-50/80 dark:bg-amber-950/30',
     goalValue: 1,
     unit: 'вопрос',
+    xpReward: 100,
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -36,6 +38,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-emerald-50/80 dark:bg-emerald-950/30',
     goalValue: 10,
     unit: 'вопросов',
+    xpReward: 200,
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -48,6 +51,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-purple-50/80 dark:bg-purple-950/30',
     goalValue: 30,
     unit: 'вопросов',
+    xpReward: 500,
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -60,6 +64,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-orange-50/80 dark:bg-orange-950/30',
     goalValue: 7,
     unit: 'дней',
+    xpReward: 300,
     getValue: (p) => p.dailyStreak,
   },
   {
@@ -72,6 +77,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-emerald-50/80 dark:bg-emerald-950/30',
     goalValue: 3,
     unit: 'тестов',
+    xpReward: 350,
     getValue: (p) => p.quizResults.filter(r => (r.score / r.totalQuestions) >= 0.8).length,
   },
   {
@@ -84,6 +90,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-rose-50/80 dark:bg-rose-950/30',
     goalValue: 1,
     unit: 'авария',
+    xpReward: 250,
     getValue: (p) => p.solvedIncidentIds ? p.solvedIncidentIds.length : 0,
   },
   {
@@ -95,6 +102,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     color: 'text-sky-500 border-sky-200 dark:border-sky-500/30 bg-sky-500/10',
     bgLight: 'bg-sky-50/80 dark:bg-sky-950/30',
     goalValue: 1,
+    unit: 'легенда',
+    xpReward: 400,
     getValue: (p) => p.savedLegend ? 1 : 0,
   },
   {
@@ -107,6 +116,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-teal-50/80 dark:bg-teal-950/30',
     goalValue: 5,
     unit: 'карточек',
+    xpReward: 200,
     getValue: (p) => Object.values(p.flashcardBoxes || {}).filter(box => box >= 3).length,
   },
   {
@@ -119,6 +129,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-amber-50/80 dark:bg-amber-950/30',
     goalValue: 5,
     unit: 'вопросов',
+    xpReward: 250,
     getValue: (p, questions) => {
       const linuxIds = new Set(questions.filter(q => q.category === 'linux').map(q => q.id));
       return p.masteredQuestionIds.filter(id => linuxIds.has(id)).length;
@@ -134,6 +145,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-blue-50/80 dark:bg-blue-950/30',
     goalValue: 5,
     unit: 'вопросов',
+    xpReward: 300,
     getValue: (p, questions) => {
       const k8sIds = new Set(questions.filter(q => q.category === 'k8s').map(q => q.id));
       return p.masteredQuestionIds.filter(id => k8sIds.has(id)).length;
@@ -149,19 +161,38 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     bgLight: 'bg-violet-50/80 dark:bg-violet-950/30',
     goalValue: 5,
     unit: 'закладок',
+    xpReward: 150,
     getValue: (p) => p.bookmarkedQuestionIds.length,
   },
   {
-    id: 'ai_interview_ready',
-    title: 'AI Симуляция',
-    description: 'Пройдите хотя бы 1 сессию голосового или текстового AI Собеседования.',
-    category: 'Career',
-    iconName: 'Bot',
-    color: 'text-cyan-500 border-cyan-200 dark:border-cyan-500/30 bg-cyan-500/10',
-    bgLight: 'bg-cyan-50/80 dark:bg-cyan-950/30',
+    id: 'daily_blitz_master',
+    title: 'Гроссмейстер Блица',
+    description: 'Пройдите хотя бы 1 интерактивный ежедневный спринт-тест.',
+    category: 'Practice',
+    iconName: 'Zap',
+    color: 'text-yellow-500 border-yellow-200 dark:border-yellow-500/30 bg-yellow-500/10',
+    bgLight: 'bg-yellow-50/80 dark:bg-yellow-950/30',
     goalValue: 1,
-    unit: 'сессия',
-    getValue: (p) => p.completedInterviewSessionsCount || 0,
+    unit: 'спринт',
+    xpReward: 150,
+    getValue: (p) => Object.keys(p.dailyBlitzHistory || {}).length,
+  },
+  {
+    id: 'test_architect',
+    title: 'Архитектор Тестирования',
+    description: 'Пройдите хотя бы 1 технический тест без единой ошибки (100% балл) или завершите 2+ теста.',
+    category: 'Practice',
+    iconName: 'GraduationCap',
+    color: 'text-indigo-500 border-indigo-200 dark:border-indigo-500/30 bg-indigo-500/10',
+    bgLight: 'bg-indigo-50/80 dark:bg-indigo-950/30',
+    goalValue: 1,
+    unit: 'тест',
+    xpReward: 300,
+    getValue: (p) => {
+      const perfectQuizzes = (p.quizResults || []).filter(r => (r.score / r.totalQuestions) >= 1.0 && r.totalQuestions > 0).length;
+      const totalPassed = (p.quizResults || []).filter(r => (r.score / r.totalQuestions) >= 0.7).length;
+      return perfectQuizzes > 0 ? 1 : (totalPassed >= 2 ? 1 : 0);
+    },
   }
 ];
 
@@ -183,6 +214,7 @@ export function evaluateAchievements(progress: UserProgress, questions: Question
       goalValue: def.goalValue,
       unit: def.unit,
       isUnlocked,
+      xpReward: def.xpReward,
     };
   });
 }

@@ -28,6 +28,7 @@ import {
 import { evaluateAchievements } from './data/achievements';
 import { ProfileView } from './components/ProfileView';
 import { AdminView } from './components/AdminView';
+import { ToastNotificationContainer, ToastItem } from './components/ToastNotificationContainer';
 import { auth, loadProgressFromFirestore, saveProgressToFirestore } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
@@ -91,6 +92,32 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
+  // Toast notifications & Gamification trackers
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [seenAchievementIds, setSeenAchievementIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('devops_pro_seen_achievements');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const triggerToast = (toast: Omit<ToastItem, 'id'>) => {
+    const id = Date.now().toString() + Math.random().toString().slice(2, 6);
+    const newToast: ToastItem = { ...toast, id };
+    setToasts(prev => [...prev, newToast]);
+
+    // Auto dismiss after 4.5s
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4500);
+  };
+
+  const handleDismissToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
   const handleSetIsAdmin = (val: boolean) => {
     setIsAdmin(val);
     setAdminState(val);
@@ -141,6 +168,41 @@ export default function App() {
   const achievements = evaluateAchievements(progress, questions);
   const unlockedAchievementsCount = achievements.filter(a => a.isUnlocked).length;
   const totalAchievementsCount = achievements.length;
+  const unseenAchievementsCount = achievements.filter(a => a.isUnlocked && !seenAchievementIds.includes(a.id)).length;
+
+  // Mark achievements as seen when viewing achievements tab
+  useEffect(() => {
+    if (activeTab === 'achievements') {
+      const currentUnlockedIds = achievements.filter(a => a.isUnlocked).map(a => a.id);
+      setSeenAchievementIds(prev => {
+        const merged = Array.from(new Set([...prev, ...currentUnlockedIds]));
+        localStorage.setItem('devops_pro_seen_achievements', JSON.stringify(merged));
+        return merged;
+      });
+    }
+  }, [activeTab]);
+
+  // Detect newly unlocked achievements & trigger toast
+  const prevUnlockedRef = React.useRef<string[]>([]);
+  useEffect(() => {
+    const currentUnlocked = achievements.filter(a => a.isUnlocked);
+    const currentUnlockedIds = currentUnlocked.map(a => a.id);
+    
+    // Check if newly unlocked (only after initial load)
+    if (prevUnlockedRef.current.length > 0) {
+      const newlyUnlocked = currentUnlocked.filter(a => !prevUnlockedRef.current.includes(a.id));
+      newlyUnlocked.forEach(ach => {
+        triggerToast({
+          title: ach.title,
+          message: ach.description,
+          xpReward: ach.xpReward || 100,
+          type: 'achievement'
+        });
+      });
+    }
+
+    prevUnlockedRef.current = currentUnlockedIds;
+  }, [progress, questions]);
 
   // Sync dark mode class and data-theme attribute on <html> and <body>, plus mobile meta tags
   useEffect(() => {
@@ -257,6 +319,12 @@ export default function App() {
       ...prev,
       quizResults: [result, ...prev.quizResults]
     }));
+    triggerToast({
+      title: 'Тест завершен!',
+      message: `Результат: ${result.score} из ${result.totalQuestions} правильных ответов.`,
+      xpReward: Math.round((result.score / result.totalQuestions) * 100),
+      type: 'quest'
+    });
   };
 
   const handleSolveIncident = (scenarioId: string) => {
@@ -267,6 +335,12 @@ export default function App() {
         ...prev,
         solvedIncidentIds: [...current, scenarioId]
       };
+    });
+    triggerToast({
+      title: 'Авария устранена!',
+      message: 'Вы успешно восстановили стабильность продакшена.',
+      xpReward: 250,
+      type: 'quest'
     });
   };
 
@@ -280,6 +354,9 @@ export default function App() {
   return (
     <div className="min-h-screen max-w-full overflow-x-hidden bg-slate-50 dark:bg-[#090d16] text-slate-900 dark:text-slate-100 font-sans transition-colors duration-200">
       
+      {/* Toast Notifications */}
+      <ToastNotificationContainer toasts={toasts} onDismiss={handleDismissToast} />
+
       {/* Desktop Fixed Sidebar */}
       <Sidebar
         activeTab={activeTab}
@@ -288,6 +365,7 @@ export default function App() {
         totalQuestionsCount={totalQuestions}
         unlockedAchievementsCount={unlockedAchievementsCount}
         totalAchievementsCount={totalAchievementsCount}
+        unseenAchievementsCount={unseenAchievementsCount}
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
         onOpenSearch={() => setIsSearchOpen(true)}
@@ -305,6 +383,7 @@ export default function App() {
           totalQuestionsCount={totalQuestions}
           unlockedAchievementsCount={unlockedAchievementsCount}
           totalAchievementsCount={totalAchievementsCount}
+          unseenAchievementsCount={unseenAchievementsCount}
           isSearchOpen={isSearchOpen}
           setIsSearchOpen={setIsSearchOpen}
           isDarkMode={isDarkMode}
@@ -321,6 +400,7 @@ export default function App() {
               onNavigate={handleNavigate}
               readinessScore={readinessScore}
               onUpdateProgress={setProgress}
+              unseenAchievementsCount={unseenAchievementsCount}
             />
           )}
 

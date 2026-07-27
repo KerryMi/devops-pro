@@ -43,6 +43,7 @@ interface HeaderProps {
   totalQuestionsCount: number;
   unlockedAchievementsCount?: number;
   totalAchievementsCount?: number;
+  unseenAchievementsCount?: number;
   isSearchOpen: boolean;
   setIsSearchOpen: (val: boolean) => void;
   isDarkMode: boolean;
@@ -58,6 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
   totalQuestionsCount,
   unlockedAchievementsCount = 0,
   totalAchievementsCount = 12,
+  unseenAchievementsCount = 0,
   isSearchOpen,
   setIsSearchOpen,
   isDarkMode,
@@ -112,7 +114,14 @@ export const Header: React.FC<HeaderProps> = ({
     {
       groupName: 'Карьера & Резюме',
       items: [
-        { id: 'achievements' as TabType, label: 'Достижения', icon: <Trophy className="w-4 h-4 text-amber-500" />, badge: `${unlockedAchievementsCount}/${totalAchievementsCount}` },
+        { 
+          id: 'achievements' as TabType, 
+          label: 'Достижения', 
+          icon: <Trophy className="w-4 h-4 text-amber-500" />, 
+          badge: unseenAchievementsCount > 0 
+            ? `🔥 +${unseenAchievementsCount}` 
+            : `${unlockedAchievementsCount}/${totalAchievementsCount}` 
+        },
         { id: 'legend' as TabType, label: 'Легенда опыта', icon: <Award className="w-4 h-4" /> },
         { id: 'resume' as TabType, label: 'Резюме', icon: <FileText className="w-4 h-4" /> }
       ]

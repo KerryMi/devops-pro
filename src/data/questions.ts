@@ -9,6 +9,7 @@ import { NETWORKING_QUESTIONS } from './questions/networking';
 import { CLOUD_QUESTIONS } from './questions/cloud';
 import { ANSIBLE_QUESTIONS } from './questions/ansible';
 import { ADMIN_20_QUESTIONS } from './questions/admin_20';
+import { COMMUNITY_2026_QUESTIONS } from './questions/community_2026';
 
 export const QUESTIONS: Question[] = [
   ...DOCKER_QUESTIONS,
@@ -21,4 +22,5 @@ export const QUESTIONS: Question[] = [
   ...CLOUD_QUESTIONS,
   ...ANSIBLE_QUESTIONS,
   ...ADMIN_20_QUESTIONS,
+  ...COMMUNITY_2026_QUESTIONS,
 ];
