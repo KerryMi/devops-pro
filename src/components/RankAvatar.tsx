@@ -42,6 +42,7 @@ export const RankAvatar: React.FC<RankAvatarProps> = ({
           onError={() => setImageError(true)}
           className="w-full h-full object-cover rounded-[inherit]"
           loading="lazy"
+          referrerPolicy="no-referrer"
         />
       ) : (
         <span className="select-none">{rank.icon}</span>
