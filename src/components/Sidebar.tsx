@@ -13,7 +13,8 @@ import {
   Search,
   Sun,
   Moon,
-  User
+  User,
+  ShieldCheck
 } from 'lucide-react';
 import { TabType } from './Header';
 import { CategoryId } from '../types';
@@ -30,6 +31,7 @@ interface SidebarProps {
   setIsDarkMode: (val: boolean) => void;
   onOpenSearch: () => void;
   currentUser: FirebaseUser | null;
+  isAdmin?: boolean;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -42,7 +44,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isDarkMode,
   setIsDarkMode,
   onOpenSearch,
-  currentUser
+  currentUser,
+  isAdmin = false
 }) => {
   const navGroups = [
     {
@@ -72,6 +75,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'achievements' as TabType, label: 'Достижения', icon: <Trophy className="w-4 h-4 text-amber-500" />, badge: `${unlockedAchievementsCount}/${totalAchievementsCount}` },
         { id: 'legend' as TabType, label: 'Легенда опыта', icon: <Award className="w-4 h-4" /> },
         { id: 'resume' as TabType, label: 'Резюме', icon: <FileText className="w-4 h-4" /> }
+      ]
+    },
+    {
+      groupName: 'УПРАВЛЕНИЕ',
+      items: [
+        { 
+          id: 'admin' as TabType, 
+          label: 'Админка', 
+          icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, 
+          badge: isAdmin ? 'Active' : 'Admin' 
+        }
       ]
     }
   ];

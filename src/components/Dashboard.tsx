@@ -420,16 +420,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* SECTION 3: MIM0-STYLE INTERACTIVE LEVEL ROADMAP MAP */}
       <div className="space-y-6">
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }} className="px-1">
-          <div className="flex items-center space-x-2">
-            <Compass className="w-5 h-5 text-emerald-500 shrink-0" />
-            <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Карта
-            </h2>
-          </div>
-          <span className="text-xs text-slate-400 font-mono">Пройдите все этапы для 100% готовности</span>
-        </div>
-
         {/* Vertical Mimo-Style Roadmap Chain */}
         <div className="relative pl-8 sm:pl-10 space-y-8 before:absolute before:left-4 sm:before:left-5 before:top-4 before:bottom-4 before:w-0.5 before:bg-gradient-to-b before:from-emerald-500 before:via-blue-500 before:to-slate-300 dark:before:to-slate-800">
           

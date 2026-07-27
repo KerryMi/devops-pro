@@ -14,7 +14,8 @@ import {
   X,
   Sun,
   Moon,
-  User
+  User,
+  ShieldCheck
 } from 'lucide-react';
 import { SearchModal } from './SearchModal';
 import { CategoryId } from '../types';
@@ -29,7 +30,8 @@ export type TabType =
   | 'incidents' 
   | 'cheatsheet'
   | 'achievements'
-  | 'profile';
+  | 'profile'
+  | 'admin';
 
 interface HeaderProps {
   activeTab: TabType;
@@ -109,6 +111,12 @@ export const Header: React.FC<HeaderProps> = ({
         { id: 'achievements' as TabType, label: 'Достижения', icon: <Trophy className="w-4 h-4 text-amber-500" />, badge: `${unlockedAchievementsCount}/${totalAchievementsCount}` },
         { id: 'legend' as TabType, label: 'Легенда опыта', icon: <Award className="w-4 h-4" /> },
         { id: 'resume' as TabType, label: 'Резюме', icon: <FileText className="w-4 h-4" /> }
+      ]
+    },
+    {
+      groupName: 'Управление',
+      items: [
+        { id: 'admin' as TabType, label: 'Админка', icon: <ShieldCheck className="w-4 h-4 text-emerald-500" />, badge: 'Admin' }
       ]
     }
   ];

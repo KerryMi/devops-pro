@@ -120,6 +120,45 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // Text to Speech
   const [isSpeaking, setIsSpeaking] = useState(false);
 
+  // Swipe / Drag gesture state for cards
+  const [dragOffsetX, setDragOffsetX] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartX = useRef<number>(0);
+  const dragStartY = useRef<number>(0);
+  const hasDraggedFar = useRef<boolean>(false);
+
+  const handleDragStart = (clientX: number, clientY: number) => {
+    dragStartX.current = clientX;
+    dragStartY.current = clientY;
+    hasDraggedFar.current = false;
+    setIsDragging(true);
+  };
+
+  const handleDragMove = (clientX: number, clientY: number) => {
+    if (!isDragging) return;
+    const diffX = clientX - dragStartX.current;
+    const diffY = clientY - dragStartY.current;
+
+    if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+      hasDraggedFar.current = true;
+      setDragOffsetX(diffX);
+    }
+  };
+
+  const handleDragEnd = () => {
+    if (!isDragging) return;
+    setIsDragging(false);
+
+    // Threshold for swipe action (65px)
+    if (dragOffsetX > 65) {
+      handleNext('easy');
+    } else if (dragOffsetX < -65) {
+      handleNext('hard');
+    }
+
+    setDragOffsetX(0);
+  };
+
   // Success Feedback Toast / Reset States
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [resetConfirm, setResetConfirm] = useState(false);
@@ -388,7 +427,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   const masteryPercentage = totalInFilter > 0 ? Math.round((box5InFilter / totalInFilter) * 100) : 0;
 
   return (
-    <div className="max-w-6xl mx-auto space-y-6 pb-16 px-4 animate-fadeIn">
+    <div className="max-w-6xl mx-auto space-y-6 pb-16 animate-fadeIn">
       
       {/* Toast Feedback */}
       {showSuccessToast && (
@@ -800,15 +839,52 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
               {/* STUDY STAGE CAROUSEL - TACTILE 3D CARD CONTAINER */}
               <div 
-                onClick={() => setIsFlipped(!isFlipped)}
+                onTouchStart={(e) => handleDragStart(e.touches[0].clientX, e.touches[0].clientY)}
+                onTouchMove={(e) => handleDragMove(e.touches[0].clientX, e.touches[0].clientY)}
+                onTouchEnd={handleDragEnd}
+                onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
+                onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
+                onMouseUp={handleDragEnd}
+                onMouseLeave={handleDragEnd}
+                onClick={() => {
+                  if (hasDraggedFar.current || Math.abs(dragOffsetX) > 10) return;
+                  setIsFlipped(prev => !prev);
+                }}
+                style={{
+                  transform: `translateX(${dragOffsetX}px) rotate(${dragOffsetX * 0.04}deg)`,
+                  transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                  touchAction: 'pan-y'
+                }}
                 className={`relative w-full rounded-3xl bg-white dark:bg-[#121927] border-2 ${
                   isFlipped 
                     ? 'border-emerald-500/30 dark:border-emerald-500/20 shadow-emerald-500/5' 
                     : 'border-emerald-500/30 dark:border-emerald-500/20 shadow-emerald-500/5'
-                } p-6 sm:p-9 shadow-2xl cursor-pointer hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/5 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[380px] max-w-full`}
+                } p-4 sm:p-8 shadow-2xl cursor-pointer hover:shadow-emerald-500/10 dark:hover:shadow-emerald-400/5 transition-all duration-300 flex flex-col justify-between group overflow-hidden min-h-[380px] max-w-full select-none`}
               >
                 {/* Backlighting effect */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-full filter blur-2xl group-hover:scale-125 transition-transform" />
+
+                {/* Swipe Right Indicator - Know / Easy */}
+                {dragOffsetX > 15 && (
+                  <div 
+                    style={{ opacity: Math.min(1, (dragOffsetX - 10) / 50) }}
+                    className="absolute top-6 right-6 z-30 px-3.5 py-1.5 rounded-xl bg-emerald-500 text-white font-extrabold text-xs shadow-lg flex items-center space-x-1 animate-fadeIn pointer-events-none"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>Знаю!</span>
+                  </div>
+                )}
+
+                {/* Swipe Left Indicator - Forgot / Hard */}
+                {dragOffsetX < -15 && (
+                  <div 
+                    style={{ opacity: Math.min(1, (-dragOffsetX - 10) / 50) }}
+                    className="absolute top-6 left-6 z-30 px-3.5 py-1.5 rounded-xl bg-rose-500 text-white font-extrabold text-xs shadow-lg flex items-center space-x-1 animate-fadeIn pointer-events-none"
+                  >
+                    <X className="w-4 h-4" />
+                    <span>Забыл</span>
+                  </div>
+                )}
 
                 {/* CARD UPPER BAR */}
                 <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-3.5 z-10">
@@ -847,14 +923,17 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   
                   {!isFlipped ? (
                     /* Question side */
-                    <div className="space-y-2 animate-fadeIn text-center sm:text-left">
-                      <div className="text-[10px] font-black uppercase text-emerald-500/70 tracking-widest">ВОПРОС</div>
+                    <div className="space-y-3 animate-fadeIn text-center sm:text-left">
+                      <div className="flex items-center justify-between">
+                        <div className="text-[10px] font-black uppercase text-emerald-500/70 tracking-widest">ВОПРОС</div>
+                        <div className="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 dark:bg-emerald-500/20 px-2.5 py-0.5 rounded-full flex items-center space-x-1 border border-emerald-500/20">
+                          <Sparkles className="w-3 h-3 text-emerald-500" />
+                          <span>Ответ по клику</span>
+                        </div>
+                      </div>
                       <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-snug mobile-word-break">
                         {renderTextWithMarkdown(currentCard.title)}
                       </h3>
-                      <div className="text-xs text-slate-400 pt-4 italic">
-                        Нажмите, чтобы перевернуть или нажмите [Пробел]
-                      </div>
                     </div>
                   ) : (
                     /* Answer side */
@@ -967,62 +1046,54 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 </div>
 
                 {/* CARD FOOTER BAR */}
-                <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-medium">
-                  <span>{isFlipped ? 'Оцените уровень владения ниже' : 'Кликните на карту, чтобы посмотреть ответ'}</span>
-                  <span className="font-extrabold text-emerald-500 group-hover:underline flex items-center space-x-1.5">
-                    <span>Клик = Flip</span>
+                <div className="pt-3.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 font-medium select-none">
+                  <span>{isFlipped ? 'Оцените знания кнопками ниже или свайпом' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}</span>
+                  <span className="font-mono text-[11px] text-slate-400 font-bold">
+                    {currentIndex + 1} / {filteredQuestions.length}
                   </span>
                 </div>
 
               </div>
 
-              {/* ACTION RATING BUTTONS - ONLY SHOW WHEN FLIPPED */}
-              <div className="min-h-[80px]">
-                {isFlipped ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 animate-fadeIn">
-                    
-                    {/* OPTION 1: HARD / FORGOT */}
-                    <button
-                      onClick={() => handleNext('hard')}
-                      className="p-3.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500 border border-rose-500/30 hover:border-rose-500 text-rose-700 dark:text-rose-400 hover:text-white font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-md cursor-pointer hover:-translate-y-0.5"
-                    >
-                      <div className="flex items-center space-x-1">
-                        <X className="w-4 h-4" />
-                        <span>Забыл</span>
-                      </div>
-                      <span className="text-[10px] text-rose-500/70 hover:text-white/80 font-bold">Вернуть в Коробку 1 (Клавиша [1])</span>
-                    </button>
-
-                    {/* OPTION 2: GOOD / STRUGGLE */}
-                    <button
-                      onClick={() => handleNext('good')}
-                      className="p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500 border border-amber-500/30 hover:border-amber-500 text-amber-700 dark:text-amber-400 hover:text-white font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-md cursor-pointer hover:-translate-y-0.5"
-                    >
-                      <div className="flex items-center space-x-1">
-                        <Zap className="w-4 h-4" />
-                        <span>С трудом</span>
-                      </div>
-                      <span className="text-[10px] text-amber-500/70 hover:text-white/80 font-bold">Оставить как есть (Клавиша [2])</span>
-                    </button>
-
-                    {/* OPTION 3: EASY / EXCELLENT */}
-                    <button
-                      onClick={() => handleNext('easy')}
-                      className="p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/30 hover:border-emerald-500 text-emerald-700 dark:text-emerald-400 hover:text-white font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-md cursor-pointer hover:-translate-y-0.5"
-                    >
-                      <div className="flex items-center space-x-1">
-                        <Check className="w-4 h-4" />
-                        <span>Знаю отлично!</span>
-                      </div>
-                      <span className="text-[10px] text-emerald-500/70 hover:text-white/80 font-bold">Коробка +1 (Клавиша [3])</span>
-                    </button>
-
+              {/* ACTION RATING BUTTONS - ALWAYS VISIBLE */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 animate-fadeIn">
+                
+                {/* OPTION 1: HARD / FORGOT */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext('hard'); }}
+                  className="p-3.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/60 text-rose-700 dark:text-rose-400 font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm hover:shadow-rose-500/10 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <div className="flex items-center space-x-1">
+                    <X className="w-4 h-4 text-rose-500" />
+                    <span>Забыл</span>
                   </div>
-                ) : (
-                  <div className="text-center py-4 text-xs text-slate-400 font-bold border border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/20">
-                    Нажмите на карточку или <kbd className="px-1.5 py-0.5 mx-1 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-[10px] font-black font-mono">Space</kbd>, чтобы увидеть правильный ответ и получить доступ к кнопкам оценки
+                  <span className="text-[10px] text-rose-500/80 dark:text-rose-400/80 font-bold">Вернуть в Коробку 1</span>
+                </button>
+
+                {/* OPTION 2: GOOD / STRUGGLE */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext('good'); }}
+                  className="p-3.5 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-amber-700 dark:text-amber-400 font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm hover:shadow-amber-500/10 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <div className="flex items-center space-x-1">
+                    <Zap className="w-4 h-4 text-amber-500" />
+                    <span>С трудом</span>
                   </div>
-                )}
+                  <span className="text-[10px] text-amber-500/80 dark:text-amber-400/80 font-bold">Оставить как есть</span>
+                </button>
+
+                {/* OPTION 3: EASY / EXCELLENT */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleNext('easy'); }}
+                  className="p-3.5 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-700 dark:text-emerald-400 font-extrabold text-xs flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm hover:shadow-emerald-500/10 cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
+                >
+                  <div className="flex items-center space-x-1">
+                    <Check className="w-4 h-4 text-emerald-500" />
+                    <span>Знаю отлично!</span>
+                  </div>
+                  <span className="text-[10px] text-emerald-500/80 dark:text-emerald-400/80 font-bold">Коробка +1</span>
+                </button>
+
               </div>
 
             </div>

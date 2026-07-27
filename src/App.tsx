@@ -12,11 +12,22 @@ import { CheatsheetsView } from './components/CheatsheetsView';
 import { AchievementsView } from './components/AchievementsView';
 import { Footer } from './components/Footer';
 
-import { QUESTIONS } from './data/questions';
-import { CategoryId, UserProgress, ExperienceLegend, QuizResult } from './types';
+import { QUESTIONS as DEFAULT_QUESTIONS } from './data/questions';
+import { QUIZZES as DEFAULT_QUIZZES } from './data/quizzes';
+import { CategoryId, UserProgress, ExperienceLegend, QuizResult, Question, Quiz } from './types';
 import { loadUserProgress, saveUserProgress } from './utils/storage';
+import { 
+  loadQuestions, 
+  saveQuestions, 
+  loadQuizzes, 
+  saveQuizzes, 
+  getAdminState, 
+  setAdminState, 
+  resetAllDataToDefault 
+} from './utils/customDataStorage';
 import { evaluateAchievements } from './data/achievements';
 import { ProfileView } from './components/ProfileView';
+import { AdminView } from './components/AdminView';
 import { auth, loadProgressFromFirestore, saveProgressToFirestore } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
@@ -65,6 +76,10 @@ function mergeProgress(local: UserProgress, cloud: any): UserProgress {
 
 export default function App() {
   const [progress, setProgress] = useState<UserProgress>(() => loadUserProgress());
+  const [questions, setQuestions] = useState<Question[]>(() => loadQuestions());
+  const [quizzes, setQuizzes] = useState<Quiz[]>(() => loadQuizzes());
+  const [isAdmin, setIsAdmin] = useState<boolean>(() => getAdminState());
+
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<CategoryId | undefined>(undefined);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
@@ -75,6 +90,27 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  const handleSetIsAdmin = (val: boolean) => {
+    setIsAdmin(val);
+    setAdminState(val);
+  };
+
+  const handleUpdateQuestions = (newQ: Question[]) => {
+    setQuestions(newQ);
+    saveQuestions(newQ);
+  };
+
+  const handleUpdateQuizzes = (newQuizzes: Quiz[]) => {
+    setQuizzes(newQuizzes);
+    saveQuizzes(newQuizzes);
+  };
+
+  const handleResetAllData = () => {
+    resetAllDataToDefault();
+    setQuestions(DEFAULT_QUESTIONS);
+    setQuizzes(DEFAULT_QUIZZES);
+  };
 
   // Sync Authentication state on mount
   useEffect(() => {
@@ -102,7 +138,7 @@ export default function App() {
   }, []);
 
   // Calculate Achievements
-  const achievements = evaluateAchievements(progress, QUESTIONS);
+  const achievements = evaluateAchievements(progress, questions);
   const unlockedAchievementsCount = achievements.filter(a => a.isUnlocked).length;
   const totalAchievementsCount = achievements.length;
 
@@ -164,7 +200,7 @@ export default function App() {
   }, [activeTab]);
 
   // Readiness Score % calculation
-  const totalQuestions = QUESTIONS.length;
+  const totalQuestions = questions.length;
   const masteredCount = progress.masteredQuestionIds.length;
   const readinessScore = totalQuestions > 0 ? Math.round((masteredCount / totalQuestions) * 100) : 0;
 
@@ -256,6 +292,7 @@ export default function App() {
         setIsDarkMode={setIsDarkMode}
         onOpenSearch={() => setIsSearchOpen(true)}
         currentUser={currentUser}
+        isAdmin={isAdmin}
       />
 
       {/* Top Header Navigation for Mobile Only */}
@@ -279,7 +316,7 @@ export default function App() {
           {activeTab === 'dashboard' && (
             <Dashboard
               progress={progress}
-              questions={QUESTIONS}
+              questions={questions}
               onNavigate={handleNavigate}
               readinessScore={readinessScore}
               onUpdateProgress={setProgress}
@@ -289,14 +326,14 @@ export default function App() {
           {activeTab === 'achievements' && (
             <AchievementsView
               progress={progress}
-              questions={QUESTIONS}
+              questions={questions}
               onNavigate={handleNavigate}
             />
           )}
 
           {activeTab === 'questions' && (
             <QuestionsView
-              questions={QUESTIONS}
+              questions={questions}
               progress={progress}
               onToggleMastered={handleToggleMastered}
               onToggleBookmark={handleToggleBookmark}
@@ -307,7 +344,7 @@ export default function App() {
 
           {activeTab === 'flashcards' && (
             <FlashcardsView
-              questions={QUESTIONS}
+              questions={questions}
               progress={progress}
               onUpdateFlashcardBox={handleUpdateFlashcardBox}
             />
@@ -316,6 +353,7 @@ export default function App() {
           {activeTab === 'quizzes' && (
             <QuizView
               onSaveQuizResult={handleSaveQuizResult}
+              quizzes={quizzes}
             />
           )}
 
@@ -349,10 +387,23 @@ export default function App() {
               onSyncManual={handleManualSync}
             />
           )}
+
+          {activeTab === 'admin' && (
+            <AdminView
+              questions={questions}
+              quizzes={quizzes}
+              onUpdateQuestions={handleUpdateQuestions}
+              onUpdateQuizzes={handleUpdateQuizzes}
+              progress={progress}
+              onResetAllData={handleResetAllData}
+              isAdmin={isAdmin}
+              onSetIsAdmin={handleSetIsAdmin}
+            />
+          )}
         </main>
 
-        {/* Footer */}
-        <Footer onNavigate={handleNavigate} />
+        {/* Footer - only on main page */}
+        {activeTab === 'dashboard' && <Footer onNavigate={handleNavigate} />}
       </div>
 
     </div>

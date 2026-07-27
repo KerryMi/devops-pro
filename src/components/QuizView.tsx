@@ -15,9 +15,11 @@ import {
 
 interface QuizViewProps {
   onSaveQuizResult: (result: QuizResult) => void;
+  quizzes?: Quiz[];
 }
 
-export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult }) => {
+export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes }) => {
+  const quizzesList = quizzes || QUIZZES;
   const [selectedQuiz, setSelectedQuiz] = useState<Quiz | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
@@ -104,7 +106,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult }) => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {QUIZZES.map((quiz) => (
+            {quizzesList.map((quiz) => (
               <div
                 key={quiz.id}
                 className="p-6 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
