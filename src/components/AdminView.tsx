@@ -1040,7 +1040,7 @@ export const AdminView: React.FC<AdminViewProps> = ({
           <div className="space-y-2">
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs font-black">
               <ShieldCheck className="w-4 h-4" />
-              <span>РЕЖИМ АДМИНИСТРАТОРА (ОТКРЫТЫЙ ДОСТУП)</span>
+              <span>РЕЖИМ АДМИНИСТРАТОРА</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight font-mono">
               DevOps<span className="text-emerald-400">Pro</span> Control Center
@@ -1048,13 +1048,6 @@ export const AdminView: React.FC<AdminViewProps> = ({
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl">
               Управление вопросами, создание тестов, редактирование карточек и мониторинг метрик подготовки
             </p>
-          </div>
-
-          <div className="flex items-center space-x-3">
-            <div className="px-4 py-2.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Локальный режим активен</span>
-            </div>
           </div>
         </div>
       </div>

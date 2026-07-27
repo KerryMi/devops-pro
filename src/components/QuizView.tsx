@@ -25,6 +25,15 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes })
   const [userAnswers, setUserAnswers] = useState<Record<number, number>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const filteredQuizzes = quizzesList.filter(quiz => {
+    const matchesDifficulty = selectedDifficulty === 'All' || quiz.difficulty === selectedDifficulty;
+    const matchesSearch = quiz.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          quiz.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesDifficulty && matchesSearch;
+  });
 
   // Start Quiz
   const handleStartQuiz = (quiz: Quiz) => {
@@ -95,53 +104,113 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes })
       {/* Quiz List View */}
       {!selectedQuiz ? (
         <div className="space-y-6">
-          <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm">
-            <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center space-x-2">
-              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
-              <span>Тесты и Эмуляция Собеседования</span>
-            </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Проверьте свои знания в условиях ограниченного времени. Выберите нужный модуль ниже.
-            </p>
+          <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white flex items-center space-x-2">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                  <span>Тесты и Эмуляция Собеседования</span>
+                </h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  Проверьте свои знания в условиях ограниченного времени. Подготовьтесь к техническому интервью.
+                </p>
+              </div>
+
+              {/* Search Bar */}
+              <div className="w-full sm:w-64">
+                <input
+                  type="text"
+                  placeholder="Поиск по тестам..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+            </div>
+
+            {/* Difficulty Pills */}
+            <div className="flex items-center space-x-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 overflow-x-auto pb-1">
+              {[
+                { label: 'Все уровни', value: 'All' },
+                { label: 'Junior (Начинающим)', value: 'Junior' },
+                { label: 'Middle (Специалист)', value: 'Middle' },
+                { label: 'Senior (Хардкор)', value: 'Senior' }
+              ].map((diff) => (
+                <button
+                  key={diff.value}
+                  onClick={() => setSelectedDifficulty(diff.value)}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
+                    selectedDifficulty === diff.value
+                      ? 'bg-emerald-500 text-slate-950 font-black shadow-xs'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                  }`}
+                >
+                  {diff.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {quizzesList.map((quiz) => (
-              <div
-                key={quiz.id}
-                className="p-6 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
-              >
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
-                      {quiz.difficulty}
-                    </span>
-                    <span className="text-xs text-slate-400 flex items-center space-x-1">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>{quiz.timeLimitMinutes} мин</span>
-                    </span>
-                  </div>
-
-                  <h3 className="font-bold text-slate-900 dark:text-white text-base">
-                    {quiz.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
-                    {quiz.description}
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                  <span className="text-xs text-slate-400 font-medium">Вопросов: {quiz.questions.length}</span>
-                  <button
-                    onClick={() => handleStartQuiz(quiz)}
-                    className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center space-x-1 transition-all"
-                  >
-                    <span>Пройти тест</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+            {filteredQuizzes.length === 0 ? (
+              <div className="col-span-full py-12 text-center bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 rounded-2xl p-6">
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+                  По выбранным фильтрам тесты не найдены. Попробуйте сбросить фильтры.
+                </p>
+                <button
+                  onClick={() => { setSelectedDifficulty('All'); setSearchQuery(''); }}
+                  className="mt-3 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold"
+                >
+                  Сбросить фильтры
+                </button>
               </div>
-            ))}
+            ) : (
+              filteredQuizzes.map((quiz) => {
+                let diffBadgeClass = 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20';
+                if (quiz.difficulty === 'Middle') {
+                  diffBadgeClass = 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20';
+                } else if (quiz.difficulty === 'Senior') {
+                  diffBadgeClass = 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20';
+                }
+
+                return (
+                  <div
+                    key={quiz.id}
+                    className="p-6 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4"
+                  >
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className={`px-2.5 py-1 rounded border text-[10px] font-bold uppercase tracking-wider ${diffBadgeClass}`}>
+                          {quiz.difficulty}
+                        </span>
+                        <span className="text-xs text-slate-400 flex items-center space-x-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          <span>{quiz.timeLimitMinutes} мин</span>
+                        </span>
+                      </div>
+
+                      <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                        {quiz.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {quiz.description}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                      <span className="text-xs text-slate-400 font-medium">Вопросов: {quiz.questions.length}</span>
+                      <button
+                        onClick={() => handleStartQuiz(quiz)}
+                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center space-x-1 transition-all cursor-pointer"
+                      >
+                        <span>Пройти тест</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
       ) : (
