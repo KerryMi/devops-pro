@@ -13,7 +13,11 @@ import {
   Check, 
   HelpCircle,
   Clock,
-  Play
+  Play,
+  CheckCircle,
+  BarChart2,
+  Calendar,
+  ChevronRight
 } from 'lucide-react';
 
 interface DailyBlitzSectionProps {
@@ -141,87 +145,112 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
     }
   };
 
+  const getCategoryBadge = (cat: string) => {
+    const c = cat.toLowerCase();
+    if (c.includes('k8s') || c.includes('kubernetes')) {
+      return { label: 'KUBERNETES', bg: 'bg-sky-500/10 dark:bg-sky-500/20 text-sky-600 dark:text-sky-300 border-sky-500/30' };
+    } else if (c.includes('docker') || c.includes('container')) {
+      return { label: 'DOCKER', bg: 'bg-blue-500/10 dark:bg-blue-500/20 text-blue-600 dark:text-blue-300 border-blue-500/30' };
+    } else if (c.includes('cicd') || c.includes('ci/cd') || c.includes('gitops')) {
+      return { label: 'CI/CD', bg: 'bg-orange-500/10 dark:bg-orange-500/20 text-orange-600 dark:text-orange-300 border-orange-500/30' };
+    } else if (c.includes('linux') || c.includes('bash')) {
+      return { label: 'LINUX', bg: 'bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/30' };
+    } else if (c.includes('ansible') || c.includes('iac') || c.includes('terraform')) {
+      return { label: 'IAC', bg: 'bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-300 border-purple-500/30' };
+    }
+    return { label: cat.toUpperCase(), bg: 'bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/30' };
+  };
+
   return (
-    <div className="bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-xs relative overflow-hidden space-y-5">
+    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-white via-slate-50/50 to-amber-50/20 dark:from-[#0d1424] dark:via-[#090d16] dark:to-[#121929] border border-amber-500/20 dark:border-amber-500/30 p-5 sm:p-6 shadow-lg shadow-amber-500/5 space-y-5 backdrop-blur-sm transition-all">
       
-      {/* Background Accent Mesh */}
-      <div className="absolute top-0 right-0 -mt-12 -mr-12 w-64 h-64 bg-amber-500/10 dark:bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Background Decorative Mesh Lights */}
+      <div className="absolute top-0 right-0 -mt-16 -mr-16 w-80 h-80 bg-gradient-to-br from-amber-500/15 to-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-64 h-64 bg-gradient-to-tr from-emerald-500/10 to-transparent rounded-full blur-2xl pointer-events-none" />
 
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative z-10">
-        <div className="flex items-center space-x-3">
-          <div className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 shrink-0">
-            <Zap className="w-5 h-5 fill-amber-500/20" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 relative z-10">
+        <div className="flex items-start sm:items-center space-x-3.5">
+          <div className="relative shrink-0">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 p-0.5 shadow-md shadow-amber-500/30 flex items-center justify-center">
+              <div className="w-full h-full bg-amber-500 dark:bg-amber-500/90 rounded-[10px] flex items-center justify-center text-slate-950">
+                <Zap className="w-6 h-6 fill-slate-950" />
+              </div>
+            </div>
+            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500 border-2 border-white dark:border-[#0d1424]"></span>
+            </span>
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h2 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+
+          <div className="space-y-0.5">
+            <div className="flex items-center space-x-2.5 flex-wrap gap-y-1">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                 Ежедневный Блиц-Тест
               </h2>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-500/30">
-                5 вопросов
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500/15 dark:bg-amber-400/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center space-x-1">
+                <Sparkles className="w-3 h-3 text-amber-500" />
+                <span>5 вопросов • 2 мин</span>
               </span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Быстрая прокачка знаний за 2 минуты в день для поддержания мотивации и стрика
+            <p className="text-xs text-slate-600 dark:text-slate-400 font-medium">
+              Закрепите ключевые концепции DevOps и поддерживайте ваш ежедневный стрик
             </p>
           </div>
         </div>
 
-        {isCompletedToday && mode === 'idle' && (
-          <div className="px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold flex items-center space-x-1.5 shrink-0 self-start sm:self-auto">
-            <Check className="w-4 h-4 text-emerald-500" />
-            <span>Пройдено</span>
+        {/* Streak & Status Pill */}
+        <div className="flex items-center space-x-2 shrink-0 self-start sm:self-auto">
+          <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 dark:bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-bold flex items-center space-x-1.5 shadow-xs">
+            <Flame className="w-4 h-4 fill-amber-500 text-amber-500 animate-bounce" />
+            <span>Стрик: <strong>{progress.dailyStreak || 0} дн.</strong></span>
           </div>
-        )}
+
+          {isCompletedToday && mode === 'idle' && (
+            <div className="px-3 py-1.5 rounded-xl bg-emerald-500/15 dark:bg-emerald-500/20 border border-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-extrabold flex items-center space-x-1.5">
+              <CheckCircle className="w-4 h-4 text-emerald-500" />
+              <span>Сегодня пройдено ({todayResult?.score}/{todayResult?.total})</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* IDLE STATE */}
       {mode === 'idle' && (
-        <div className="bg-slate-50/80 dark:bg-slate-950/60 border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-5 rounded-2xl space-y-4 relative z-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 w-full px-0">
-            <div className="space-y-1.5 max-w-full overflow-hidden w-full px-0">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }} className="text-xs font-semibold text-slate-700 dark:text-slate-300 w-full px-0">
-                <Clock className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-                <span className="truncate">Блиц-подборка на сегодня ({new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}):</span>
+        <div className="bg-white/80 dark:bg-[#070b14]/70 border border-slate-200/80 dark:border-slate-800/80 p-4 sm:p-5 rounded-xl space-y-4 relative z-10 backdrop-blur-md">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            
+            <div className="space-y-2 flex-1">
+              <div className="flex items-center space-x-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+                <Calendar className="w-4 h-4 text-amber-500 shrink-0" />
+                <span>Подборка тем на сегодня ({new Date().toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}):</span>
               </div>
-              <div 
-                style={{ width: '100%', paddingLeft: 0, paddingRight: 0, overflowX: 'auto' }} 
-                className="flex flex-row whitespace-nowrap scrollbar-none gap-1.5 pt-1 pb-1 max-w-full snap-x snap-mandatory w-full"
-              >
+
+              {/* Topics Pills */}
+              <div className="flex flex-wrap gap-2 pt-0.5">
                 {todayQuestions.map((q, i) => {
-                  const cat = q.category.toLowerCase();
-                  let colorClasses = 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700';
-                  if (cat.includes('k8s') || cat.includes('kubernetes')) {
-                    colorClasses = 'bg-sky-50 dark:bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-100 dark:border-sky-500/20';
-                  } else if (cat.includes('docker') || cat.includes('container')) {
-                    colorClasses = 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-500/20';
-                  } else if (cat.includes('cicd') || cat.includes('ci/cd') || cat.includes('gitops')) {
-                    colorClasses = 'bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-100 dark:border-orange-500/20';
-                  } else if (cat.includes('linux') || cat.includes('bash')) {
-                    colorClasses = 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-500/20';
-                  } else if (cat.includes('ansible') || cat.includes('iac') || cat.includes('terraform')) {
-                    colorClasses = 'bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-100 dark:border-purple-500/20';
-                  }
-                  
+                  const badge = getCategoryBadge(q.category);
                   return (
-                    <span
-                      key={q.id}
-                      className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border shrink-0 snap-start ${colorClasses}`}
+                    <div
+                      key={q.id || i}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-extrabold border flex items-center space-x-1.5 ${badge.bg}`}
                     >
-                      #{i + 1} {q.category.toUpperCase()}
-                    </span>
+                      <span className="opacity-60 text-[10px]">#{i + 1}</span>
+                      <span>{q.category}</span>
+                    </div>
                   );
                 })}
               </div>
             </div>
- 
+
+            {/* CTA Button */}
             <button
               onClick={handleStartBlitz}
-              className="w-full md:w-auto px-5 py-2.5 rounded-[12px] bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-slate-950 font-extrabold text-xs transition-all shadow-md shadow-amber-500/25 flex items-center justify-center space-x-2 shrink-0 cursor-pointer"
+              className="w-full lg:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-slate-950 font-black text-xs sm:text-sm tracking-wide transition-all duration-200 shadow-md shadow-amber-500/25 flex items-center justify-center space-x-2.5 shrink-0 cursor-pointer group"
             >
-              <Play className="w-4 h-4 fill-current" />
-              <span>{isCompletedToday ? 'Пройти снова' : 'Начать блиц-тест'}</span>
+              <Play className="w-4 h-4 fill-slate-950 group-hover:scale-110 transition-transform" />
+              <span>{isCompletedToday ? 'Пройти блиц повторно' : 'Начать ежедневный блиц'}</span>
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
         </div>
@@ -229,37 +258,57 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
 
       {/* ACTIVE QUIZ STATE */}
       {mode === 'active' && currentQ && (
-        <div className="space-y-4 relative z-10 bg-slate-50/80 dark:bg-[#0b1120]/60 border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl animate-fadeIn">
+        <div className="space-y-4 relative z-10 bg-white/90 dark:bg-[#070b14]/80 border border-slate-200/90 dark:border-slate-800/90 p-4 sm:p-6 rounded-2xl animate-fadeIn backdrop-blur-md">
           
-          {/* Progress Header */}
-          <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-bold">
-            <div className="flex items-center space-x-2">
-              <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20 uppercase text-[10px]">
-                {currentQ.category}
-              </span>
-              <span>Вопрос {currentIdx + 1} из {todayQuestions.length}</span>
+          {/* Progress Header & Stepper */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-bold">
+              <div className="flex items-center space-x-2">
+                <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-black border uppercase ${getCategoryBadge(currentQ.category).bg}`}>
+                  {currentQ.category}
+                </span>
+                <span className="text-slate-400">•</span>
+                <span>Вопрос {currentIdx + 1} из {todayQuestions.length}</span>
+              </div>
+
+              <div className="flex items-center space-x-1 bg-amber-500/10 dark:bg-amber-500/20 px-2.5 py-1 rounded-lg text-amber-700 dark:text-amber-300 font-extrabold text-[11px] border border-amber-500/30">
+                <BarChart2 className="w-3.5 h-3.5 text-amber-500" />
+                <span>Счет: {score} / {todayQuestions.length}</span>
+              </div>
             </div>
 
-            <span>Текущий счет: {score}</span>
+            {/* Stepper Dots & Progress Bar */}
+            <div className="flex items-center space-x-1.5 pt-1">
+              {todayQuestions.map((_, idx) => {
+                const isCurrent = idx === currentIdx;
+                const isAnswered = selectedAnswers[idx] !== undefined;
+                const isCorrect = isAnswered && selectedAnswers[idx] === todayQuestions[idx].correctAnswerIndex;
+
+                let dotColor = 'bg-slate-200 dark:bg-slate-800';
+                if (isCurrent) dotColor = 'bg-amber-500 ring-2 ring-amber-500/40';
+                else if (isAnswered) dotColor = isCorrect ? 'bg-emerald-500' : 'bg-rose-500';
+
+                return (
+                  <div
+                    key={idx}
+                    className={`h-2 rounded-full flex-1 transition-all duration-300 ${dotColor}`}
+                  />
+                );
+              })}
+            </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">
-            <div
-              className="h-full bg-amber-500 transition-all duration-300 rounded-full"
-              style={{ width: `${((currentIdx + 1) / todayQuestions.length) * 100}%` }}
-            />
+          {/* Question Title */}
+          <div className="pt-2">
+            <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-snug">
+              {currentQ.question}
+            </h3>
           </div>
-
-          {/* Question Text */}
-          <h3 className="text-sm sm:text-base font-extrabold text-slate-900 dark:text-white leading-snug pt-1">
-            {currentQ.question}
-          </h3>
 
           {/* Code Snippet if present */}
           {currentQ.codeSnippet && (
-            <div className="p-3 rounded-xl bg-slate-900 text-slate-200 font-mono text-xs overflow-x-auto border border-slate-800">
-              <pre><code>{currentQ.codeSnippet}</code></pre>
+            <div className="p-3.5 rounded-xl bg-slate-950 text-slate-200 font-mono text-xs overflow-x-auto border border-slate-800/80 shadow-inner">
+              <pre className="leading-relaxed"><code>{currentQ.codeSnippet}</code></pre>
             </div>
           )}
 
@@ -271,15 +320,15 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
               const isAnswered = userSelection !== undefined;
               const isCorrectOpt = optIdx === currentQ.correctAnswerIndex;
 
-              let btnStyle = 'bg-white dark:bg-[#121927] border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-emerald-400 dark:hover:border-emerald-500';
+              let btnStyle = 'bg-slate-50/80 dark:bg-[#0f172a]/60 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-amber-400 dark:hover:border-amber-500/60 hover:bg-white dark:hover:bg-[#121b2d] cursor-pointer';
 
               if (isAnswered) {
                 if (isCorrectOpt) {
-                  btnStyle = 'bg-emerald-500/10 border-emerald-500/50 text-emerald-800 dark:text-emerald-300 font-bold';
+                  btnStyle = 'bg-emerald-500/10 border-emerald-500/60 text-emerald-900 dark:text-emerald-200 font-bold shadow-xs';
                 } else if (isSelected) {
-                  btnStyle = 'bg-rose-500/10 border-rose-500/50 text-rose-800 dark:text-rose-300 font-bold';
+                  btnStyle = 'bg-rose-500/10 border-rose-500/60 text-rose-900 dark:text-rose-200 font-bold shadow-xs';
                 } else {
-                  btnStyle = 'bg-white/40 dark:bg-[#121927]/40 border-slate-200/40 dark:border-slate-800/40 opacity-50';
+                  btnStyle = 'bg-slate-100/40 dark:bg-slate-900/40 border-slate-200/40 dark:border-slate-800/40 text-slate-400 dark:text-slate-600 opacity-60';
                 }
               }
 
@@ -288,18 +337,20 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
                   key={optIdx}
                   onClick={() => handleSelectOption(optIdx)}
                   disabled={isAnswered}
-                  className={`p-3 sm:p-3.5 rounded-xl border text-left text-xs sm:text-sm transition-all flex items-start space-x-3 ${btnStyle}`}
+                  className={`p-3.5 rounded-xl border text-left text-xs sm:text-sm transition-all duration-150 flex items-start space-x-3 group ${btnStyle}`}
                 >
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold shrink-0 ${
-                    isAnswered && isCorrectOpt ? 'bg-emerald-500 text-white' :
+                  <span className={`w-6 h-6 rounded-lg text-[11px] font-black shrink-0 flex items-center justify-center transition-colors ${
+                    isAnswered && isCorrectOpt ? 'bg-emerald-500 text-slate-950' :
                     isAnswered && isSelected ? 'bg-rose-500 text-white' :
-                    'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+                    'bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 group-hover:bg-amber-500 group-hover:text-slate-950'
                   }`}>
                     {String.fromCharCode(65 + optIdx)}
                   </span>
-                  <span className="flex-1 leading-snug">{optionText}</span>
-                  {isAnswered && isCorrectOpt && <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />}
-                  {isAnswered && isSelected && !isCorrectOpt && <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />}
+
+                  <span className="flex-1 leading-relaxed pt-0.5">{optionText}</span>
+
+                  {isAnswered && isCorrectOpt && <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />}
+                  {isAnswered && isSelected && !isCorrectOpt && <XCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />}
                 </button>
               );
             })}
@@ -307,23 +358,23 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
 
           {/* Explanation Box */}
           {showExplanation && (
-            <div className="p-3.5 rounded-xl bg-emerald-500/10 dark:bg-emerald-950/40 border border-emerald-500/20 dark:border-emerald-800/50 space-y-1.5 animate-fadeIn">
-              <div className="flex items-center space-x-1.5 text-xs font-extrabold text-emerald-700 dark:text-emerald-400">
-                <HelpCircle className="w-4 h-4 shrink-0" />
-                <span>Объяснение:</span>
+            <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-transparent dark:from-emerald-950/40 dark:via-emerald-900/20 dark:to-transparent border border-emerald-500/30 text-slate-800 dark:text-slate-200 space-y-1.5 animate-fadeIn">
+              <div className="flex items-center space-x-2 text-xs font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-wide">
+                <HelpCircle className="w-4 h-4 shrink-0 text-emerald-500" />
+                <span>Разбор ответа:</span>
               </div>
-              <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed font-normal">
                 {currentQ.explanation}
               </p>
             </div>
           )}
 
-          {/* Action Button */}
+          {/* Next / Complete Action Button */}
           {selectedAnswers[currentIdx] !== undefined && (
             <div className="flex justify-end pt-2">
               <button
                 onClick={handleNextQuestion}
-                className="px-5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs transition-all flex items-center space-x-2 shadow-md shadow-emerald-500/20"
+                className="px-6 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-xs sm:text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center space-x-2 cursor-pointer"
               >
                 <span>{currentIdx < todayQuestions.length - 1 ? 'Следующий вопрос' : 'Завершить блиц'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -336,37 +387,47 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
 
       {/* SUMMARY RESULT STATE */}
       {mode === 'summary' && (
-        <div className="space-y-4 relative z-10 bg-slate-50/80 dark:bg-[#0b1120]/60 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl text-center animate-fadeIn space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-500 border border-amber-500/20 mx-auto flex items-center justify-center">
-            <Award className="w-6 h-6" />
+        <div className="space-y-5 relative z-10 bg-white/90 dark:bg-[#070b14]/80 border border-slate-200/90 dark:border-slate-800/90 p-6 sm:p-8 rounded-2xl text-center animate-fadeIn backdrop-blur-md">
+          
+          <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-slate-950 mx-auto flex items-center justify-center shadow-lg shadow-amber-500/30">
+            <Award className="w-8 h-8" />
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center border-2 border-white dark:border-[#070b14]">
+              <Check className="w-3.5 h-3.5 stroke-[3]" />
+            </div>
           </div>
 
-          <div className="space-y-1">
-            <h3 className="text-lg font-extrabold text-slate-900 dark:text-white">
-              Блиц-тест завершен!
+          <div className="space-y-1.5">
+            <h3 className="text-xl font-black text-slate-900 dark:text-white">
+              Ежедневный Блиц Завершен!
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Ваш результат: <strong className="text-slate-900 dark:text-white font-extrabold text-sm">{score} из {todayQuestions.length}</strong> правильных ответов
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+              Ваш результат: <strong className="text-amber-600 dark:text-amber-400 font-black text-base">{score} из {todayQuestions.length}</strong> правильных ответов
             </p>
           </div>
 
-          <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-extrabold border border-emerald-200 dark:border-emerald-500/20">
-            <Flame className="w-4 h-4 text-amber-500" />
-            <span>Ежедневный стрик поддержан!</span>
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <div className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 text-xs font-black border border-emerald-500/25">
+              <Flame className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <span>Ежедневный стрик повышен до {progress.dailyStreak || 1} дн.!</span>
+            </div>
+            <div className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-black border border-amber-500/25">
+              <Sparkles className="w-4 h-4 text-amber-500" />
+              <span>+{score * 20} XP Получено</span>
+            </div>
           </div>
 
-          <div className="pt-2 flex justify-center space-x-3">
+          <div className="pt-3 flex justify-center space-x-3">
             <button
               onClick={() => setMode('idle')}
-              className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-all"
+              className="px-5 py-2.5 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs transition-all cursor-pointer"
             >
-              Закрыть
+              Вернуться на дашборд
             </button>
             <button
               onClick={handleStartBlitz}
-              className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-extrabold text-xs transition-all flex items-center space-x-1.5 shadow-md shadow-amber-500/20"
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-black text-xs transition-all flex items-center space-x-2 shadow-md shadow-amber-500/20 cursor-pointer"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
+              <RotateCcw className="w-4 h-4" />
               <span>Пройти повторно</span>
             </button>
           </div>
@@ -376,3 +437,4 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
     </div>
   );
 };
+
