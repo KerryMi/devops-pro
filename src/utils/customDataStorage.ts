@@ -59,6 +59,12 @@ export function loadQuizzes(): Quiz[] {
     if (!raw) return DEFAULT_QUIZZES;
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
+      // Ensure all default quizzes are included if missing in storage
+      const storedIds = new Set(parsed.map((q: Quiz) => q.id));
+      const missingDefaults = DEFAULT_QUIZZES.filter(q => !storedIds.has(q.id));
+      if (missingDefaults.length > 0) {
+        return [...parsed, ...missingDefaults];
+      }
       return parsed;
     }
     return DEFAULT_QUIZZES;

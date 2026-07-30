@@ -110,12 +110,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         
         {/* Welcome & Focus Banner */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#121927] text-slate-900 dark:text-white p-5 sm:p-6 md:p-7 rounded-2xl shadow-sm flex flex-col justify-between relative overflow-hidden border border-slate-200 dark:border-slate-800 h-full transition-colors duration-200">
+        <div className="lg:col-span-2 bg-white dark:bg-[#121927] text-slate-900 dark:text-white p-5 sm:p-6 rounded-2xl shadow-sm flex flex-col space-y-4 relative overflow-hidden border border-slate-200 dark:border-slate-800 transition-colors duration-200">
           {/* Ambient glows */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="space-y-4 relative z-10">
+          <div className="space-y-3 relative z-10">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20">
                 <Sparkles className="w-3.5 h-3.5" />
@@ -126,16 +126,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
             <div>
               <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Текущий фокус</h3>
-              <p className="text-lg sm:text-xl font-black tracking-tight mt-1 text-slate-900 dark:text-white leading-snug">
+              <p className="text-lg sm:text-xl font-black tracking-tight mt-0.5 text-slate-900 dark:text-white leading-snug">
                 {recommendedStage.name}: {recActivity.title}
               </p>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1.5 leading-relaxed">
+              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                 {recActivity.description}.
               </p>
             </div>
 
             {/* Transferred Roadmap Focus Blocks (Replacing old quick metrics bar) */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* Recommended Focus Stage Card */}
               <div 
                 onClick={() => onNavigate(recActivity.type, recommendedStage.categoryId)}
@@ -177,7 +177,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
             <button
               onClick={() => onNavigate(recActivity.type, recommendedStage.categoryId)}
               className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
@@ -208,11 +208,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-1.5">
                   <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-slate-500">ИНДЕКС ГОТОВНОСТИ</span>
-                  <span className="relative flex h-2 w-2">
-                    <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                      detailedReadiness.totalScore >= 80 ? 'bg-emerald-400' : detailedReadiness.totalScore >= 55 ? 'bg-blue-400' : 'bg-amber-400'
-                    }`}></span>
-                    <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                  <span className="flex h-2 w-2">
+                    <span className={`inline-flex rounded-full h-2 w-2 ${
                       detailedReadiness.totalScore >= 80 ? 'bg-emerald-500' : detailedReadiness.totalScore >= 55 ? 'bg-blue-500' : 'bg-amber-500'
                     }`}></span>
                   </span>

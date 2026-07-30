@@ -30,20 +30,19 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>(initialCategory || 'all');
-  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     if (initialCategory) {
       setSelectedCategory(initialCategory);
+    } else {
+      setSelectedCategory('all');
     }
   }, [initialCategory]);
 
   const filteredQuizzes = quizzesList.filter(quiz => {
     const matchesDifficulty = selectedDifficulty === 'All' || quiz.difficulty === selectedDifficulty;
     const matchesCategory = selectedCategory === 'all' || quiz.category === selectedCategory || quiz.category === 'all';
-    const matchesSearch = quiz.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          quiz.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesDifficulty && matchesCategory && matchesSearch;
+    return matchesDifficulty && matchesCategory;
   });
 
   // Scroll to top when opening/closing quiz or changing questions
@@ -109,14 +108,18 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
       stars = 1;
     }
 
-    const alreadyMaxed = (progress?.quizResults || []).some(r => 
-      r.quizId === selectedQuiz.id && 
-      Math.round((r.score / 100) * r.totalQuestions) === r.totalQuestions
-    );
+    const previousBestStars = (progress?.quizResults || [])
+      .filter(r => r.quizId === selectedQuiz.id)
+      .reduce((maxStars, r) => {
+        let s = typeof r.stars === 'number' ? r.stars : 0;
+        return Math.max(maxStars, s);
+      }, 0);
 
     let xpReward = 0;
-    if (stars === 3 && !alreadyMaxed) {
-      xpReward = 150;
+    if (stars > previousBestStars) {
+      if (stars === 3) xpReward = 60 - (previousBestStars === 2 ? 40 : previousBestStars === 1 ? 20 : 0);
+      else if (stars === 2) xpReward = 40 - (previousBestStars === 1 ? 20 : 0);
+      else if (stars === 1) xpReward = 20;
     }
 
     const result: QuizResult = {
@@ -159,25 +162,23 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
                 </p>
               </div>
 
-              {/* Search Bar */}
-              <div className="w-full sm:w-64">
-                <input
-                  type="text"
-                  placeholder="Поиск по тестам..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
-                />
-              </div>
+              {selectedCategory !== 'all' && (
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className="px-3 py-1.5 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 text-xs font-bold transition-all shrink-0 self-start sm:self-center"
+                >
+                  Показать все темы (Текущая: {selectedCategory}) ✕
+                </button>
+              )}
             </div>
 
             {/* Difficulty Pills */}
             <div className="flex items-center space-x-2 pt-2 border-t border-slate-100 dark:border-slate-800/60 overflow-x-auto pb-1">
               {[
                 { label: 'Все уровни', value: 'All' },
-                { label: 'Junior (Начинающим)', value: 'Junior' },
-                { label: 'Middle (Специалист)', value: 'Middle' },
-                { label: 'Senior (Хардкор)', value: 'Senior' }
+                { label: 'Junior', value: 'Junior' },
+                { label: 'Middle', value: 'Middle' },
+                { label: 'Senior', value: 'Senior' }
               ].map((diff) => (
                 <button
                   key={diff.value}
@@ -201,7 +202,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
                   По выбранным фильтрам тесты не найдены. Попробуйте сбросить фильтры.
                 </p>
                 <button
-                  onClick={() => { setSelectedDifficulty('All'); setSearchQuery(''); }}
+                  onClick={() => { setSelectedDifficulty('All'); setSelectedCategory('all'); }}
                   className="mt-3 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold"
                 >
                   Сбросить фильтры

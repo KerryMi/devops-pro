@@ -13,7 +13,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
   };
 
   return (
-    <footer className="mt-12 pb-[calc(5.5rem+env(safe-area-inset-bottom,16px))] lg:pb-8 max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 transition-colors">
+    <footer className="mt-4 sm:mt-8 lg:mt-10 pb-[calc(5.5rem+env(safe-area-inset-bottom,16px))] lg:pb-8 max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 transition-colors">
       <div className="p-5 sm:p-6 rounded-2xl bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-slate-800/80 shadow-sm transition-all flex flex-col md:flex-row items-center justify-between gap-4">
         
         {/* Brand & Copyright */}

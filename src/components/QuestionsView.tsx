@@ -294,7 +294,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
             <div className="grid grid-cols-12 gap-5">
               
               {/* Interactive Map Bento Card (replacing Main Info Bento Card) */}
-              <div className="col-span-12 lg:col-span-8 bg-white dark:bg-[#111520] border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs flex flex-col justify-between space-y-5 transition-all duration-200">
+              <div className="col-span-12 lg:col-span-8 bg-white dark:bg-[#111520] border border-slate-200 dark:border-slate-800/80 p-5 rounded-2xl shadow-xs flex flex-col space-y-4 transition-all duration-200">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800/40">
                   <div className="space-y-1">
                     <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center space-x-2">

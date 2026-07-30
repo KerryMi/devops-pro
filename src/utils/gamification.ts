@@ -156,15 +156,15 @@ export function calculateUserGamification(progress: UserProgress, questions: Que
       else stars = 1;
     }
     
-    let xp = typeof r.xpReward === 'number' ? r.xpReward : 0;
-    if (typeof r.xpReward !== 'number') {
-      if (stars === 3) xp = 150;
-      else xp = 0;
-    }
+    let xp = typeof r.xpReward === 'number' && r.xpReward > 0 ? r.xpReward : 0;
+    if (stars === 3) xp = Math.min(xp > 0 ? xp : 60, 60);
+    else if (stars === 2) xp = Math.min(xp > 0 ? xp : 40, 40);
+    else if (stars === 1) xp = Math.min(xp > 0 ? xp : 20, 20);
+    else xp = 0;
 
     const currentBestStars = existing ? (typeof existing.stars === 'number' ? existing.stars : 0) : -1;
     
-    if (!existing || stars > currentBestStars || (stars === currentBestStars && r.score > existing.score)) {
+    if (!existing || stars > currentBestStars || (stars === currentBestStars && r.score > (existing.score || 0))) {
       bestQuizAttempts.set(r.quizId, {
         ...r,
         stars,

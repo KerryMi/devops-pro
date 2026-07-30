@@ -4,7 +4,7 @@ export const QUIZZES: Quiz[] = [
   // --- JUNIOR LEVEL QUIZZES ---
   {
     id: 'quiz-junior-basics',
-    title: 'Основы Linux & Командной строки (Junior)',
+    title: 'Основы Linux & Командной строки',
     category: 'linux',
     difficulty: 'Junior',
     description: 'Базовые команды Linux, права доступа, процессы и навигация по файловой системе для начинающих DevOps специалистов.',
@@ -80,7 +80,7 @@ export const QUIZZES: Quiz[] = [
 
   {
     id: 'quiz-junior-docker',
-    title: 'Docker & Контейнеризация: Старт (Junior)',
+    title: 'Docker & Контейнеризация: Старт',
     category: 'docker',
     difficulty: 'Junior',
     description: 'Основы Docker, разница между контейнером и образом, базовые команды CLI и проброс портов.',
@@ -156,7 +156,7 @@ export const QUIZZES: Quiz[] = [
 
   {
     id: 'quiz-junior-git-cicd',
-    title: 'Git & Основы CI/CD (Junior)',
+    title: 'Git & Основы CI/CD',
     category: 'cicd',
     difficulty: 'Junior',
     description: 'Основы контроля версий Git, ветвление, Merging, Pull Request и базовые понятия автоматических деплоев.',
@@ -219,7 +219,7 @@ export const QUIZZES: Quiz[] = [
 
   {
     id: 'quiz-junior-networking',
-    title: 'Компьютерные Сети & Web (Junior)',
+    title: 'Компьютерные Сети & Web',
     category: 'networking',
     difficulty: 'Junior',
     description: 'Основы сетевых протоколов, IP адресация, DNS, порт 80/443, HTTP статус коды для новичков.',

@@ -67,7 +67,7 @@ const ServerIcon = ({ className }: { className: string }) => <svg className={cla
 const renderTextWithMarkdown = (text: string): React.ReactNode => {
   if (!text) return null;
   return (
-    <div className="select-text inline-block w-full text-left font-medium">
+    <div className="inline-block w-full text-left font-medium pointer-events-none select-none">
       <Markdown
         components={{
           p: ({node, ...props}) => <span className="inline" {...props} />,
@@ -136,6 +136,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // Swipe / Drag gesture state for cards
   const [dragOffsetX, setDragOffsetX] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isSwipingOut, setIsSwipingOut] = useState(false);
   const dragStartX = useRef<number>(0);
   const dragStartY = useRef<number>(0);
   const hasDraggedFar = useRef<boolean>(false);
@@ -249,6 +250,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
   // Drag Gesture Handlers
   const handleDragStart = (clientX: number, clientY: number) => {
+    if (isSwipingOut) return;
     dragStartX.current = clientX;
     dragStartY.current = clientY;
     hasDraggedFar.current = false;
@@ -256,28 +258,45 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   };
 
   const handleDragMove = (clientX: number, clientY: number) => {
-    if (!isDragging) return;
+    if (!isDragging || isSwipingOut) return;
     const diffX = clientX - dragStartX.current;
     const diffY = clientY - dragStartY.current;
 
-    if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+    // Trigger horizontal swipe tracking only if diffX > 15px and horizontal > vertical * 1.5
+    if (Math.abs(diffX) > 15 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
       hasDraggedFar.current = true;
       setDragOffsetX(diffX);
     }
+  };
+
+  const triggerAnimatedNext = (rating: 'hard' | 'good' | 'easy') => {
+    if (isSwipingOut) return;
+    setIsSwipingOut(true);
+
+    const targetX = rating === 'easy' ? 450 : rating === 'hard' ? -450 : 0;
+    if (targetX !== 0) {
+      setDragOffsetX(targetX);
+    }
+
+    setTimeout(() => {
+      handleNext(rating);
+      setDragOffsetX(0);
+      setIsSwipingOut(false);
+    }, 220);
   };
 
   const handleDragEnd = () => {
     if (!isDragging) return;
     setIsDragging(false);
 
-    // Threshold for swipe action (65px)
-    if (dragOffsetX > 65) {
-      handleNext('easy');
-    } else if (dragOffsetX < -65) {
-      handleNext('hard');
+    // Smooth threshold evaluation
+    if (dragOffsetX > 75) {
+      triggerAnimatedNext('easy');
+    } else if (dragOffsetX < -75) {
+      triggerAnimatedNext('hard');
+    } else {
+      setDragOffsetX(0);
     }
-
-    setDragOffsetX(0);
   };
 
   // Navigation Controls
@@ -550,7 +569,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
               <div className="space-y-2">
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                  Отличная работа! 🎉
+                  Отличная работа!
                 </h2>
                 <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
                   Вы успешно просмотрели все {filteredQuestions.length} карточек в этом наборе.
@@ -604,12 +623,15 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 onMouseUp={handleDragEnd}
                 onMouseLeave={handleDragEnd}
                 onClick={() => {
-                  if (hasDraggedFar.current || Math.abs(dragOffsetX) > 10) return;
+                  if (hasDraggedFar.current || Math.abs(dragOffsetX) > 15 || isSwipingOut) return;
                   setIsFlipped(prev => !prev);
                 }}
                 style={{
                   transform: `translateX(${dragOffsetX}px) rotate(${dragOffsetX * 0.04}deg)`,
-                  transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                  opacity: isSwipingOut ? 0 : 1,
+                  transition: isDragging 
+                    ? 'none' 
+                    : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease-out',
                   touchAction: 'pan-y'
                 }}
                 className={`relative w-full rounded-3xl bg-white dark:bg-slate-900 border-2 ${
@@ -667,8 +689,9 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   ) : (
                     /* Answer side */
                     <div className="space-y-5 animate-fadeIn">
-                      <div className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-widest">
-                        ПРАВИЛЬНЫЙ ОТВЕТ
+                      <div className="text-xs font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-widest flex items-center justify-between">
+                        <span>ПРАВИЛЬНЫЙ ОТВЕТ</span>
+                        <span className="text-[10px] text-slate-400 dark:text-slate-500 font-bold">Нажмите чтобы зарыть</span>
                       </div>
                       
                       <div className="text-lg sm:text-xl text-slate-900 dark:text-slate-100 font-extrabold leading-relaxed whitespace-pre-line mobile-word-break">
@@ -776,7 +799,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 {/* CARD FOOTER BAR */}
                 <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium select-none pointer-events-none">
                   <span className="truncate mr-2">
-                    {isFlipped ? 'Оцените кнопками или свайпом' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}
+                    {isFlipped ? 'Нажмите в любом месте карточки, чтобы перевернуть обратно' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}
                   </span>
                   <span className="font-mono text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold shrink-0">
                     {currentIndex + 1} / {filteredQuestions.length}
@@ -790,7 +813,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 
                 {/* OPTION 1: HARD / FORGOT */}
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleNext('hard'); }}
+                  onClick={(e) => { e.stopPropagation(); triggerAnimatedNext('hard'); }}
                   className="p-4 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 hover:border-rose-500/60 text-rose-600 dark:text-rose-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <div className="flex items-center space-x-1.5">
@@ -802,7 +825,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
                 {/* OPTION 2: GOOD / STRUGGLE */}
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleNext('good'); }}
+                  onClick={(e) => { e.stopPropagation(); triggerAnimatedNext('good'); }}
                   className="p-4 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-amber-600 dark:text-amber-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <div className="flex items-center space-x-1.5">
@@ -814,7 +837,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
                 {/* OPTION 3: EASY / EXCELLENT */}
                 <button
-                  onClick={(e) => { e.stopPropagation(); handleNext('easy'); }}
+                  onClick={(e) => { e.stopPropagation(); triggerAnimatedNext('easy'); }}
                   className="p-4 rounded-2xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-600 dark:text-emerald-400 font-extrabold text-sm flex flex-col items-center justify-center space-y-1 transition-all duration-200 shadow-sm cursor-pointer hover:-translate-y-0.5 active:translate-y-0"
                 >
                   <div className="flex items-center space-x-1.5">

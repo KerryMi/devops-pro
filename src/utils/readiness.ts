@@ -118,8 +118,16 @@ export function calculateDetailedReadiness(progress: UserProgress, questions: Qu
     }
   ];
 
-  const sortedByPct = [...pillars].sort((a, b) => a.pct - b.pct);
-  const lowestPillar = sortedByPct[0];
+  // We only recommend the Career Legend if the user has reached a solid foundation of theory (at least 50%)
+  const pillarsForRecommendation = pillars.filter(p => {
+    if (p.id === 'legend') {
+      return theoryPct >= 50;
+    }
+    return true;
+  });
+
+  const sortedByPct = [...pillarsForRecommendation].sort((a, b) => a.pct - b.pct);
+  const lowestPillar = sortedByPct[0] || pillars[0];
 
   let recommendation = {
     title: 'Подтяните теорию',

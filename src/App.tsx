@@ -370,9 +370,7 @@ export default function App() {
 
   const handleNavigate = (tab: TabType, filterCategory?: CategoryId) => {
     setActiveTab(tab);
-    if (filterCategory) {
-      setSelectedCategoryFilter(filterCategory);
-    }
+    setSelectedCategoryFilter(filterCategory);
   };
 
   return (
@@ -419,7 +417,11 @@ export default function App() {
         />
 
         {/* Main Container View Area - starts from top on desktop without top bar */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8 lg:pt-10 pb-[calc(7.5rem+env(safe-area-inset-bottom,16px))] lg:pb-16 min-w-0 overflow-x-hidden">
+        <main className={`max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 pt-6 sm:pt-8 lg:pt-10 ${
+          activeTab === 'dashboard'
+            ? 'pb-3 sm:pb-6 lg:pb-10'
+            : 'pb-[calc(6.5rem+env(safe-area-inset-bottom,16px))] lg:pb-16'
+        } min-w-0 overflow-x-hidden`}>
           {activeTab === 'dashboard' && (
             <Dashboard
               progress={progress}
