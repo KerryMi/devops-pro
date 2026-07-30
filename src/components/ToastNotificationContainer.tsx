@@ -22,7 +22,10 @@ export const ToastNotificationContainer: React.FC<ToastNotificationContainerProp
   if (toasts.length === 0) return null;
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center space-y-2 max-w-lg w-[calc(100%-2rem)] sm:w-auto pointer-events-none transition-all">
+    <div 
+      className="fixed left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center space-y-2 max-w-lg w-[calc(100%-2rem)] sm:w-auto pointer-events-none transition-all"
+      style={{ top: 'calc(4.5rem + env(safe-area-inset-top, 0px))' }}
+    >
       {toasts.map((toast) => {
         let badgeBg = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
         let mainIcon = <Sparkles className="w-3.5 h-3.5 text-emerald-400" />;

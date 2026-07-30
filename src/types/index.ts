@@ -82,6 +82,8 @@ export interface QuizResult {
   timeSpentSeconds: number;
   date: string;
   passed: boolean;
+  stars?: number;
+  xpReward?: number;
 }
 
 export interface IncidentScenario {

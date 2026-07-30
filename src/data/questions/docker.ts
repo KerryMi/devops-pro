@@ -5,18 +5,15 @@ export const DOCKER_QUESTIONS: Question[] = [
   // ============================ JUNIOR LEVEL ===============================
   // =========================================================================
   {
-    id: 'docker-1',
-    title: 'Чем отличаются Docker image и Docker container? Из чего состоит образ?',
-    category: 'docker',
-    difficulty: 'Junior',
-    summaryAnswer: 'Docker Image — это неизменяемый (read-only) шаблон со слоями файловой системы. Container — это запущенный экземпляр образа с добавленным поверх тонким слоем чтения-записи (Read-Write layer).',
-    fullAnswer: `Docker Образ состоит из последовательности read-only слоев (UnionFS / OverlayFS). Каждый слой представляет собой изменения (diff) по сравнению с предыдущим.
-При запуске контейнера движок Docker создаёт поверх всех слоев образа один тонкий слой запись/чтение (R/W Container Layer).
-Если приложение внутри контейнера изменяет существующий файл из образа, срабатывает механизм Copy-on-Write (CoW): файл копируется из нижнего read-only слоя в верхний R/W слой, где и модифицируется.`,
+    id: "docker-1",
+    title: "Чем отличаются Docker image и Docker container? Из чего они состоят?",
+    category: "docker",
+    difficulty: "Junior",
+    summaryAnswer: "Docker Image — это неизменяемый (read only, только чтение) шаблон со слоями файловой системы. Container — это запущенный экземпляр образа с добавленным поверх тонким слоем read/write (чтение/запись).",
+    fullAnswer: `Docker Образ состоит из последовательности read only (только чтение) слоев (UnionFS / OverlayFS). Каждый слой представляет собой изменения (diff) по сравнению с предыдущим.\n\nПри запуске контейнера движок Docker создаёт поверх всех слоев образа один тонкий слой read/write (чтение/запись).\n\nЕсли приложение внутри контейнера изменяет существующий файл из образа, срабатывает механизм Copy-on-Write (CoW): файл копируется из нижнего read only слоя в верхний R/W слой, где и модифицируется.`,
     codeSnippet: {
-      language: 'bash',
-      code: `docker history my-app:latest # просмотр слоев образа
-docker inspect my-container # данные о слоях и монтировании (GraphDriver/Overlay2)`
+      language: "bash",
+      code: `docker history my-app:latest # просмотр слоев образа\ndocker inspect my-container # данные о слоях и монтировании (GraphDriver/Overlay2)`
     },
     interviewTips: [
       'Упомяните термины Overlay2 и Copy-on-Write (CoW). Это покажет понимание работы Linux файловых систем.',

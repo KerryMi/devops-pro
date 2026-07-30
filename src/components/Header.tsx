@@ -15,7 +15,8 @@ import {
   Sun,
   Moon,
   User,
-  ShieldCheck
+  ShieldCheck,
+  Compass
 } from 'lucide-react';
 import { SearchModal } from './SearchModal';
 import { CategoryId } from '../types';
@@ -24,6 +25,7 @@ import { User as FirebaseUser } from 'firebase/auth';
 
 export type TabType = 
   | 'dashboard' 
+  | 'roadmap'
   | 'questions' 
   | 'flashcards' 
   | 'quizzes' 
@@ -99,6 +101,7 @@ export const Header: React.FC<HeaderProps> = ({
     {
       groupName: 'Обучение & База',
       items: [
+        { id: 'roadmap' as TabType, label: 'Roadmap', icon: <Compass className="w-4 h-4 text-emerald-500" />, badge: 'Tree' },
         { id: 'questions' as TabType, label: 'Вопросы', icon: <BookOpen className="w-4 h-4" />, badge: `${masteredCount}/${totalQuestionsCount}` },
         { id: 'flashcards' as TabType, label: 'Карточки', icon: <Bookmark className="w-4 h-4" /> },
         { id: 'quizzes' as TabType, label: 'Тесты', icon: <CheckCircle2 className="w-4 h-4" /> },

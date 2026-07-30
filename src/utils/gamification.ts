@@ -141,16 +141,48 @@ export function calculateUserGamification(progress: UserProgress, questions: Que
   const masteredCount = (progress.masteredQuestionIds || []).length;
   const masteredXP = masteredCount * 10;
 
-  const passedQuizzes = (progress.quizResults || []).filter(r => r.passed || (r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.7));
-  const quizXP = passedQuizzes.length * 30;
+  // Find the best attempt for each unique quiz to calculate stars and XP
+  const bestQuizAttempts = new Map<string, any>();
+  (progress.quizResults || []).forEach(r => {
+    if (!r || !r.quizId) return;
+    const existing = bestQuizAttempts.get(r.quizId);
+    
+    const correctCount = Math.round((r.score / 100) * r.totalQuestions);
+    let stars = typeof r.stars === 'number' ? r.stars : 0;
+    if (typeof r.stars !== 'number') {
+      if (correctCount === 0) stars = 0;
+      else if (correctCount === r.totalQuestions) stars = 3;
+      else if (correctCount >= r.totalQuestions * 0.7) stars = 2;
+      else stars = 1;
+    }
+    
+    let xp = typeof r.xpReward === 'number' ? r.xpReward : 0;
+    if (typeof r.xpReward !== 'number') {
+      if (stars === 3) xp = 150;
+      else xp = 0;
+    }
+
+    const currentBestStars = existing ? (typeof existing.stars === 'number' ? existing.stars : 0) : -1;
+    
+    if (!existing || stars > currentBestStars || (stars === currentBestStars && r.score > existing.score)) {
+      bestQuizAttempts.set(r.quizId, {
+        ...r,
+        stars,
+        xpReward: xp
+      });
+    }
+  });
+
+  const quizXP = Array.from(bestQuizAttempts.values()).reduce((sum, r) => sum + (r.xpReward || 0), 0);
+  const totalStars = Array.from(bestQuizAttempts.values()).reduce((sum, r) => sum + (r.stars || 0), 0);
 
   const solvedIncidents = (progress.solvedIncidentIds || []).length;
   const incidentXP = solvedIncidents * 60;
 
   const legendXP = progress.savedLegend ? 100 : 0;
 
-  const blitzHistory = Object.keys(progress.dailyBlitzHistory || {}).length;
-  const blitzXP = blitzHistory * 20;
+  const blitzHistoryValues = Object.values(progress.dailyBlitzHistory || {});
+  const blitzXP = blitzHistoryValues.reduce((sum, h: any) => sum + ((h.score || 0) * 20), 0);
 
   const achievements = evaluateAchievements(progress, questions);
   const unlockedAchievements = achievements.filter(a => a.isUnlocked);
@@ -174,6 +206,7 @@ export function calculateUserGamification(progress: UserProgress, questions: Que
 
   return {
     totalXP,
+    totalStars,
     level: currentRank.level,
     rank: currentRank,
     nextRank,

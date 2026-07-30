@@ -10,6 +10,7 @@ import { ResumeGuideView } from './components/ResumeGuideView';
 import { IncidentsView } from './components/IncidentsView';
 import { CheatsheetsView } from './components/CheatsheetsView';
 import { AchievementsView } from './components/AchievementsView';
+import { DevOpsRoadmap } from './components/DevOpsRoadmap';
 import { Footer } from './components/Footer';
 
 import { QUESTIONS as DEFAULT_QUESTIONS } from './data/questions';
@@ -27,6 +28,7 @@ import {
 } from './utils/customDataStorage';
 import { evaluateAchievements } from './data/achievements';
 import { calculateUserGamification, ITRank } from './utils/gamification';
+import { calculateDetailedReadiness } from './utils/readiness';
 import { RankUpModal } from './components/RankUpModal';
 import { ProfileView } from './components/ProfileView';
 import { AdminView } from './components/AdminView';
@@ -283,10 +285,11 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'instant' as any });
   }, [activeTab]);
 
-  // Readiness Score % calculation
+  // Detailed Readiness Score calculation
   const totalQuestions = questions.length;
   const masteredCount = progress.masteredQuestionIds.length;
-  const readinessScore = totalQuestions > 0 ? Math.round((masteredCount / totalQuestions) * 100) : 0;
+  const detailedReadiness = calculateDetailedReadiness(progress, questions);
+  const readinessScore = detailedReadiness.totalScore;
 
   // Progress Handlers
   const handleToggleMastered = (questionId: string) => {
@@ -336,17 +339,16 @@ export default function App() {
     }));
   };
 
+  // Reset scroll position on tab change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
   const handleSaveQuizResult = (result: QuizResult) => {
     setProgress(prev => ({
       ...prev,
       quizResults: [result, ...prev.quizResults]
     }));
-    triggerToast({
-      title: 'Тест завершен!',
-      message: `Результат: ${result.score} из ${result.totalQuestions} правильных ответов.`,
-      xpReward: Math.round((result.score / result.totalQuestions) * 100),
-      type: 'quest'
-    });
   };
 
   const handleSolveIncident = (scenarioId: string) => {
@@ -429,6 +431,14 @@ export default function App() {
             />
           )}
 
+          {activeTab === 'roadmap' && (
+            <DevOpsRoadmap
+              questions={questions}
+              progress={progress}
+              onNavigate={handleNavigate}
+            />
+          )}
+
           {activeTab === 'achievements' && (
             <AchievementsView
               progress={progress}
@@ -453,6 +463,7 @@ export default function App() {
               questions={questions}
               progress={progress}
               onUpdateFlashcardBox={handleUpdateFlashcardBox}
+              initialCategory={selectedCategoryFilter}
             />
           )}
 
@@ -460,6 +471,8 @@ export default function App() {
             <QuizView
               onSaveQuizResult={handleSaveQuizResult}
               quizzes={quizzes}
+              progress={progress}
+              initialCategory={selectedCategoryFilter}
             />
           )}
 
@@ -478,6 +491,7 @@ export default function App() {
             <IncidentsView
               onSolveIncident={handleSolveIncident}
               solvedIncidentIds={progress.solvedIncidentIds || []}
+              initialCategory={selectedCategoryFilter}
             />
           )}
 

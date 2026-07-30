@@ -25,8 +25,11 @@ import {
   ChevronLeft,
   ChevronRight,
   Sparkles,
-  Globe
+  Globe,
+  Cpu,
+  Cloud
 } from 'lucide-react';
+import { calculateDetailedReadiness } from '../utils/readiness';
 
 interface QuestionsViewProps {
   questions: Question[];
@@ -42,7 +45,7 @@ const STAGES = [
     id: 1,
     title: 'Linux & System Internals',
     subtitle: 'Базовая операционная система',
-    description: 'Изучение управления процессами, системных вызовов, памяти, дисков, systemd и основ работы ОС Linux.',
+    description: 'Изучение управления процессами, системных вызовов, памяти, дисков, systemd и OOM killer.',
     categoryIds: ['linux'] as CategoryId[],
     iconName: 'Terminal',
   },
@@ -50,7 +53,7 @@ const STAGES = [
     id: 2,
     title: 'Сети & Безопасность',
     subtitle: 'Сетевой стек и протоколы',
-    description: 'Разбор модели OSI, стека TCP/IP, DNS, TLS/SSL, HTTPS, маршрутизации и сетевых утилит.',
+    description: 'Разбор модели OSI, стека TCP/IP, DNS, TLS/SSL, HTTPS, iptables и реверс-прокси Nginx.',
     categoryIds: ['networking'] as CategoryId[],
     iconName: 'Globe',
   },
@@ -58,41 +61,49 @@ const STAGES = [
     id: 3,
     title: 'Docker & Контейнеризация',
     subtitle: 'Изоляция и рантайм контейнеров',
-    description: 'Понимание namespaces, cgroups, оптимизации слоев образов, мультистейдж сборки и сетевой структуры Docker.',
+    description: 'Понимание namespaces, cgroups, OverlayFS, мультистейдж сборки и оптимизации слоев Docker.',
     categoryIds: ['docker'] as CategoryId[],
     iconName: 'Box',
   },
   {
     id: 4,
-    title: 'Ansible & IaC (Автоматизация)',
-    subtitle: 'Инфраструктура как код и конфигурация',
-    description: 'Управление конфигурациями с помощью Ansible playbooks, ролей и идемпотентности, а также декларативное описание ресурсов в Terraform.',
-    categoryIds: ['ansible', 'terraform'] as CategoryId[],
-    iconName: 'Settings',
+    title: 'CI/CD & GitOps Пайплайн',
+    subtitle: 'Непрерывная интеграция и доставка',
+    description: 'Построение пайплайнов в GitLab CI и GitHub Actions, автоматизация деплоя через ArgoCD и Helm.',
+    categoryIds: ['cicd'] as CategoryId[],
+    iconName: 'GitBranch',
   },
   {
     id: 5,
     title: 'Kubernetes & Оркестрация',
     subtitle: 'Масштабирование и деплой в k8s',
-    description: 'Архитектура Control Plane, жизненный цикл Pod, манифесты Deployment, StatefulSet, сетевое взаимодействие CNI, Ingress и сервис-меш.',
+    description: 'Архитектура Control Plane, жизненный цикл Pod, манифесты Deployment, StatefulSet, CNI и Ingress.',
     categoryIds: ['k8s'] as CategoryId[],
     iconName: 'Layers',
   },
   {
     id: 6,
-    title: 'CI/CD & GitOps',
-    subtitle: 'Непрерывная интеграция и доставка',
-    description: 'Построение пайплайнов девелопмента в GitLab CI и GitHub Actions, автоматизация деплоя через ArgoCD и шаблонизация Helm.',
-    categoryIds: ['cicd'] as CategoryId[],
-    iconName: 'GitBranch',
+    title: 'Infrastructure as Code (IaC)',
+    subtitle: 'Инфраструктура как код и конфигурации',
+    description: 'Декларативное управление ресурсами в Terraform (State, модули) и автоматизация в Ansible.',
+    categoryIds: ['terraform', 'ansible'] as CategoryId[],
+    iconName: 'Cpu',
   },
   {
     id: 7,
-    title: 'Мониторинг & Observability',
-    subtitle: 'Наблюдаемость и архитектура',
-    description: 'Сбор метрик в Prometheus, визуализация в Grafana, распределенная трассировка, логирование и высокоуровневый System Design.',
-    categoryIds: ['monitoring', 'cloud', 'sysdesign'] as CategoryId[],
+    title: 'Observability & Мониторинг',
+    subtitle: 'Наблюдаемость и алертинг',
+    description: 'Сбор метрик в Prometheus, визуализация в Grafana, дедупликация алертов и централизованные логи.',
+    categoryIds: ['monitoring'] as CategoryId[],
     iconName: 'Activity',
+  },
+  {
+    id: 8,
+    title: 'Облака & System Design',
+    subtitle: 'High Availability и архитектура',
+    description: 'Проектирование отказоустойчивых систем (HA), S3 хранилища, IAM, Disaster Recovery и системный дизайн.',
+    categoryIds: ['cloud', 'sysdesign'] as CategoryId[],
+    iconName: 'Cloud',
   },
 ];
 
@@ -125,6 +136,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
     5: true,
     6: true,
     7: true,
+    8: true,
   });
 
   // Expand matching stage if initialCategory is passed
@@ -236,9 +248,10 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
     return '';
   };
 
-  // Overall statistics
+  // Overall statistics (synchronized with readiness calculation)
   const totalMasteredCount = questions.filter(q => progress.masteredQuestionIds.includes(q.id)).length;
-  const overallPercentage = questions.length > 0 ? Math.round((totalMasteredCount / questions.length) * 100) : 0;
+  const detailedReadiness = calculateDetailedReadiness(progress, questions);
+  const overallPercentage = detailedReadiness.totalScore;
 
   // Find navigation neighbors in detail view
   const filteredList = getAllFilteredQuestions();
@@ -255,6 +268,8 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
       case 'Layers': return <Layers className={className} />;
       case 'GitBranch': return <GitBranch className={className} />;
       case 'Activity': return <Activity className={className} />;
+      case 'Cpu': return <Cpu className={className} />;
+      case 'Cloud': return <Cloud className={className} />;
       default: return <FileText className={className} />;
     }
   };
@@ -284,11 +299,8 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   <div className="space-y-1">
                     <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center space-x-2">
                       <TrendingUp className="w-5 h-5 text-emerald-500" />
-                      <span>Интерактивная карта подготовки</span>
+                      <span>Интерактивная карта</span>
                     </h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Учебный трек системного инженера. Выберите шаг для фильтрации.
-                    </p>
                   </div>
 
                   {/* Right side controls: overall progress & show-all toggle */}
@@ -342,8 +354,8 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Flex horizontal buttons */}
-                  <div className="relative flex items-stretch justify-between gap-3 overflow-x-auto pb-2 pt-1 scrollbar-none snap-x snap-mandatory">
+                  {/* Grid on mobile (4 columns x 2 rows), flex row on sm+ */}
+                  <div className="relative grid grid-cols-4 sm:flex sm:items-stretch sm:justify-between gap-2 sm:gap-3 pb-2 pt-1">
                     {STAGES.map((st) => {
                       const stageQuestions = questions.filter(q => st.categoryIds.includes(q.category));
                       const totalInStage = stageQuestions.length;
@@ -374,14 +386,14 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                         <button
                           key={st.id}
                           onClick={() => handleStageClick(st.id)}
-                          className={`flex-1 min-w-[130px] md:min-w-0 flex flex-col items-center text-center space-y-2 snap-start group relative cursor-pointer p-2 rounded-2xl transition-all duration-300 ${
+                          className={`flex-1 min-w-0 flex flex-col items-center text-center space-y-1.5 group relative cursor-pointer p-1.5 sm:p-2 rounded-2xl transition-all duration-300 ${
                             isCurrentlySelected ? 'bg-slate-50/40 dark:bg-[#0c0f16]/20' : ''
                           }`}
                         >
                           {/* Circle Icon Badge Node */}
-                          <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 relative ${nodeOuterStyle}`}>
+                          <div className={`w-11 h-11 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center border-2 transition-all duration-300 relative ${nodeOuterStyle}`}>
                             <div className={`transition-transform duration-300 group-hover:scale-110 ${nodeInnerStyle}`}>
-                              {renderStageIcon(st.iconName, "w-6 h-6 stroke-[2]")}
+                              {renderStageIcon(st.iconName, "w-5 h-5 sm:w-6 sm:h-6 stroke-[2]")}
                             </div>
 
                             {/* Sequential Step/Done indicator */}
@@ -421,38 +433,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   </div>
                 </div>
 
-                {/* Live Dynamic Details Card */}
-                <div className="bg-slate-50/50 dark:bg-[#0b1120]/30 border border-slate-100 dark:border-slate-800/40 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4 transition-all duration-300 min-h-[84px]">
-                  <div className="space-y-1 max-w-xl">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2 py-0.5 rounded-md border border-emerald-500/20">
-                        {selectedStageFilter === 'all' ? 'Полный обзор' : `Этап ${selectedStageFilter}`}
-                      </span>
-                      <h3 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white">
-                        {selectedStageFilter === 'all' 
-                          ? "Учебный трек подготовки по системной инженерии" 
-                          : STAGES.find(s => s.id === selectedStageFilter)?.title}
-                      </h3>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                      {selectedStageFilter === 'all' 
-                        ? "Изучайте ключевые концепции от базового администрирования операционных систем Linux до сложнейших распределенных сетей, Docker, Ansible, оркестрации Kubernetes, конвейеров CI/CD и системного дизайна."
-                        : STAGES.find(s => s.id === selectedStageFilter)?.description}
-                    </p>
-                  </div>
 
-                  {selectedStageFilter !== 'all' && (
-                    <div className="shrink-0">
-                      <button
-                        onClick={() => handleStageClick(selectedStageFilter as number)}
-                        className="text-[11px] font-extrabold text-white bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500 px-3.5 py-2 rounded-xl shadow-xs hover:shadow-emerald-500/20 transition-all flex items-center space-x-1 cursor-pointer"
-                      >
-                        <span>Смотреть вопросы</span>
-                        <ArrowLeft className="w-3 h-3 rotate-180" />
-                      </button>
-                    </div>
-                  )}
-                </div>
               </div>
 
               {/* Learning Statistics Bento Card */}

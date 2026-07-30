@@ -89,15 +89,23 @@ interface FlashcardsViewProps {
   questions: Question[];
   progress: UserProgress;
   onUpdateFlashcardBox: (questionId: string, newBox: number) => void;
+  initialCategory?: string;
 }
 
 export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   questions,
   progress,
   onUpdateFlashcardBox,
+  initialCategory,
 }) => {
   // Configuration State
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory || 'all');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
   const [selectedBoxFilter, setSelectedBoxFilter] = useState<'all' | number>('all');
   const [isShuffled, setIsShuffled] = useState<boolean>(false);
@@ -819,7 +827,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               </div>
 
               {/* NAVIGATION & SHORTCUTS FOOTER */}
-              <div className="flex items-center justify-between text-xs text-slate-500 pt-1">
+              <div className="hidden sm:flex items-center justify-between text-xs text-slate-500 pt-1">
                 <div className="flex items-center space-x-2">
                   <button onClick={handlePrev} className="hover:text-slate-900 dark:hover:text-slate-300 flex items-center space-x-1 font-bold">
                     <ChevronLeft className="w-4 h-4" />
@@ -832,7 +840,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   </button>
                 </div>
 
-                <div className="hidden sm:flex items-center space-x-2 text-[11px] text-slate-500 dark:text-slate-400">
+                <div className="flex items-center space-x-2 text-[11px] text-slate-500 dark:text-slate-400">
                   <kbd className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 font-mono text-[10px] text-emerald-600 dark:text-emerald-400">Space</kbd>
                   <span>Перевернуть</span>
                 </div>

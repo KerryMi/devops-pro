@@ -15,12 +15,12 @@ export const QUIZZES: Quiz[] = [
         category: 'linux',
         question: 'Какая команда используется для проверки текущей рабочей директории в терминале Linux?',
         options: [
-          'pwd',
           'ls -la',
+          'pwd',
           'cd ~',
           'whoami'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Команда `pwd` (Print Working Directory) выводит полный путь к текущему каталогу, в котором вы находитесь.'
       },
       {
@@ -28,12 +28,12 @@ export const QUIZZES: Quiz[] = [
         category: 'linux',
         question: 'Что означают права доступа 755 на файл в символьном представлении?',
         options: [
-          '-rwxr-xr-x (Владелец: чтение/запись/выполнение, Группа и Остальные: чтение/выполнение)',
-          '-rw-r--r-- (Только чтение и запись)',
+          '-rw-r--r-- (Владелец: чтение и запись, остальные: только чтение)',
           '-rwxrwxrwx (Полный доступ для всех)',
+          '-rwxr-xr-x (Владелец: чтение/запись/выполнение, Группа и Остальные: чтение/выполнение)',
           '-r-xr-xr-x (Только чтение и запуск для всех)'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'В восьмеричной системе: 7 = rwx (4+2+1), 5 = r-x (4+0+1). Таким образом, 755 означает -rwxr-xr-x.'
       },
       {
@@ -41,12 +41,12 @@ export const QUIZZES: Quiz[] = [
         category: 'linux',
         question: 'С помощью какой команды можно посмотреть использование оперативной памяти в реальном времени?',
         options: [
-          'top (или htop / free -m)',
           'df -h',
           'du -sh *',
-          'uname -a'
+          'uname -a',
+          'top (или htop / free -m)'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 3,
         explanation: 'Команда `free -m` показывает объём доступной и занятой RAM в мегабайтах, а `top` или `htop` дают интерактивный просмотр загрузки процессов и памяти.'
       },
       {
@@ -54,25 +54,25 @@ export const QUIZZES: Quiz[] = [
         category: 'linux',
         question: 'Какой сигнал посылает команда `kill -9 <PID>` процессу?',
         options: [
-          'SIGKILL (немедленное принудительное завершение ядра без очистки)',
           'SIGTERM (запрос на корректное завершение)',
+          'SIGKILL (немедленное принудительное завершение ядра без очистки)',
           'SIGHUP (перечитай конфигурацию)',
           'SIGSTOP (пауза процесса)'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Сигнал -9 — это SIGKILL. Процесс не может перехватить или проигнорировать этот сигнал, ядро немедленно уничтожает процесс.'
       },
       {
         id: 'q-j5',
         category: 'linux',
-        question: 'В какому файле хранится список соответствий IP-адресов и доменных имен для локального резолвинга в Linux?',
+        question: 'В каком файле хранится список соответствий IP-адресов и доменных имен для локального резолвинга в Linux?',
         options: [
-          '/etc/hosts',
           '/etc/resolv.conf',
           '/etc/fstab',
+          '/etc/hosts',
           '/etc/environment'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'Файл `/etc/hosts` используется операционной системой для локального сопоставления хостнеймов с IP-адресами в первую очередь перед обращением к DNS-серверам из `/etc/resolv.conf`.'
       }
     ]
@@ -91,25 +91,25 @@ export const QUIZZES: Quiz[] = [
         category: 'docker',
         question: 'В чем ключевое отличие Docker образа (Image) от Docker контейнера (Container)?',
         options: [
-          'Образ — это неизменяемый шаблон (шаблон/чертеж), а контейнер — запущенный изолированный экземпляр этого образа',
           'Образ работает только на Linux, а контейнер на Windows',
+          'Образ — это неизменяемый шаблон (шаблон/чертеж), а контейнер — запущенный изолированный экземпляр этого образа',
           'Контейнер содержит исходный код, а образ только скомпилированные бинарники',
           'Никакой разницы нет, это синонимы'
         ],
-        correctAnswerIndex: 0,
-        explanation: 'Docker Image — это читать-only слои с приложением и зависимостями. Docker Container — это запущенный процесс, имеющий свой тонкий запись-чтение (R/W) слой поверх образа.'
+        correctAnswerIndex: 1,
+        explanation: 'Docker Image — это read only (только чтение) слои с приложением и зависимостями. Docker Container — это запущенный процесс, имеющий свой тонкий read/write (чтение/запись) слой поверх образа.'
       },
       {
         id: 'q-jd2',
         category: 'docker',
         question: 'Какой флаг в команде `docker run` запускает контейнер в фоновом режиме (detached mode)?',
         options: [
-          '-d',
           '-it',
           '-p',
-          '--rm'
+          '--rm',
+          '-d'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 3,
         explanation: 'Флаг `-d` (detached) запускает контейнер в фоновом режиме и выводит ID созданного контейнера.'
       },
       {
@@ -117,12 +117,12 @@ export const QUIZZES: Quiz[] = [
         category: 'docker',
         question: 'Что делает ключ `-p 8080:80` при запуске `docker run -p 8080:80 nginx`?',
         options: [
-          'Пробрасывает порт 8080 хост-машины на порт 80 внутри контейнера',
           'Пробрасывает порт 80 хост-машины на порт 8080 внутри контейнера',
+          'Пробрасывает порт 8080 хост-машины на порт 80 внутри контейнера',
           'Ограничивает использование оперативной памяти до 8080 МБ',
           'Запускает 8080 параллельных копий контейнера'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Формат проброса портов `-p host_port:container_port`. Порт 8080 хоста связывается с портом 80 внутри контейнера.'
       },
       {
@@ -130,25 +130,25 @@ export const QUIZZES: Quiz[] = [
         category: 'docker',
         question: 'Какая команда удаляет все остановленные контейнеры и неиспользуемые Docker ресурсы?',
         options: [
-          'docker system prune',
           'docker stop all',
           'docker rm -f $(docker ps)',
+          'docker system prune',
           'docker rmi --all'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'Команда `docker system prune` очищает остановленные контейнеры, неиспользуемые сети и виртуальные слои без тегов (dangling images).'
       },
       {
         id: 'q-jd5',
         category: 'docker',
-        question: 'Чем отличатся инструкция `CMD` от `ENTRYPOINT` в Dockerfile?',
+        question: 'Чем отличается инструкция `CMD` от `ENTRYPOINT` в Dockerfile?',
         options: [
-          'ENTRYPOINT задает основную исполняемую команду, а CMD задает аргументы по умолчанию, которые легко переопределить при запуске',
           'CMD выполняется во время сборки образа (build time), а ENTRYPOINT во время запуска (runtime)',
+          'ENTRYPOINT задает основную исполняемую команду, а CMD задает аргументы по умолчанию, которые легко переопределить при запуске',
           'ENTRYPOINT используется только для Python приложений',
           'CMD запускает процессы от пользователя root, а ENTRYPOINT от daemon'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'ENTRYPOINT определяет постоянный исполняемый файл бинарника (например, `/usr/bin/python`), а CMD аргументы по умолчанию. Аргументы из `docker run ...` легко перезаписывают `CMD`.'
       }
     ]
@@ -167,25 +167,25 @@ export const QUIZZES: Quiz[] = [
         category: 'cicd',
         question: 'Какая команда создаст новую ветку `feature/login` и сразу переключит вас на нее?',
         options: [
-          'git checkout -b feature/login (или git switch -c feature/login)',
           'git branch create feature/login',
+          'git checkout -b feature/login (или git switch -c feature/login)',
           'git commit -b feature/login',
           'git pull origin feature/login'
         ],
-        correctAnswerIndex: 0,
-        explanation: 'Команда `git checkout -b <name>` или современный аналогичный аналог `git switch -c <name>` создают новую ветку от текущего коммита и делают переключение на нее.'
+        correctAnswerIndex: 1,
+        explanation: 'Команда `git checkout -b <name>` или современный аналог `git switch -c <name>` создают новую ветку от текущего коммита и делают переключение на нее.'
       },
       {
         id: 'q-jg2',
         category: 'cicd',
-        question: 'Что расшифровываются аббревиатуры CI и CD?',
+        question: 'Как расшифровываются аббревиатуры CI и CD?',
         options: [
-          'Continuous Integration (Непрерывная Интеграция) и Continuous Delivery / Deployment (Непрерывная Доставка / Развертывание)',
           'Code Inspection и Cloud Deployment',
           'Container Insulation и Central Database',
+          'Continuous Integration (Непрерывная Интеграция) и Continuous Delivery / Deployment (Непрерывная Доставка / Развертывание)',
           'Computer Integration и Data Distribution'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'CI — автоматическая сборка и тестирование кода при каждом коммите. CD — автоматизированная или автоматическая доставка готового релиза на тестовые и продакшн стенды.'
       },
       {
@@ -193,12 +193,12 @@ export const QUIZZES: Quiz[] = [
         category: 'cicd',
         question: 'Для чего используется файл `.gitignore` в корне репозитория?',
         options: [
-          'Чтобы указать файлы и папки (например, node_modules, .env, логи), которые НЕ должны попадать в Git репозиторий',
           'Чтобы скрыть репозиторий от сторонних пользователей в интернете',
           'Чтобы отменить последний коммит',
+          'Чтобы указать файлы и папки (например, node_modules, .env, логи), которые НЕ должны попадать в Git репозиторий',
           'Чтобы хранить пароли от продакшн серверов'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'Файл `.gitignore` содержит шаблоны путей к временным бинарникам, кэшам, секретам и зависимостям, чтобы Git игнорировал их при индексации (git add).'
       },
       {
@@ -230,12 +230,12 @@ export const QUIZZES: Quiz[] = [
         category: 'networking',
         question: 'Какие стандартные порты используются по умолчанию для незащищенного протокола HTTP и защищенного HTTPS?',
         options: [
-          'HTTP — 80, HTTPS — 443',
           'HTTP — 8080, HTTPS — 8443',
+          'HTTP — 80, HTTPS — 443',
           'HTTP — 22, HTTPS — 21',
           'HTTP — 53, HTTPS — 3306'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'По общепринятым стандартам IANA: порт 80 — HTTP, порт 443 — HTTPS (TLS/SSL).'
       },
       {
@@ -243,12 +243,12 @@ export const QUIZZES: Quiz[] = [
         category: 'networking',
         question: 'Что означает HTTP код ответа сервера 404 Not Found?',
         options: [
-          'Запрошенный ресурс или страница не найдены на сервере',
           'На сервере произошла внутренняя ошибка кода (Internal Server Error)',
+          'Запрошенный ресурс или страница не найдены на сервере',
           'Доступ запрещен из-за отсутствия авторизации',
           'Сервер временно перегружен'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Семейство кодов 4xx указывает на ошибки клиента. 404 означает, что сервер понял запрос, но не нашел объект по указанному URI.'
       },
       {
@@ -256,12 +256,12 @@ export const QUIZZES: Quiz[] = [
         category: 'networking',
         question: 'За что отвечает служба DNS (Domain Name System)?',
         options: [
-          'Преобразует понятные человеку доменные имена (например, google.com) в числовые IP-адреса (например, 142.250.180.206)',
           'Шифрует пароли в браузерах',
           'Ускоряет загрузку картинок на сайте',
+          'Преобразует понятные человеку доменные имена (например, google.com) в числовые IP-адреса (например, 142.250.180.206)',
           'Защищает сервер от вирусов'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'DNS действует как "телефонная книга" интернета, превращая доменные имена в IP-адреса, необходимые компьютерам для маршрутизации пакетов.'
       },
       {
@@ -269,12 +269,12 @@ export const QUIZZES: Quiz[] = [
         category: 'networking',
         question: 'Какая из утилит позволяет проверить сетевую доступность хоста с помощью ICMP пакетов?',
         options: [
-          'ping',
           'curl',
           'ssh',
-          'git'
+          'git',
+          'ping'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 3,
         explanation: 'Утилита `ping` отправляет специальные пакеты ICMP Echo Request и измеряет время задержки (RTT) ответа ICMP Echo Reply.'
       }
     ]
@@ -307,12 +307,12 @@ export const QUIZZES: Quiz[] = [
         category: 'k8s',
         question: 'Какой статус у пода Kubernetes будет, если контейнер завершился из-за превышения лимита памяти (Memory Limit)?',
         options: [
-          'CrashLoopBackOff со статусом OOMKilled в причинах',
           'Evicted',
           'Completed',
+          'CrashLoopBackOff со статусом OOMKilled в причинах',
           'NodeLost'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'При выходе за пределы указанного memory limit ядро Linux (или cgroup) убивает контейнер сигналом SIGKILL (код 137). Kubelet регистрирует причину OOMKilled и переводит под в цикл перезапусков CrashLoopBackOff.'
       },
       {
@@ -370,12 +370,12 @@ export const QUIZZES: Quiz[] = [
         category: 'k8s',
         question: 'Какая NetworkPolicy изолирует все входящие соединения к подам с селектором app=backend в namespace, если правила ingress пусты?',
         options: [
-          'Поды перестанут принимать любой входящий трафик извне (Default Deny Ingress)',
           'Поды продолжат принимать весь трафик без ограничений',
+          'Поды перестанут принимать любой входящий трафик извне (Default Deny Ingress)',
           'Kubelet принудительно перезапустит поды',
           'NetworkPolicy выдаст ошибку валидации'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Если под выбран в NetworkPolicy, к нему начинает применяться политика "запрещено все, что явно не разрешено" (Default Deny). Если секция ingress пуста, блокируется весь входящий трафик.'
       },
       {
@@ -396,12 +396,12 @@ export const QUIZZES: Quiz[] = [
         category: 'k8s',
         question: 'Какой тип Kubernetes Service создает внешний облачный балансировщик нагрузки (Cloud Load Balancer)?',
         options: [
-          'LoadBalancer',
           'NodePort',
           'ClusterIP',
+          'LoadBalancer',
           'ExternalName'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 2,
         explanation: 'Тип `LoadBalancer` автоматически запрашивает у облачного провайдера (AWS ELB, GCP Cloud Load Balancer, Yandex Cloud NLB) выделение внешнего IP-адреса и настраивает маршрутизацию.'
       }
     ]
@@ -420,12 +420,12 @@ export const QUIZZES: Quiz[] = [
         category: 'linux',
         question: 'Какая команда покажет открытые сетевые порты и процессы, удерживающие их в Linux?',
         options: [
-          'ss -tulpn',
           'ip addr show',
+          'ss -tulpn',
           'cat /etc/resolv.conf',
           'sysctl -a'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Команда ss -tulpn (или lsof -i -P -n) выводит таблицу TCP/UDP сокетов, их состояния и PID с именами процессов.'
       },
       {
@@ -447,11 +447,11 @@ export const QUIZZES: Quiz[] = [
         question: 'Что обозначает статус процесса "Z" (Zombie) в выводе команды ps aux?',
         options: [
           'Процесс принудительно заморожен в гибернацию',
-          'Процесс завершил выполнение, но его родительский процесс еще не прочитал код завершения через sys_wait',
           'Процесс заблокирован в ожидании ввода-вывода диска',
+          'Процесс завершил выполнение, но его родительский процесс еще не прочитал код завершения через sys_wait',
           'Процесс превысил лимит по оперативной памяти'
         ],
-        correctAnswerIndex: 1,
+        correctAnswerIndex: 2,
         explanation: 'Процесс-зомби уже освободил свою память и ресурсы, но сохраняет запись в таблице процессов ядра до тех пор, пока родительский процесс не вызовет wait() / waitpid().'
       },
       {
@@ -533,12 +533,12 @@ export const QUIZZES: Quiz[] = [
         category: 'cloud',
         question: 'Зачем используется пул соединений (Connection Pooler, например PgBouncer) перед PostgreSQL?',
         options: [
-          'Создание нового процесса на каждое соединение в Postgres очень ресурсоемко; PgBouncer переиспользует готовый пул соединений, экономя RAM и CPU',
           'PgBouncer сжимает таблицы базы данных на диске',
+          'Создание нового процесса на каждое соединение в Postgres очень ресурсоемко; PgBouncer переиспользует готовый пул соединений, экономя RAM и CPU',
           'PgBouncer автоматически переводит запросы SELECT на Redis',
           'Он нужен только для шифрования SSL'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'PostgreSQL использует модель process-per-connection. Управление тысячами открытых соединений приводит к огромным накладным расходам по памяти и context switching. PgBouncer позволяет держать тысячи клиентов с минимальным числом соединений к самой БД.'
       },
       {
@@ -546,12 +546,12 @@ export const QUIZZES: Quiz[] = [
         category: 'cloud',
         question: 'Что такое WAL (Write-Ahead Logging) в PostgreSQL и для чего он критически важен?',
         options: [
-          'Журнал предзаписи изменений, позволяющий восстановить целостность данных при сбое и использовать Point-In-Time Recovery (PITR)',
           'Лог ошибок веб-сервера',
+          'Журнал предзаписи изменений, позволяющий восстановить целостность данных при сбое и использовать Point-In-Time Recovery (PITR)',
           'Список заблокированных IP-адресов',
           'Файл конфигурации пользователей базы'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'WAL гарантирует транзакционность (ACID Durability). Все изменения сначала записываются на диск в WAL, а затем в файлы таблиц. Это основа стриминговой репликации и точного восстановления на любой момент времени (PITR).'
       }
     ]
@@ -568,7 +568,7 @@ export const QUIZZES: Quiz[] = [
       {
         id: 'q13',
         category: 'monitoring',
-        question: 'Чем отличатся тип метрики Counter от Gauge в Prometheus?',
+        question: 'Чем отличается тип метрики Counter от Gauge в Prometheus?',
         options: [
           'Counter только растет (или сбрасывается в 0 при перезапуске), а Gauge может увеличиваться и уменьшаться',
           'Gauge сохраняет текстовые логи, а Counter только числа',
@@ -583,12 +583,12 @@ export const QUIZZES: Quiz[] = [
         category: 'ansible',
         question: 'Что такое Идемпотентность (Idempotency) в Ansible?',
         options: [
-          'Способность выполнять плейбук повторно неограниченное количество раз с получением одного и того же целевого состояния без лишних изменений',
           'Автоматическое шифрование конфигов с помощью Vault',
+          'Способность выполнять плейбук повторно неограниченное количество раз с получением одного и того же целевого состояния без лишних изменений',
           'Параллельное выполнение задач на 1000 серверах',
           'Удаление старых логов после деплоя'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Идемпотентный модуль проверяет текущее состояние целевой системы: если нужный файл или пакет уже установлены и соответствуют эталону, модуль не совершает повторных действий и возвращает ok (changed: false).'
       },
       {
@@ -612,7 +612,7 @@ export const QUIZZES: Quiz[] = [
     title: 'Cloud Security & DevSecOps Practice',
     category: 'cloud',
     difficulty: 'Senior',
-    description: 'Управление секретами (HashiCorp Vault), сканирование уязвимостей (Trivy), IAM роли и принцоп Least Privilege.',
+    description: 'Управление секретами (HashiCorp Vault), сканирование уязвимостей (Trivy), IAM роли и принцип Least Privilege.',
     timeLimitMinutes: 15,
     questions: [
       {
@@ -633,12 +633,12 @@ export const QUIZZES: Quiz[] = [
         category: 'cloud',
         question: 'Какое главное преимущество использования динамических секретов (Dynamic Secrets) в HashiCorp Vault?',
         options: [
-          'Секреты создаются по запросу на лету с коротким временем жизни (TTL) и автоматически отзываются по истечении срока',
           'Динамические секреты не шифруются, поэтому работают быстрее',
+          'Секреты создаются по запросу на лету с коротким временем жизни (TTL) и автоматически отзываются по истечении срока',
           'Их можно передавать по HTTP без TLS',
           'Они хранятся прямо в коде приложения'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Dynamic Secrets не существуют до момента запроса приложения. Vault создает временные учетные данные в базе/облаке со строгим TTL и автоматически удаляет их после использования.'
       }
     ]
@@ -657,12 +657,12 @@ export const QUIZZES: Quiz[] = [
         category: 'linux',
         question: 'Что за параметр ядра Linux net.ipv4.tcp_tw_reuse и когда его безопасно включать?',
         options: [
-          'Он позволяет повторно использовать сокеты в состоянии TIME_WAIT для новых исходящих TCP подключений',
           'Он отключает брандмауэр iptables для ускорения роутинга',
+          'Он позволяет повторно использовать сокеты в состоянии TIME_WAIT для новых исходящих TCP подключений',
           'Он увеличивает размер максимального пакета MTU до 9000',
           'Его нельзя использовать ни при каких условиях'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'tcp_tw_reuse позволяет ядру безопасно задействовать TIME_WAIT сокеты для исходящих (outgoing) соединений, если временная метка пакета строго новее предыдущей. Это предотвращает исчерпание ephemeral ports под высокой нагрузкой.'
       },
       {
@@ -671,11 +671,11 @@ export const QUIZZES: Quiz[] = [
         question: 'Какой системный компонент Kubernetes отвечает за запуск контейнеров и проверку Liveness/Readiness проб на ноде?',
         options: [
           'kube-scheduler',
-          'kubelet',
           'kube-controller-manager',
+          'kubelet',
           'etcd'
         ],
-        correctAnswerIndex: 1,
+        correctAnswerIndex: 2,
         explanation: 'Kubelet — это агент, работающий непосредственно на каждой ноде. Он взаимодействует с Container Runtime (CRI), проверяет Health check пробы и отправляет статусы подов в API Server.'
       },
       {
@@ -696,15 +696,14 @@ export const QUIZZES: Quiz[] = [
         category: 'networking',
         question: 'Что такое BGP Anycast и как он используется в DNS и CDN сервисах?',
         options: [
-          'Маршрутизация, при которой один и тот же IP-адрес анонсируется из разных географических локаций по протоколу BGP, а клиент автоматически направляется к ближайшему узлу',
           'Метод защиты от спама в почтовых серверах',
+          'Маршрутизация, при которой один и тот же IP-адрес анонсируется из разных географических локаций по протоколу BGP, а клиент автоматически направляется к ближайшему узлу',
           'Протокол динамического выделения IP внутри подсетей Kubernetes',
           'Технология сжатия видеопотока'
         ],
-        correctAnswerIndex: 0,
+        correctAnswerIndex: 1,
         explanation: 'Anycast анонсирует один префикс через BGP от множества независимых Edge серверов. Сетевые провайдеры отправляют трафик по кратчайшему пути (AS-Path / IGP cost) к ближайшему датацентру.'
       }
     ]
   }
 ];
-

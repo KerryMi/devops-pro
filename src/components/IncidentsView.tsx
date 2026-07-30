@@ -32,16 +32,27 @@ import {
 interface IncidentsViewProps {
   onSolveIncident?: (scenarioId: string) => void;
   solvedIncidentIds?: string[];
+  initialCategory?: CategoryId;
 }
 
 type TabType = 'diagnostics' | 'fix' | 'postmortem';
 
-export const IncidentsView: React.FC<IncidentsViewProps> = ({ onSolveIncident, solvedIncidentIds = [] }) => {
+export const IncidentsView: React.FC<IncidentsViewProps> = ({ 
+  onSolveIncident, 
+  solvedIncidentIds = [],
+  initialCategory 
+}) => {
   // Navigation & View State
   const [activeScenarioId, setActiveScenarioId] = useState<string | null>(null);
   
   // Catalog Filters State
-  const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>(initialCategory || 'all');
+
+  useEffect(() => {
+    if (initialCategory) {
+      setSelectedCategory(initialCategory);
+    }
+  }, [initialCategory]);
   const [selectedDifficulty, setSelectedDifficulty] = useState<'all' | 'Junior' | 'Middle' | 'Senior'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'unsolved' | 'solved'>('all');
   const [searchQuery, setSearchQuery] = useState('');
