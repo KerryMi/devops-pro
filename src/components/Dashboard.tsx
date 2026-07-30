@@ -177,7 +177,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
           </div>
 
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
+          <div className="mt-auto pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
             <button
               onClick={() => onNavigate(recActivity.type, recommendedStage.categoryId)}
               className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
