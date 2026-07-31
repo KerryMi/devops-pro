@@ -30,6 +30,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
   const [timeLeftSeconds, setTimeLeftSeconds] = useState(0);
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | 'all'>(initialCategory || 'all');
+  const [lastEarnedXP, setLastEarnedXP] = useState<number>(0);
 
   useEffect(() => {
     if (initialCategory) {
@@ -45,10 +46,12 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
     return matchesDifficulty && matchesCategory;
   });
 
-  // Scroll to top when opening/closing quiz or changing questions
+  // Scroll to top when opening quiz
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [selectedQuiz, currentQuestionIndex]);
+    if (selectedQuiz) {
+      window.scrollTo(0, 0);
+    }
+  }, [selectedQuiz]);
 
   // Start Quiz
   const handleStartQuiz = (quiz: Quiz) => {
@@ -60,6 +63,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
     setCurrentQuestionIndex(0);
     setUserAnswers({});
     setIsSubmitted(false);
+    setLastEarnedXP(0);
     setTimeLeftSeconds(quiz.timeLimitMinutes * 60);
   };
 
@@ -121,6 +125,8 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
       else if (stars === 2) xpReward = 40 - (previousBestStars === 1 ? 20 : 0);
       else if (stars === 1) xpReward = 20;
     }
+
+    setLastEarnedXP(xpReward);
 
     const result: QuizResult = {
       id: Date.now().toString(),
@@ -398,24 +404,7 @@ export const QuizView: React.FC<QuizViewProps> = ({ onSaveQuizResult, quizzes, p
                     Награда
                   </div>
                   <div className="text-sm font-black text-emerald-600 dark:text-emerald-400 font-mono">
-                    +{(() => {
-                      let correctCount = 0;
-                      selectedQuiz.questions.forEach((q, idx) => {
-                        if (userAnswers[idx] === q.correctAnswerIndex) {
-                          correctCount++;
-                        }
-                      });
-                      let starsCount = 0;
-                      if (correctCount === selectedQuiz.questions.length) starsCount = 3;
-                      
-                      const alreadyMaxed = (progress?.quizResults || []).some(r => 
-                        r.quizId === selectedQuiz.id && 
-                        Math.round((r.score / 100) * r.totalQuestions) === r.totalQuestions
-                      );
-
-                      if (starsCount === 3 && !alreadyMaxed) return 150;
-                      return 0;
-                    })()} XP
+                    +{lastEarnedXP} XP
                   </div>
                 </div>
               </div>
