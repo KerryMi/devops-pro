@@ -110,74 +110,181 @@ export const Dashboard: React.FC<DashboardProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
         
         {/* Welcome & Focus Banner */}
-        <div className="lg:col-span-2 bg-white dark:bg-[#121927] text-slate-900 dark:text-white p-5 sm:p-6 rounded-2xl shadow-sm flex flex-col space-y-4 relative overflow-hidden border border-slate-200 dark:border-slate-800 transition-colors duration-200">
+        <div className="lg:col-span-2 bg-white dark:bg-[#121927] text-slate-900 dark:text-white p-5 sm:p-6 rounded-2xl shadow-sm flex flex-col justify-between space-y-5 relative overflow-hidden border border-slate-200 dark:border-slate-800 transition-colors duration-200">
           {/* Ambient glows */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
           
-          <div className="space-y-3 relative z-10">
+          <div className="space-y-4 relative z-10">
+            {/* Header row */}
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Рекомендация обучения</span>
               </div>
+
+              <div className="flex items-center space-x-2 text-xs font-semibold text-slate-500 dark:text-slate-400">
+                <span className="flex items-center space-x-1.5 px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono">
+                  <recommendedStage.icon className="w-3.5 h-3.5 text-blue-500" />
+                  <span>Уровень {recommendedStage.step}: {recommendedStage.name}</span>
+                </span>
+                <span className="hidden sm:inline-block px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-bold font-mono">
+                  {recommendedStage.stats.overallPercent}% пройдено
+                </span>
+              </div>
             </div>
             
-
+            {/* Focus title & description */}
             <div>
-              <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Текущий фокус</h3>
-              <p className="text-lg sm:text-xl font-black tracking-tight mt-0.5 text-slate-900 dark:text-white leading-snug">
-                {recommendedStage.name}: {recActivity.title}
-              </p>
+              <div className="flex items-center space-x-2 text-xs font-extrabold text-slate-400 uppercase tracking-widest">
+                <Target className="w-3.5 h-3.5 text-emerald-500" />
+                <span>Текущая приоритетная цель</span>
+              </div>
+              <h3 className="text-lg sm:text-xl font-black tracking-tight mt-1 text-slate-900 dark:text-white leading-snug flex items-center gap-2">
+                <span>{recommendedStage.name}: {recActivity.title}</span>
+              </h3>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                {recActivity.description}.
+                {recActivity.description}. Завершите эти задания, чтобы поднять уровень готовности к собеседованию.
               </p>
             </div>
 
-            {/* Transferred Roadmap Focus Blocks (Replacing old quick metrics bar) */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {/* Recommended Focus Stage Card */}
-              <div 
-                onClick={() => onNavigate(recActivity.type, recommendedStage.categoryId)}
-                className="sm:col-span-2 p-3 sm:p-3.5 rounded-xl bg-slate-50/80 dark:bg-[#0b1120]/80 border border-slate-200/80 dark:border-slate-800/80 flex items-center justify-between cursor-pointer hover:border-emerald-500/40 transition-all group"
-              >
-                <div className="flex items-center space-x-3 min-w-0 w-full">
-                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500 border border-blue-500/20 shrink-0">
-                    <recommendedStage.icon className="w-4 h-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center space-x-1.5">
-                      <span className="text-[9px] font-black uppercase text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded shrink-0">
-                        Уровень {recommendedStage.step}
-                      </span>
-                      <span className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
-                        {recommendedStage.name}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">
-                      {recActivity.description}
-                    </p>
-                  </div>
-                </div>
+            {/* Detailed 4-Activity breakdown grid for this stage */}
+            <div className="pt-2">
+              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                <span>Статус активности модуля «{recommendedStage.name}»:</span>
+                <span className="text-[10px] text-slate-500 font-normal">Нажмите для прямого перехода</span>
               </div>
 
-              {/* Overall Progress Pill */}
-              <div className="p-3 sm:p-3.5 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 flex items-center justify-between">
-                <div>
-                  <div className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">Общий Roadmap</div>
-                  <div className="text-lg font-black text-slate-900 dark:text-white font-mono flex items-center space-x-1 mt-0.5">
-                    <span>{overallPercent}%</span>
-                    <span className="text-xs text-slate-400 font-normal">({completedCount}/8 ветвей)</span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {/* 1. Questions */}
+                <div 
+                  onClick={() => onNavigate('questions', recommendedStage.categoryId)}
+                  className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                    recActivity.type === 'questions'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm ring-1 ring-emerald-500/20'
+                      : 'bg-slate-50/80 dark:bg-[#0b1120]/80 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1">
+                      <BookOpen className="w-3.5 h-3.5 text-blue-500" />
+                      <span>Вопросы</span>
+                    </span>
+                    {recActivity.type === 'questions' && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline justify-between mt-1">
+                    <span className="text-xs font-extrabold font-mono text-slate-900 dark:text-white">
+                      {recommendedStage.stats.masteredQuestions}/{recommendedStage.stats.totalQuestions}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 font-mono">
+                      {recommendedStage.stats.questionsPercent}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                    <div className="bg-blue-500 h-full rounded-full transition-all" style={{ width: `${recommendedStage.stats.questionsPercent}%` }} />
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold">
-                  <Star className="w-4 h-4 fill-emerald-500" />
+
+                {/* 2. Flashcards */}
+                <div 
+                  onClick={() => onNavigate('flashcards', recommendedStage.categoryId)}
+                  className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                    recActivity.type === 'flashcards'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm ring-1 ring-emerald-500/20'
+                      : 'bg-slate-50/80 dark:bg-[#0b1120]/80 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1">
+                      <BrainCircuit className="w-3.5 h-3.5 text-purple-500" />
+                      <span>Карточки</span>
+                    </span>
+                    {recActivity.type === 'flashcards' && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline justify-between mt-1">
+                    <span className="text-xs font-extrabold font-mono text-slate-900 dark:text-white">
+                      {recommendedStage.stats.reviewedCards}/{recommendedStage.stats.totalCards}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 font-mono">
+                      {recommendedStage.stats.cardsPercent}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                    <div className="bg-purple-500 h-full rounded-full transition-all" style={{ width: `${recommendedStage.stats.cardsPercent}%` }} />
+                  </div>
+                </div>
+
+                {/* 3. Quizzes */}
+                <div 
+                  onClick={() => onNavigate('quizzes', recommendedStage.categoryId)}
+                  className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                    recActivity.type === 'quizzes'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm ring-1 ring-emerald-500/20'
+                      : 'bg-slate-50/80 dark:bg-[#0b1120]/80 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1">
+                      <Zap className="w-3.5 h-3.5 text-amber-500" />
+                      <span>Тесты</span>
+                    </span>
+                    {recActivity.type === 'quizzes' && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline justify-between mt-1">
+                    <span className="text-xs font-extrabold font-mono text-slate-900 dark:text-white">
+                      {recommendedStage.stats.passedQuizzes}/{recommendedStage.stats.totalQuizzes || 1}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 font-mono">
+                      {recommendedStage.stats.quizzesPercent}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                    <div className="bg-amber-500 h-full rounded-full transition-all" style={{ width: `${recommendedStage.stats.quizzesPercent}%` }} />
+                  </div>
+                </div>
+
+                {/* 4. Incidents */}
+                <div 
+                  onClick={() => onNavigate('incidents', recommendedStage.categoryId)}
+                  className={`p-2.5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${
+                    recActivity.type === 'incidents'
+                      ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm ring-1 ring-emerald-500/20'
+                      : 'bg-slate-50/80 dark:bg-[#0b1120]/80 border-slate-200/80 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 flex items-center space-x-1">
+                      <AlertTriangle className="w-3.5 h-3.5 text-rose-500" />
+                      <span>Аварии</span>
+                    </span>
+                    {recActivity.type === 'incidents' && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    )}
+                  </div>
+                  <div className="flex items-baseline justify-between mt-1">
+                    <span className="text-xs font-extrabold font-mono text-slate-900 dark:text-white">
+                      {recommendedStage.stats.solvedIncidents}/{recommendedStage.stats.totalIncidents || 1}
+                    </span>
+                    <span className="text-[10px] font-bold text-slate-400 font-mono">
+                      {recommendedStage.stats.incidentsPercent}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-200 dark:bg-slate-800 h-1 rounded-full mt-1.5 overflow-hidden">
+                    <div className="bg-rose-500 h-full rounded-full transition-all" style={{ width: `${recommendedStage.stats.incidentsPercent}%` }} />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="mt-auto pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10">
+          {/* Action buttons footer */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 relative z-10 border-t border-slate-100 dark:border-slate-800/80">
             <button
               onClick={() => onNavigate(recActivity.type, recommendedStage.categoryId)}
               className="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-md shadow-emerald-500/20 transition-all cursor-pointer"
