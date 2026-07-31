@@ -23,7 +23,7 @@ export const ToastNotificationContainer: React.FC<ToastNotificationContainerProp
 
   return (
     <div 
-      className="fixed top-3 sm:top-4 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center space-y-2 pointer-events-none transition-all"
+      className="fixed top-[max(3.5rem,calc(env(safe-area-inset-top,24px)+12px))] sm:top-6 left-1/2 -translate-x-1/2 z-[100] flex flex-col items-center space-y-2 pointer-events-none transition-all"
     >
       {toasts.map((toast) => {
         let badgeBg = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';

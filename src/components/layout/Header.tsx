@@ -231,8 +231,8 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Mobile Drawer Menu Modal */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-slate-900/60 dark:bg-slate-950/90 backdrop-blur-md animate-fadeIn pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)]">
-          <div className="bg-white dark:bg-[#121927] p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col bg-white dark:bg-[#0b1120] animate-fadeIn h-full w-full h-[100dvh]">
+          <div className="bg-white dark:bg-[#121927] px-4 pt-[calc(1rem+env(safe-area-inset-top,0px))] pb-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0">
             <div className="flex items-center space-x-2">
               <Terminal className="w-5 h-5 text-emerald-500" />
               <span className="font-bold text-slate-900 dark:text-white font-mono">DevOps Pro Menu</span>
@@ -255,7 +255,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-6 bg-slate-50 dark:bg-[#0b1120]">
+          <div className="flex-1 overflow-y-auto p-4 pb-[calc(3rem+env(safe-area-inset-bottom,20px))] space-y-6 bg-slate-50 dark:bg-[#0b1120]">
             {/* Личный кабинет quick access link */}
             <div 
               onClick={() => handleSelectTab('profile')}
