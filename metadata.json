@@ -2,5 +2,5 @@
   "name": "DevOps Pro — Тренажер & Подготовка к Собеседованиям",
   "description": "Платформа для подготовки DevOps инженеров: карточки, тесты, симулятор собеседований, конструктор легенды опыта и разбор резюме.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": []
 }

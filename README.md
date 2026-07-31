@@ -24,7 +24,7 @@
 ├── vite.config.ts               # Конфигурация сборщика Vite и Tailwind CSS
 ├── tsconfig.json                # Настройки компилятора TypeScript
 ├── package.json                 # Зависимости и скрипты сборки
-├── metadata.json                # Конфигурация платформы AI Studio (название, права, возможности)
+├── metadata.json                # Конфигурация платформы (название, права, возможности)
 ├── firebase-blueprint.json      # Схема структуры Firestore базы данных
 ├── firestore.rules              # Правила безопасности Firestore
 ├── .env.example                 # Шаблон переменных окружения
@@ -122,7 +122,7 @@ npm start
 
 ## 🔒 Назначение служебных файлов в корне
 
-- `metadata.json` — метаданные AI Studio (название приложения, описание, разрешенные права браузера).
+- `metadata.json` — метаданные (название приложения, описание, разрешенные права браузера).
 - `server.ts` — точки входа сервера приложений Express.
 - `firebase-blueprint.json` & `firestore.rules` — конфигурации структуры и безопасности Firestore.
 - `vite.config.ts`, `tsconfig.json`, `package.json` — стандартные конфигурации TypeScript/Vite/npm сборки.
