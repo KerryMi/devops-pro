@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Header, TabType } from './components/Header';
-import { Sidebar } from './components/Sidebar';
-import { Dashboard } from './components/Dashboard';
-import { QuestionsView } from './components/QuestionsView';
-import { FlashcardsView } from './components/FlashcardsView';
-import { QuizView } from './components/QuizView';
-import { LegendBuilderView } from './components/LegendBuilderView';
-import { ResumeGuideView } from './components/ResumeGuideView';
-import { IncidentsView } from './components/IncidentsView';
-import { CheatsheetsView } from './components/CheatsheetsView';
-import { AchievementsView } from './components/AchievementsView';
-import { DevOpsRoadmap } from './components/DevOpsRoadmap';
-import { Footer } from './components/Footer';
+import { 
+  Header, TabType, 
+  Sidebar, 
+  Footer, 
+  ToastNotificationContainer, ToastItem,
+  Dashboard, 
+  QuestionsView, 
+  FlashcardsView, 
+  QuizView, 
+  LegendBuilderView, 
+  ResumeGuideView, 
+  IncidentsView, 
+  CheatsheetsView, 
+  AchievementsView, 
+  DevOpsRoadmap, 
+  ProfileView, 
+  AdminView, 
+  RankUpModal 
+} from './components';
 
 import { QUESTIONS as DEFAULT_QUESTIONS } from './data/questions';
 import { QUIZZES as DEFAULT_QUIZZES } from './data/quizzes';
@@ -29,10 +35,6 @@ import {
 import { evaluateAchievements } from './data/achievements';
 import { calculateUserGamification, ITRank } from './utils/gamification';
 import { calculateDetailedReadiness } from './utils/readiness';
-import { RankUpModal } from './components/RankUpModal';
-import { ProfileView } from './components/ProfileView';
-import { AdminView } from './components/AdminView';
-import { ToastNotificationContainer, ToastItem } from './components/ToastNotificationContainer';
 import { auth, loadProgressFromFirestore, saveProgressToFirestore } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
