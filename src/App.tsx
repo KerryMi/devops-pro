@@ -22,7 +22,7 @@ import {
 import { QUESTIONS as DEFAULT_QUESTIONS } from './data/questions';
 import { QUIZZES as DEFAULT_QUIZZES } from './data/quizzes';
 import { CategoryId, UserProgress, ExperienceLegend, QuizResult, Question, Quiz } from './types';
-import { loadUserProgress, saveUserProgress } from './utils/storage';
+import { loadUserProgress, saveUserProgress, DEFAULT_PROGRESS, clearUserProgress } from './utils/storage';
 import { 
   loadQuestions, 
   saveQuestions, 
@@ -37,55 +37,6 @@ import { calculateUserGamification, ITRank } from './utils/gamification';
 import { calculateDetailedReadiness } from './utils/readiness';
 import { auth, loadProgressFromFirestore, saveProgressToFirestore } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-
-function mergeProgress(local: UserProgress, cloud: any): UserProgress {
-  const masteredQuestionIds = Array.from(new Set([
-    ...(local.masteredQuestionIds || []),
-    ...(cloud.masteredQuestionIds || [])
-  ]));
-  
-  const bookmarkedQuestionIds = Array.from(new Set([
-    ...(local.bookmarkedQuestionIds || []),
-    ...(cloud.bookmarkedQuestionIds || [])
-  ]));
-
-  const solvedIncidentIds = Array.from(new Set([
-    ...(local.solvedIncidentIds || []),
-    ...(cloud.solvedIncidentIds || [])
-  ]));
-
-  const seenAchievementIds = Array.from(new Set([
-    ...(local.seenAchievementIds || []),
-    ...(cloud.seenAchievementIds || [])
-  ]));
-
-  const flashcardBoxes = { ...(local.flashcardBoxes || {}), ...(cloud.flashcardBoxes || {}) };
-  const flashcardLastReview = { ...(local.flashcardLastReview || {}), ...(cloud.flashcardLastReview || {}) };
-  const customNotes = { ...(local.customNotes || {}), ...(cloud.customNotes || {}) };
-  const dailyBlitzHistory = { ...(local.dailyBlitzHistory || {}), ...(cloud.dailyBlitzHistory || {}) };
-
-  const allResults = [...(local.quizResults || []), ...(cloud.quizResults || [])];
-  const uniqueResultsMap = new Map();
-  allResults.forEach(r => {
-    if (r && r.id) uniqueResultsMap.set(r.id, r);
-  });
-  const quizResults = Array.from(uniqueResultsMap.values())
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-  return {
-    ...local,
-    ...cloud,
-    masteredQuestionIds,
-    bookmarkedQuestionIds,
-    solvedIncidentIds,
-    seenAchievementIds,
-    flashcardBoxes,
-    flashcardLastReview,
-    customNotes,
-    dailyBlitzHistory,
-    quizResults
-  };
-}
 
 export default function App() {
   const [progress, setProgress] = useState<UserProgress>(() => loadUserProgress());
@@ -103,6 +54,7 @@ export default function App() {
 
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
+  const isInitialAuthRef = React.useRef(true);
 
   // Toast notifications & Gamification trackers
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -152,28 +104,66 @@ export default function App() {
     setQuizzes(DEFAULT_QUIZZES);
   };
 
-  // Sync Authentication state on mount
+  // Sync Authentication & Firestore state on auth state change
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
+
       if (user) {
         setIsSyncing(true);
         try {
-          const cloudProgress = await loadProgressFromFirestore(user.uid);
-          if (cloudProgress) {
-            setProgress(prev => mergeProgress(prev, cloudProgress));
+          const cloudData = await loadProgressFromFirestore(user.uid);
+          if (cloudData) {
+            // Document exists: completely overwrite local state and localStorage with cloud data
+            const cloudProgress: UserProgress = {
+              masteredQuestionIds: cloudData.masteredQuestionIds || [],
+              bookmarkedQuestionIds: cloudData.bookmarkedQuestionIds || [],
+              flashcardBoxes: cloudData.flashcardBoxes || {},
+              flashcardLastReview: cloudData.flashcardLastReview || {},
+              quizResults: cloudData.quizResults || [],
+              dailyStreak: cloudData.dailyStreak ?? 1,
+              lastActiveDate: cloudData.lastActiveDate || new Date().toISOString().slice(0, 10),
+              customNotes: cloudData.customNotes || {},
+              solvedIncidentIds: cloudData.solvedIncidentIds || [],
+              completedInterviewSessionsCount: cloudData.completedInterviewSessionsCount || 0,
+              lastDailyBlitzDate: cloudData.lastDailyBlitzDate || '',
+              dailyBlitzHistory: cloudData.dailyBlitzHistory || {},
+              seenAchievementIds: cloudData.seenAchievementIds || [],
+              savedLegend: cloudData.savedLegend
+            };
+
+            setProgress(cloudProgress);
+            saveUserProgress(cloudProgress);
+            const seen = cloudData.seenAchievementIds || [];
+            setSeenAchievementIds(seen);
+            localStorage.setItem('devops_pro_seen_achievements', JSON.stringify(seen));
           } else {
-            // New cloud account: Seed it with local progress
-            const localProgress = loadUserProgress();
-            await saveProgressToFirestore(user.uid, localProgress, true);
+            // Document does NOT exist: create document in Firestore with zero/default progress
+            const newProgress: UserProgress = { ...DEFAULT_PROGRESS };
+            await saveProgressToFirestore(user.uid, newProgress, true);
+            setProgress(newProgress);
+            saveUserProgress(newProgress);
+            setSeenAchievementIds([]);
+            localStorage.setItem('devops_pro_seen_achievements', JSON.stringify([]));
           }
         } catch (err) {
-          console.error('Error loading/merging progress from cloud:', err);
+          console.error('Error fetching progress from Firestore:', err);
         } finally {
           setIsSyncing(false);
         }
+      } else {
+        // User is signed out (Sign Out)
+        if (!isInitialAuthRef.current) {
+          // Clear current application state & completely remove progress from localStorage
+          setProgress(DEFAULT_PROGRESS);
+          clearUserProgress();
+          setSeenAchievementIds([]);
+        }
       }
+
+      isInitialAuthRef.current = false;
     });
+
     return () => unsubscribe();
   }, []);
 
@@ -274,9 +264,29 @@ export default function App() {
     if (!currentUser) return;
     setIsSyncing(true);
     try {
-      const cloudProgress = await loadProgressFromFirestore(currentUser.uid);
-      if (cloudProgress) {
-        setProgress(prev => mergeProgress(prev, cloudProgress));
+      const cloudData = await loadProgressFromFirestore(currentUser.uid);
+      if (cloudData) {
+        const cloudProgress: UserProgress = {
+          masteredQuestionIds: cloudData.masteredQuestionIds || [],
+          bookmarkedQuestionIds: cloudData.bookmarkedQuestionIds || [],
+          flashcardBoxes: cloudData.flashcardBoxes || {},
+          flashcardLastReview: cloudData.flashcardLastReview || {},
+          quizResults: cloudData.quizResults || [],
+          dailyStreak: cloudData.dailyStreak ?? 1,
+          lastActiveDate: cloudData.lastActiveDate || new Date().toISOString().slice(0, 10),
+          customNotes: cloudData.customNotes || {},
+          solvedIncidentIds: cloudData.solvedIncidentIds || [],
+          completedInterviewSessionsCount: cloudData.completedInterviewSessionsCount || 0,
+          lastDailyBlitzDate: cloudData.lastDailyBlitzDate || '',
+          dailyBlitzHistory: cloudData.dailyBlitzHistory || {},
+          seenAchievementIds: cloudData.seenAchievementIds || [],
+          savedLegend: cloudData.savedLegend
+        };
+        setProgress(cloudProgress);
+        saveUserProgress(cloudProgress);
+        const seen = cloudData.seenAchievementIds || [];
+        setSeenAchievementIds(seen);
+        localStorage.setItem('devops_pro_seen_achievements', JSON.stringify(seen));
       } else {
         await saveProgressToFirestore(currentUser.uid, progress, true);
       }

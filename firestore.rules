@@ -24,12 +24,8 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isVerified() {
-      return isSignedIn() && request.auth.token.email_verified == true;
-    }
-
     function isOwner(userId) {
-      return isVerified() && request.auth.uid == userId;
+      return isSignedIn() && request.auth.uid == userId;
     }
 
     // Validation helper for UserProgress (the abstract schema)
@@ -44,6 +40,7 @@ service cloud.firestore {
         (!('masteredQuestionIds' in data) || (data.masteredQuestionIds is list && data.masteredQuestionIds.size() <= 5000)) &&
         (!('bookmarkedQuestionIds' in data) || (data.bookmarkedQuestionIds is list && data.bookmarkedQuestionIds.size() <= 5000)) &&
         (!('solvedIncidentIds' in data) || (data.solvedIncidentIds is list && data.solvedIncidentIds.size() <= 1000)) &&
+        (!('seenAchievementIds' in data) || (data.seenAchievementIds is list && data.seenAchievementIds.size() <= 1000)) &&
         (!('flashcardBoxes' in data) || (data.flashcardBoxes is map)) &&
         (!('flashcardLastReview' in data) || (data.flashcardLastReview is map)) &&
         (!('customNotes' in data) || (data.customNotes is map)) &&
@@ -76,7 +73,7 @@ service cloud.firestore {
           'email', 'masteredQuestionIds', 'bookmarkedQuestionIds', 'flashcardBoxes',
           'flashcardLastReview', 'quizResults', 'dailyStreak', 'lastActiveDate',
           'customNotes', 'savedLegend', 'solvedIncidentIds', 'completedInterviewSessionsCount',
-          'lastDailyBlitzDate', 'dailyBlitzHistory', 'updatedAt'
+          'lastDailyBlitzDate', 'dailyBlitzHistory', 'seenAchievementIds', 'updatedAt'
         ]);
 
       // Delete: only owner can delete their account

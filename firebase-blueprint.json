@@ -20,6 +20,7 @@
         "completedInterviewSessionsCount": { "type": "number", "description": "Total interview simulator runs" },
         "lastDailyBlitzDate": { "type": "string", "description": "Last date daily blitz was played" },
         "dailyBlitzHistory": { "type": "object", "description": "Blitz scoring history by date" },
+        "seenAchievementIds": { "type": "array", "description": "List of seen achievement IDs" },
         "createdAt": { "type": "string", "format": "date-time", "description": "Timestamp when the user was created" },
         "updatedAt": { "type": "string", "format": "date-time", "description": "Timestamp when the profile was last updated" }
       },
