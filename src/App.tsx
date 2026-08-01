@@ -15,8 +15,7 @@ import {
   AchievementsView, 
   DevOpsRoadmap, 
   ProfileView, 
-  AdminView, 
-  RankUpModal 
+  AdminView 
 } from './components';
 
 import { QUESTIONS as DEFAULT_QUESTIONS } from './data/questions';
@@ -33,7 +32,7 @@ import {
   resetAllDataToDefault 
 } from './utils/customDataStorage';
 import { evaluateAchievements } from './data/achievements';
-import { calculateUserGamification, ITRank } from './utils/gamification';
+import { calculateUserGamification } from './utils/gamification';
 import { calculateDetailedReadiness } from './utils/readiness';
 import { auth, loadProgressFromFirestore, saveProgressToFirestore } from './firebase';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
@@ -157,7 +156,6 @@ export default function App() {
 
   // Toast notifications & Gamification trackers
   const [toasts, setToasts] = useState<ToastItem[]>([]);
-  const [celebratedRank, setCelebratedRank] = useState<ITRank | null>(null);
   const [seenAchievementIds, setSeenAchievementIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('devops_pro_seen_achievements');
@@ -269,11 +267,11 @@ export default function App() {
   const totalAchievementsCount = gamification.totalAchievementsCount;
   const unseenAchievementsCount = achievements.filter(a => a.isUnlocked && !seenAchievementIds.includes(a.id)).length;
 
-  // Detect level up & open celebration modal
+  // Detect level up & trigger toast notification
   const prevLevelRef = React.useRef<number>(0);
   useEffect(() => {
     const currentLevel = gamification.level;
-    // Set initial level on first load without triggering modal
+    // Set initial level on first load without triggering toast
     if (prevLevelRef.current === 0) {
       prevLevelRef.current = currentLevel;
       return;
@@ -281,7 +279,12 @@ export default function App() {
 
     if (currentLevel > prevLevelRef.current) {
       const newRank = gamification.rank;
-      setCelebratedRank(newRank);
+      triggerToast({
+        title: `Новый ранг: ${newRank.title}!`,
+        message: `Поздравляем! Вы получили ${currentLevel} уровень — «${newRank.title}»`,
+        icon: newRank.icon,
+        type: 'level_up'
+      });
     }
 
     prevLevelRef.current = currentLevel;
@@ -489,9 +492,6 @@ export default function App() {
       
       {/* Toast Notifications */}
       <ToastNotificationContainer toasts={toasts} onDismiss={handleDismissToast} />
-
-      {/* Rank Up Celebration Modal */}
-      <RankUpModal rank={celebratedRank} onClose={() => setCelebratedRank(null)} />
 
       {/* Desktop Fixed Sidebar */}
       <Sidebar

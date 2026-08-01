@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trophy, Sparkles, CheckCircle2, Zap, X } from 'lucide-react';
+import { Trophy, CheckCircle2, Zap, X, Info } from 'lucide-react';
 
 export interface ToastItem {
   id: string;
@@ -27,21 +27,25 @@ export const ToastNotificationContainer: React.FC<ToastNotificationContainerProp
     >
       {toasts.map((toast) => {
         let badgeBg = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-        let mainIcon = <Sparkles className="w-4 h-4 text-emerald-400" />;
-        let typeText = '✨ Достижение!';
+        let mainIcon = <Info className="w-4 h-4 text-emerald-400" />;
+        let typeText = 'Уведомление';
 
         if (toast.type === 'achievement') {
           badgeBg = 'bg-amber-500/20 text-amber-400 border-amber-500/40';
           mainIcon = <Trophy className="w-4 h-4 text-amber-400" />;
-          typeText = '🏆 Достижение!';
+          typeText = 'Достижение';
         } else if (toast.type === 'level_up') {
           badgeBg = 'bg-purple-500/20 text-purple-400 border-purple-500/40';
           mainIcon = <Zap className="w-4 h-4 text-purple-400" />;
-          typeText = '⚡ Уровень!';
+          typeText = 'Новый ранг';
         } else if (toast.type === 'quest') {
           badgeBg = 'bg-blue-500/20 text-blue-400 border-blue-500/40';
           mainIcon = <CheckCircle2 className="w-4 h-4 text-blue-400" />;
-          typeText = '🎯 Квест!';
+          typeText = 'Квест';
+        } else if (toast.type === 'info') {
+          badgeBg = 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+          mainIcon = <Info className="w-4 h-4 text-emerald-400" />;
+          typeText = 'Уведомление';
         }
 
         return (
@@ -51,7 +55,7 @@ export const ToastNotificationContainer: React.FC<ToastNotificationContainerProp
           >
             {/* Left Small Icon Pill */}
             <div className={`p-1.5 rounded-xl border ${badgeBg} shrink-0 flex items-center justify-center`}>
-              {toast.icon ? <span className="text-sm">{toast.icon}</span> : mainIcon}
+              {mainIcon}
             </div>
 
             {/* Content text */}
