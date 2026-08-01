@@ -139,16 +139,24 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
     8: true,
   });
 
-  // Expand matching stage if initialCategory is passed & always scroll to top
+  // Expand matching stage if initialCategory is passed & scroll to that stage panel block
   useEffect(() => {
     if (initialCategory) {
       const matchingStage = STAGES.find(s => s.categoryIds.includes(initialCategory));
       if (matchingStage) {
         setSelectedStageFilter(matchingStage.id);
         setExpandedStages(prev => ({ ...prev, [matchingStage.id]: true }));
+        const timer = setTimeout(() => {
+          const element = document.getElementById(`stage-panel-${matchingStage.id}`);
+          if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 120);
+        return () => clearTimeout(timer);
       }
+    } else {
+      window.scrollTo({ top: 0, behavior: 'instant' });
     }
-    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [initialCategory, questions]);
 
   // Scroll to top when selecting a question to read
@@ -168,7 +176,12 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
   const handleStageClick = (stageId: number) => {
     setSelectedStageFilter(stageId);
     setExpandedStages(prev => ({ ...prev, [stageId]: true }));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      const element = document.getElementById(`stage-panel-${stageId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   // Base filtering of questions within a stage
@@ -539,10 +552,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   return (
                     <button
                       key={st.id}
-                      onClick={() => {
-                        setSelectedStageFilter(st.id);
-                        setExpandedStages(prev => ({ ...prev, [st.id]: true }));
-                      }}
+                      onClick={() => handleStageClick(st.id)}
                       className={`px-3.5 py-1.5 rounded-xl text-xs font-black whitespace-nowrap transition-all flex items-center space-x-1.5 cursor-pointer ${
                         isSel
                           ? 'bg-emerald-500 text-slate-950 shadow-xs'
