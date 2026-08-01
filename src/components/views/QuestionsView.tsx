@@ -500,27 +500,33 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
 
                 {/* Styled Filter Controls */}
                 <div className="flex items-center space-x-2 shrink-0">
-                  <select
-                    value={selectedDifficulty}
-                    onChange={(e) => setSelectedDifficulty(e.target.value as any)}
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
-                  >
-                    <option value="all">Сложность: Все</option>
-                    <option value="Junior">Junior</option>
-                    <option value="Middle">Middle</option>
-                    <option value="Senior">Senior</option>
-                  </select>
+                  <div className="relative inline-flex items-center">
+                    <select
+                      value={selectedDifficulty}
+                      onChange={(e) => setSelectedDifficulty(e.target.value as any)}
+                      className="appearance-none pl-3.5 pr-8 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                    >
+                      <option value="all">Сложность: Все</option>
+                      <option value="Junior">Junior</option>
+                      <option value="Middle">Middle</option>
+                      <option value="Senior">Senior</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute right-2.5 pointer-events-none" />
+                  </div>
 
-                  <select
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value as any)}
-                    className="px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
-                  >
-                    <option value="all">Статус: Все</option>
-                    <option value="unmastered">Не изучено</option>
-                    <option value="mastered">Изучено</option>
-                    <option value="bookmarked">В закладках</option>
-                  </select>
+                  <div className="relative inline-flex items-center">
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value as any)}
+                      className="appearance-none pl-3.5 pr-8 py-2.5 rounded-xl bg-slate-50 dark:bg-[#0b1120] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                    >
+                      <option value="all">Статус: Все</option>
+                      <option value="unmastered">Не изучено</option>
+                      <option value="mastered">Изучено</option>
+                      <option value="bookmarked">В закладках</option>
+                    </select>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 absolute right-2.5 pointer-events-none" />
+                  </div>
                 </div>
               </div>
 
@@ -605,16 +611,16 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                       className="flex flex-col md:flex-row md:items-center justify-between gap-4 cursor-pointer select-none group"
                     >
                       <div className="space-y-1.5 flex-1">
-                        <div className="flex items-center space-x-2">
-                           <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded ${
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded whitespace-nowrap shrink-0 inline-flex items-center ${
                             isCompleted
                               ? 'bg-emerald-500/15 text-emerald-500'
                               : 'bg-emerald-500/10 text-emerald-500'
                           }`}>
                             Этап {st.id}
                           </span>
-                          <span className="text-slate-300 dark:text-slate-700">•</span>
-                          <div className="text-xs font-bold text-slate-400">
+                          <span className="text-slate-300 dark:text-slate-700 shrink-0">•</span>
+                          <div className="text-xs font-bold text-slate-400 min-w-0 leading-tight">
                             {st.subtitle}
                           </div>
                         </div>
