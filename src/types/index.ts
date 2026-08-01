@@ -161,4 +161,5 @@ export interface UserProgress {
   completedInterviewSessionsCount?: number;
   lastDailyBlitzDate?: string;
   dailyBlitzHistory?: Record<string, { score: number; total: number; completedAt: string }>;
+  seenAchievementIds?: string[];
 }

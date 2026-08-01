@@ -932,7 +932,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
         <div className="lg:col-span-7 space-y-6">
           
           {/* STEP 1: CATEGORY SELECTION */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl space-y-4">
+          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-4 sm:p-6 rounded-3xl space-y-3 sm:space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-2">
                 <Sliders className="w-4 h-4 text-emerald-500" />
@@ -941,14 +941,74 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               {selectedCategory !== 'all' && (
                 <button 
                   onClick={() => setSelectedCategory('all')}
-                  className="text-xs text-emerald-500 hover:underline font-semibold"
+                  className="text-xs text-emerald-500 hover:underline font-semibold cursor-pointer"
                 >
                   Сбросить
                 </button>
               )}
             </div>
 
-            <div className="space-y-2 max-h-[350px] overflow-y-auto pr-1">
+            {/* MOBILE COMPACT VIEW (< sm) */}
+            <div className="block sm:hidden space-y-2.5">
+              {/* Active Selection Banner */}
+              <div className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-[#0b1120] rounded-xl border border-slate-200/80 dark:border-slate-800 text-xs">
+                <div className="flex items-center space-x-2 min-w-0">
+                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                    {selectedCategory === 'all' 
+                      ? <Award className="w-3.5 h-3.5" /> 
+                      : renderCategoryIcon(selectedCatObj?.iconName || '', "w-3.5 h-3.5")}
+                  </div>
+                  <span className="font-extrabold text-slate-800 dark:text-slate-200 truncate">
+                    {selectedCatObj ? selectedCatObj.title : 'Все категории'}
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-black text-[11px] shrink-0">
+                  {selectedCategory === 'all' ? questions.length : questions.filter(q => q.category === selectedCategory).length} карт
+                </span>
+              </div>
+
+              {/* Horizontal Scroll Chips Bar */}
+              <div className="flex items-center space-x-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar snap-x scroll-smooth">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`snap-start shrink-0 px-3 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 border cursor-pointer ${
+                    selectedCategory === 'all'
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
+                      : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <Award className="w-3.5 h-3.5" />
+                  <span>Все ({questions.length})</span>
+                </button>
+
+                {CATEGORIES.map((cat) => {
+                  const isCatActive = selectedCategory === cat.id;
+                  const totalInCat = questions.filter(q => q.category === cat.id).length;
+                  return (
+                    <button
+                      key={cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                      className={`snap-start shrink-0 px-3 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 border cursor-pointer ${
+                        isCatActive
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
+                          : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
+                      }`}
+                    >
+                      {renderCategoryIcon(cat.iconName, "w-3.5 h-3.5")}
+                      <span>{cat.title}</span>
+                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-black ${
+                        isCatActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                      }`}>
+                        {totalInCat}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* DESKTOP/TABLET FULL VIEW (>= sm) */}
+            <div className="hidden sm:block space-y-2 max-h-[350px] overflow-y-auto pr-1">
               <button
                 onClick={() => { setSelectedCategory('all'); }}
                 className={`w-full px-4 py-3 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${

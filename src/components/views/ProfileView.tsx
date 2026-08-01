@@ -214,12 +214,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             {/* Cloud Storage Welcome Info */}
             <div className="bg-emerald-500/5 dark:bg-emerald-500/10 rounded-2xl border border-emerald-500/20 p-6 flex items-start space-x-4">
               <div className="p-3 bg-emerald-500/10 dark:bg-emerald-500/20 rounded-xl text-emerald-600 dark:text-emerald-400 shrink-0">
-                <Cloud className="w-6 h-6" />
+                <Cloud className="w-6 h-6 animate-pulse" />
               </div>
               <div className="space-y-1">
-                <h4 className="font-extrabold text-sm text-emerald-950 dark:text-emerald-400">Облачное резервное копирование включено</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Ваши достижения, выполненные тесты, легенда опыта и решенные инциденты автоматически сохраняются в вашей учетной записи. Вы можете войти с другого браузера или телефона, и ваши данные подтянутся мгновенно!
+                <h4 className="font-extrabold text-sm text-emerald-950 dark:text-emerald-400">
+                  Автоматическая синхронизация активна
+                </h4>
+                <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  Все изменения вашего прогресса (изученные вопросы, ответы в карточках Лейтнера, прохождение тестов и Блиц-испытаний, новые ранги и достижения) автоматически и мгновенно сохраняются в облачный профиль в реальном времени. Войдите с любого устройства, и данные обновятся без ручного нажатия!
                 </p>
               </div>
             </div>

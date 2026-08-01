@@ -54,6 +54,11 @@ function mergeProgress(local: UserProgress, cloud: any): UserProgress {
     ...(cloud.solvedIncidentIds || [])
   ]));
 
+  const seenAchievementIds = Array.from(new Set([
+    ...(local.seenAchievementIds || []),
+    ...(cloud.seenAchievementIds || [])
+  ]));
+
   const flashcardBoxes = { ...(local.flashcardBoxes || {}), ...(cloud.flashcardBoxes || {}) };
   const flashcardLastReview = { ...(local.flashcardLastReview || {}), ...(cloud.flashcardLastReview || {}) };
   const customNotes = { ...(local.customNotes || {}), ...(cloud.customNotes || {}) };
@@ -73,6 +78,7 @@ function mergeProgress(local: UserProgress, cloud: any): UserProgress {
     masteredQuestionIds,
     bookmarkedQuestionIds,
     solvedIncidentIds,
+    seenAchievementIds,
     flashcardBoxes,
     flashcardLastReview,
     customNotes,
