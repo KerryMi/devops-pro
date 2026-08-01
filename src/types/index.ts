@@ -57,6 +57,7 @@ export interface QuizQuestion {
   id: string;
   question: string;
   category: CategoryId;
+  difficulty?: DifficultyLevel;
   options: string[];
   correctAnswerIndex: number;
   explanation: string;

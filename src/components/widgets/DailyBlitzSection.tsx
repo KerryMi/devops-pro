@@ -24,30 +24,130 @@ interface DailyBlitzSectionProps {
   onUpdateProgress: (updater: (prev: UserProgress) => UserProgress) => void;
 }
 
-// Extract all quiz questions from QUIZZES
-const ALL_QUIZ_QUESTIONS: QuizQuestion[] = QUIZZES.flatMap(q => q.questions);
+// Extract all quiz questions from QUIZZES with explicit difficulty
+const ALL_QUIZ_QUESTIONS: QuizQuestion[] = QUIZZES.flatMap(quiz => {
+  return quiz.questions.map(q => {
+    let diff: 'Junior' | 'Middle' | 'Senior' = 'Middle';
+    if (q.difficulty) {
+      diff = q.difficulty;
+    } else if (quiz.difficulty === 'Junior' || quiz.difficulty === 'Middle' || quiz.difficulty === 'Senior') {
+      diff = quiz.difficulty;
+    } else {
+      diff = q.id.includes('junior') ? 'Junior' : (q.id.includes('senior') || q.id.includes('hard') ? 'Senior' : 'Middle');
+    }
+    return {
+      ...q,
+      difficulty: diff
+    };
+  });
+});
 
-// Seeded PRNG for consistent daily questions
+// FNV-1a Hash function for date string
+function hashString(str: string): number {
+  let h = 2166136261 ^ str.length;
+  for (let i = 0; i < str.length; i++) {
+    h = Math.imul(h ^ str.charCodeAt(i), 16777619);
+  }
+  return h >>> 0;
+}
+
+// Mulberry32 PRNG for uniform random distribution
+function mulberry32(a: number) {
+  return function() {
+    let t = a += 0x6D2B79F5;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function getPreviousDateStr(dateStr: string, daysAgo: number = 1): string {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  return date.toISOString().slice(0, 10);
+}
+
+function generateRawDailyQuestions(dateStr: string): QuizQuestion[] {
+  const seed = hashString(dateStr);
+  const rng = mulberry32(seed);
+
+  const juniorPool = ALL_QUIZ_QUESTIONS.filter(q => q.difficulty === 'Junior');
+  const middlePool = ALL_QUIZ_QUESTIONS.filter(q => q.difficulty === 'Middle');
+  const seniorPool = ALL_QUIZ_QUESTIONS.filter(q => q.difficulty === 'Senior');
+
+  const shuffle = <T,>(arr: T[]): T[] => {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  };
+
+  const shuffledJunior = shuffle(juniorPool);
+  const shuffledMiddle = shuffle(middlePool);
+  const shuffledSenior = shuffle(seniorPool);
+
+  const pattern = Math.floor(rng() * 3);
+  let jCount = 2, mCount = 2, sCount = 1;
+  if (pattern === 1) { jCount = 1; mCount = 2; sCount = 2; }
+  else if (pattern === 2) { jCount = 2; mCount = 1; sCount = 2; }
+
+  const selected = [
+    ...shuffledJunior.slice(0, jCount),
+    ...shuffledMiddle.slice(0, mCount),
+    ...shuffledSenior.slice(0, sCount)
+  ];
+
+  return shuffle(selected).slice(0, 5);
+}
+
 function getDailyQuestions(dateStr: string): QuizQuestion[] {
-  let hash = 0;
-  for (let i = 0; i < dateStr.length; i++) {
-    hash = (hash << 5) - hash + dateStr.charCodeAt(i);
-    hash |= 0;
-  }
-  const seed = Math.abs(hash);
+  const prevDate1 = getPreviousDateStr(dateStr, 1);
+  const prevDate2 = getPreviousDateStr(dateStr, 2);
 
-  const array = [...ALL_QUIZ_QUESTIONS];
-  let m = array.length, t, i;
-  let s = seed;
-  while (m) {
-    s = (s * 9301 + 49297) % 233280;
-    const rnd = s / 233280;
-    i = Math.floor(rnd * m--);
-    t = array[m];
-    array[m] = array[i];
-    array[i] = t;
-  }
-  return array.slice(0, 5);
+  const usedIds = new Set<string>();
+  generateRawDailyQuestions(prevDate1).forEach(q => usedIds.add(q.id));
+  generateRawDailyQuestions(prevDate2).forEach(q => usedIds.add(q.id));
+
+  const seed = hashString(dateStr + '-salt-v2');
+  const rng = mulberry32(seed);
+
+  const filterPool = (pool: QuizQuestion[]) => {
+    const fresh = pool.filter(q => !usedIds.has(q.id));
+    return fresh.length >= 2 ? fresh : pool;
+  };
+
+  const juniorPool = filterPool(ALL_QUIZ_QUESTIONS.filter(q => q.difficulty === 'Junior'));
+  const middlePool = filterPool(ALL_QUIZ_QUESTIONS.filter(q => q.difficulty === 'Middle'));
+  const seniorPool = filterPool(ALL_QUIZ_QUESTIONS.filter(q => q.difficulty === 'Senior'));
+
+  const shuffle = <T,>(arr: T[]): T[] => {
+    const copy = [...arr];
+    for (let i = copy.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [copy[i], copy[j]] = [copy[j], copy[i]];
+    }
+    return copy;
+  };
+
+  const shuffledJunior = shuffle(juniorPool);
+  const shuffledMiddle = shuffle(middlePool);
+  const shuffledSenior = shuffle(seniorPool);
+
+  const pattern = Math.floor(rng() * 3);
+  let jCount = 2, mCount = 2, sCount = 1;
+  if (pattern === 1) { jCount = 1; mCount = 2; sCount = 2; }
+  else if (pattern === 2) { jCount = 2; mCount = 1; sCount = 2; }
+
+  const selected = [
+    ...shuffledJunior.slice(0, jCount),
+    ...shuffledMiddle.slice(0, mCount),
+    ...shuffledSenior.slice(0, sCount)
+  ];
+
+  return shuffle(selected).slice(0, 5);
 }
 
 export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
@@ -193,6 +293,18 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
     return { label: cat.toUpperCase(), bg: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-300' };
   };
 
+  const getDifficultyBadge = (diff?: string) => {
+    switch (diff) {
+      case 'Junior':
+        return { label: 'JUNIOR', bg: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' };
+      case 'Senior':
+        return { label: 'SENIOR', bg: 'bg-purple-500/10 text-purple-700 dark:text-purple-300' };
+      case 'Middle':
+      default:
+        return { label: 'MIDDLE', bg: 'bg-sky-500/10 text-sky-700 dark:text-sky-300' };
+    }
+  };
+
   return (
     <div className="h-full flex flex-col justify-between rounded-2xl bg-white dark:bg-[#121927] p-5 shadow-xs gap-4 transition-all">
       
@@ -256,14 +368,20 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
             {/* Topics Pills */}
             <div className="flex flex-wrap gap-1.5">
               {todayQuestions.map((q, i) => {
-                const badge = getCategoryBadge(q.category);
+                const catBadge = getCategoryBadge(q.category);
+                const diffBadge = getDifficultyBadge(q.difficulty);
                 return (
                   <div
                     key={q.id || i}
-                    className={`px-2 py-0.5 rounded-lg text-[10px] font-extrabold flex items-center space-x-1 ${badge.bg}`}
+                    className="px-2 py-1 rounded-lg text-[10px] font-extrabold flex items-center space-x-1.5 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 shadow-2xs"
                   >
-                    <span className="opacity-60 text-[9px]">#{i + 1}</span>
-                    <span className="truncate max-w-[100px]">{q.category}</span>
+                    <span className="opacity-60 text-[9px] font-mono">#{i + 1}</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${catBadge.bg}`}>
+                      {q.category}
+                    </span>
+                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${diffBadge.bg}`}>
+                      {q.difficulty || 'Middle'}
+                    </span>
                   </div>
                 );
               })}
@@ -303,9 +421,12 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
           {/* Progress Header & Stepper */}
           <div className="space-y-2.5">
             <div className="flex items-center justify-between text-xs text-slate-600 dark:text-slate-400 font-bold">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 flex-wrap gap-y-1">
                 <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${getCategoryBadge(currentQ.category).bg}`}>
                   {currentQ.category}
+                </span>
+                <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${getDifficultyBadge(currentQ.difficulty).bg}`}>
+                  {currentQ.difficulty || 'Middle'}
                 </span>
                 <span className="text-slate-400">•</span>
                 <span>Вопрос {currentIdx + 1} из {todayQuestions.length}</span>

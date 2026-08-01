@@ -225,6 +225,20 @@ export default function App() {
 
           // Save merged progress back to Firestore so cloud gets any local additions as well
           await saveProgressToFirestore(user.uid, merged, !cloudData);
+
+          if (!cloudData) {
+            triggerToast({
+              title: 'Аккаунт привязан',
+              message: 'Ваш текущий локальный прогресс успешно сохранен в ваш новый аккаунт!',
+              type: 'info'
+            });
+          } else {
+            triggerToast({
+              title: 'Вход выполнен',
+              message: 'Прогресс успешно синхронизирован с облаком.',
+              type: 'info'
+            });
+          }
         } catch (err) {
           console.error('Error syncing progress with Firestore on auth:', err);
         } finally {

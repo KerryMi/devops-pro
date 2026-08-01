@@ -139,21 +139,16 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
     8: true,
   });
 
-  // Expand matching stage if initialCategory is passed
+  // Expand matching stage if initialCategory is passed & always scroll to top
   useEffect(() => {
     if (initialCategory) {
       const matchingStage = STAGES.find(s => s.categoryIds.includes(initialCategory));
       if (matchingStage) {
         setSelectedStageFilter(matchingStage.id);
         setExpandedStages(prev => ({ ...prev, [matchingStage.id]: true }));
-        setTimeout(() => {
-          const element = document.getElementById(`stage-panel-${matchingStage.id}`);
-          if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
-        }, 150);
       }
     }
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }, [initialCategory, questions]);
 
   // Scroll to top when selecting a question to read
@@ -173,12 +168,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
   const handleStageClick = (stageId: number) => {
     setSelectedStageFilter(stageId);
     setExpandedStages(prev => ({ ...prev, [stageId]: true }));
-    setTimeout(() => {
-      const element = document.getElementById(`stage-panel-${stageId}`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Base filtering of questions within a stage
