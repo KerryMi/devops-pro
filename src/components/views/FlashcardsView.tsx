@@ -67,7 +67,7 @@ const ServerIcon = ({ className }: { className: string }) => <svg className={cla
 const renderTextWithMarkdown = (text: string): React.ReactNode => {
   if (!text) return null;
   return (
-    <div className="inline-block w-full text-left font-medium pointer-events-none select-none">
+    <div className="inline-block w-full text-left font-medium select-none">
       <Markdown
         components={{
           p: ({node, ...props}) => <span className="inline" {...props} />,
@@ -250,7 +250,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
   // Drag Gesture Handlers
   const handleDragStart = (clientX: number, clientY: number) => {
-    if (isSwipingOut) return;
+    if (isSwipingOut || isFlipped) return;
     dragStartX.current = clientX;
     dragStartY.current = clientY;
     hasDraggedFar.current = false;
@@ -258,7 +258,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   };
 
   const handleDragMove = (clientX: number, clientY: number) => {
-    if (!isDragging || isSwipingOut) return;
+    if (!isDragging || isSwipingOut || isFlipped) return;
     const diffX = clientX - dragStartX.current;
     const diffY = clientY - dragStartY.current;
 
@@ -708,6 +708,9 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       {currentCard.codeSnippet && (
                         <div 
                           onClick={(e) => e.stopPropagation()}
+                          onTouchStart={(e) => e.stopPropagation()}
+                          onTouchMove={(e) => e.stopPropagation()}
+                          onTouchEnd={(e) => e.stopPropagation()}
                           className="group/code relative mt-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 overflow-hidden text-slate-800 dark:text-slate-200 text-xs font-mono"
                         >
                           <div className="bg-slate-100 dark:bg-slate-950 px-4 py-2 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
@@ -799,7 +802,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 {/* CARD FOOTER BAR */}
                 <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 flex items-center justify-between text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-medium select-none pointer-events-none">
                   <span className="truncate mr-2">
-                    {isFlipped ? 'Нажмите в любом месте карточки, чтобы перевернуть обратно' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}
+                    {isFlipped ? 'Оцените ответ кнопками ниже | Нажмите на карточку, чтобы перевернуть' : 'Свайп влево — Забыл | Свайп вправо — Знаю'}
                   </span>
                   <span className="font-mono text-[10px] sm:text-xs text-slate-500 dark:text-slate-400 font-bold shrink-0">
                     {currentIndex + 1} / {filteredQuestions.length}
