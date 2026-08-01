@@ -926,257 +926,140 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         
-        {/* LEFT/MAIN COLUMN: SELECTION FLOW */}
-        <div className="lg:col-span-7 space-y-6">
+        {/* BENTO CARD 1: SESSION LAUNCH WIDGET (TOP LEFT - SPAN 5 - COMPACT HERO) */}
+        <div className="lg:col-span-5 bento-card flex flex-col justify-between bg-gradient-to-br from-slate-900 via-[#121c2c] to-slate-950 border-2 border-slate-200 dark:border-emerald-500/30 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden space-y-3">
           
-          {/* STEP 1: CATEGORY SELECTION */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-4 sm:p-6 rounded-3xl space-y-3 sm:space-y-4">
+          <div className="space-y-2.5 relative z-10">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-2">
-                <Sliders className="w-4 h-4 text-emerald-500" />
-                <span>1. Выберите категорию знаний</span>
-              </h3>
-              {selectedCategory !== 'all' && (
-                <button 
-                  onClick={() => setSelectedCategory('all')}
-                  className="text-xs text-emerald-500 hover:underline font-semibold cursor-pointer"
-                >
-                  Сбросить
-                </button>
-              )}
-            </div>
-
-            {/* MOBILE COMPACT VIEW (< sm) */}
-            <div className="block sm:hidden space-y-2.5">
-              {/* Active Selection Banner */}
-              <div className="flex items-center justify-between p-2.5 bg-slate-50 dark:bg-[#0b1120] rounded-xl border border-slate-200/80 dark:border-slate-800 text-xs">
-                <div className="flex items-center space-x-2 min-w-0">
-                  <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-                    {selectedCategory === 'all' 
-                      ? <Award className="w-3.5 h-3.5" /> 
-                      : renderCategoryIcon(selectedCatObj?.iconName || '', "w-3.5 h-3.5")}
-                  </div>
-                  <span className="font-extrabold text-slate-800 dark:text-slate-200 truncate">
-                    {selectedCatObj ? selectedCatObj.title : 'Все категории'}
+              <div className="flex items-center space-x-2.5">
+                <div className="p-1.5 rounded-xl bg-emerald-500 text-slate-950 font-black shrink-0 shadow-xs">
+                  <Play className="w-4 h-4 fill-current" />
+                </div>
+                <div>
+                  <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider block">
+                    БЫСТРЫЙ СТАРТ
                   </span>
+                  <h3 className="text-sm sm:text-base font-black text-white leading-tight">
+                    Запустить сессию
+                  </h3>
                 </div>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-black text-[11px] shrink-0">
-                  {selectedCategory === 'all' ? questions.length : questions.filter(q => q.category === selectedCategory).length} карт
-                </span>
               </div>
 
-              {/* Horizontal Scroll Chips Bar */}
-              <div className="flex items-center space-x-2 overflow-x-auto pb-1 pt-0.5 no-scrollbar snap-x scroll-smooth">
-                <button
-                  onClick={() => setSelectedCategory('all')}
-                  className={`snap-start shrink-0 px-3 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 border cursor-pointer ${
-                    selectedCategory === 'all'
-                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
-                      : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  <Award className="w-3.5 h-3.5" />
-                  <span>Все ({questions.length})</span>
-                </button>
-
-                {CATEGORIES.map((cat) => {
-                  const isCatActive = selectedCategory === cat.id;
-                  const totalInCat = questions.filter(q => q.category === cat.id).length;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={`snap-start shrink-0 px-3 py-2 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-2 border cursor-pointer ${
-                        isCatActive
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/20'
-                          : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
-                      }`}
-                    >
-                      {renderCategoryIcon(cat.iconName, "w-3.5 h-3.5")}
-                      <span>{cat.title}</span>
-                      <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-black ${
-                        isCatActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
-                      }`}>
-                        {totalInCat}
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="hidden sm:flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+                <Brain className="w-3 h-3" />
+                <span>Концентрация</span>
               </div>
             </div>
 
-            {/* DESKTOP/TABLET FULL VIEW (>= sm) */}
-            <div className="hidden sm:block space-y-2 max-h-[350px] overflow-y-auto pr-1">
-              <button
-                onClick={() => { setSelectedCategory('all'); }}
-                className={`w-full px-4 py-3 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${
-                  selectedCategory === 'all'
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/10'
-                    : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
-                }`}
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
-                    <Award className="w-4 h-4" />
-                  </div>
-                  <span className="font-extrabold text-sm">Все категории</span>
-                </div>
-                <span className={`px-2.5 py-1 rounded-md text-xs font-black ${
-                  selectedCategory === 'all' ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                }`}>
-                  {questions.length} карт
+            {/* Inline 4-column summary of active parameters */}
+            <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-800/80 text-xs">
+              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
+                <span className="text-[9px] text-slate-400 block font-bold">Категория</span>
+                <span className="font-extrabold text-emerald-400 truncate block text-[11px]">
+                  {selectedCatObj ? selectedCatObj.title : 'Все'}
                 </span>
-              </button>
+              </div>
+              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
+                <span className="text-[9px] text-slate-400 block font-bold">Сложность</span>
+                <span className="font-extrabold text-white block text-[11px]">
+                  {selectedDifficulty === 'all' ? 'Все' : selectedDifficulty}
+                </span>
+              </div>
+              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
+                <span className="text-[9px] text-slate-400 block font-bold">Коробка</span>
+                <span className="font-extrabold text-white block text-[11px]">
+                  {selectedBoxFilter === 'all' ? 'Все (1-5)' : `К${selectedBoxFilter}`}
+                </span>
+              </div>
+              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
+                <span className="text-[9px] text-slate-400 block font-bold">Порядок</span>
+                <span className="font-extrabold text-white block text-[11px]">
+                  {isShuffled ? 'Случайный' : 'Прямой'}
+                </span>
+              </div>
+            </div>
+          </div>
 
-              {CATEGORIES.map((cat) => {
-                const isCatActive = selectedCategory === cat.id;
-                const totalInCat = questions.filter(q => q.category === cat.id).length;
+          <div className="pt-1 relative z-10 space-y-1">
+            <button
+              onClick={startStudySession}
+              disabled={filteredQuestions.length === 0}
+              className={`w-full py-2.5 px-3 rounded-xl font-black text-xs flex items-center justify-center space-x-2 shadow-md transition-all cursor-pointer ${
+                filteredQuestions.length > 0
+                  ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:scale-[1.01] active:scale-[0.99]'
+                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+              }`}
+            >
+              <Maximize2 className="w-3.5 h-3.5" />
+              <span>
+                {filteredQuestions.length > 0 
+                  ? `Открыть карточки (${filteredQuestions.length} шт)` 
+                  : 'Нет карточек в фильтре'}
+              </span>
+            </button>
+
+            {filteredQuestions.length === 0 && (
+              <button
+                onClick={handleClearAllFilters}
+                className="w-full text-center text-[10px] text-amber-400 hover:underline font-bold"
+              >
+                Сбросить фильтры для просмотра карточек
+              </button>
+            )}
+          </div>
+
+        </div>
+
+        {/* BENTO CARD 2: DIFFICULTY & LEITNER BOXES FILTER (TOP RIGHT - SPAN 7) */}
+        <div className="lg:col-span-7 bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col justify-between space-y-3">
+          
+          {/* Difficulty Selection */}
+          <div className="space-y-1.5">
+            <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">
+              2. Уровень сложности
+            </span>
+            
+            <div className="grid grid-cols-4 gap-1 p-1 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-900">
+              {['all', 'Junior', 'Middle', 'Senior'].map((diff) => {
+                const isActive = selectedDifficulty === diff;
                 return (
                   <button
-                    key={cat.id}
-                    onClick={() => { setSelectedCategory(cat.id); }}
-                    className={`w-full px-4 py-3 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${
-                      isCatActive
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md shadow-emerald-600/10'
-                        : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
+                    key={diff}
+                    onClick={() => { setSelectedDifficulty(diff); }}
+                    className={`py-1.5 rounded-lg text-[11px] font-black uppercase text-center transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-emerald-600 text-white shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                     }`}
                   >
-                    <div className="flex items-center space-x-3 min-w-0">
-                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                        isCatActive ? 'bg-white/10 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
-                      }`}>
-                        {renderCategoryIcon(cat.iconName, "w-4 h-4")}
-                      </div>
-                      <span className="truncate font-extrabold text-sm">{cat.title}</span>
-                    </div>
-                    <span className={`px-2.5 py-1 rounded-md text-xs font-black ml-1 whitespace-nowrap ${
-                      isCatActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
-                    }`}>
-                      {totalInCat} карт
-                    </span>
+                    {diff === 'all' ? 'Все' : diff}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* STEP 2: DIFFICULTY & SHUFFLING */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl space-y-5">
-            
-            {/* Difficulty Selection */}
-            <div className="space-y-3">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">2. Выберите уровень сложности</span>
-              
-              <div className="grid grid-cols-4 gap-1.5 p-1.5 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-100 dark:border-slate-900">
-                {['all', 'Junior', 'Middle', 'Senior'].map((diff) => {
-                  const isActive = selectedDifficulty === diff;
-                  return (
-                    <button
-                      key={diff}
-                      onClick={() => { setSelectedDifficulty(diff); }}
-                      className={`py-2 rounded-xl text-xs font-black uppercase text-center transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-emerald-600 text-white shadow-sm'
-                          : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
-                      }`}
-                    >
-                      {diff === 'all' ? 'Все' : diff}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Shuffling Toggle */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
-              <div className="space-y-0.5">
-                <span className="text-sm font-extrabold text-slate-800 dark:text-slate-200">Случайный порядок</span>
-                <span className="text-xs text-slate-400 block">Перемешать все выбранные карточки</span>
-              </div>
-              <button
-                onClick={() => setIsShuffled(!isShuffled)}
-                className={`p-2.5 rounded-xl border transition-all cursor-pointer ${
-                  isShuffled 
-                    ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold' 
-                    : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600'
-                }`}
-              >
-                <RotateCw className={`w-5 h-5 ${isShuffled ? 'animate-spin-slow' : ''}`} />
-              </button>
-            </div>
-
-            {/* Reset Progress */}
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80">
-              <button
-                onClick={handleResetProgress}
-                className={`w-full py-3 px-4 rounded-xl border text-xs font-extrabold transition-all duration-200 flex items-center justify-center space-x-2 cursor-pointer ${
-                  resetConfirm 
-                    ? 'bg-amber-500 text-white border-amber-500 shadow-md animate-pulse'
-                    : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/50 dark:hover:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400'
-                }`}
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span>{resetConfirm ? 'Вы уверены? Нажмите для подтверждения' : 'Сбросить прогресс Лейтнера'}</span>
-              </button>
-            </div>
-
-          </div>
-
-          {/* Keyboard Shortcuts Helper */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-5 rounded-3xl space-y-3">
-            <span className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5 border-b border-slate-100 dark:border-slate-800/80 pb-2">
-              <Keyboard className="w-4 h-4 text-emerald-500" />
-              <span>Горячие клавиши в окне просмотра</span>
-            </span>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                <span>Перевернуть:</span>
-                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-emerald-500 font-black">Space</kbd>
-              </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                <span>Выход:</span>
-                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-amber-500 font-black">Esc</kbd>
-              </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                <span>Забыл [1]:</span>
-                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-rose-500 font-black">1</kbd>
-              </div>
-              <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-2 bg-slate-50 dark:bg-slate-900 rounded-xl">
-                <span>Знаю отлично! [3]:</span>
-                <kbd className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[10px] text-emerald-500 font-black">3</kbd>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* RIGHT COLUMN: PROGRESS METRICS, LEITNER FILTER & LAUNCH BUTTON */}
-        <div className="lg:col-span-5 space-y-6">
-          
-          {/* LEITNER METHOD BOXES (STEP 3) */}
-          <div className="bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-6 rounded-3xl space-y-5">
+          {/* Leitner Boxes Filter */}
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center space-x-1.5">
+              <span className="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center space-x-1">
                 <Filter className="w-3.5 h-3.5 text-emerald-500" />
-                <span>3. Коробки Лейтнера (Фильтр)</span>
+                <span>Коробки Лейтнера</span>
               </span>
               {selectedBoxFilter !== 'all' && (
                 <button 
                   onClick={() => setSelectedBoxFilter('all')}
-                  className="text-xs text-emerald-500 hover:underline font-semibold"
+                  className="text-xs text-emerald-500 hover:underline font-semibold cursor-pointer"
                 >
-                  Все коробки
+                  Сбросить (Все)
                 </button>
               )}
             </div>
 
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Коробка отражает степень запоминания. Новые карты попадают в Коробку 1, а изученные продвигаются до Коробки 5. Выберите коробку для фокусной тренировки.
-            </p>
-
-            <div className="grid grid-cols-5 gap-2 pt-1">
+            {/* DESKTOP BOX GRID (>= sm) */}
+            <div className="hidden sm:grid grid-cols-5 gap-1.5">
               {[1, 2, 3, 4, 5].map((boxNum) => {
                 const isActive = selectedBoxFilter === boxNum;
                 const count = boxesCount[boxNum - 1];
@@ -1195,15 +1078,15 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   <button
                     key={boxNum}
                     onClick={() => setSelectedBoxFilter(isActive ? 'all' : boxNum)}
-                    className={`p-2 rounded-xl border text-center transition-all duration-200 cursor-pointer flex flex-col justify-between items-center ${
+                    className={`p-1.5 rounded-xl border text-center transition-all duration-200 cursor-pointer flex flex-col justify-between items-center ${
                       isActive 
-                        ? `${currentStyle.active} border-2 shadow-sm`
+                        ? `${currentStyle.active} border-2 shadow-xs`
                         : `border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/60 hover:bg-slate-50 dark:hover:bg-slate-900 ${currentStyle.border}`
                     }`}
                   >
                     <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">К{boxNum}</div>
-                    <div className="flex items-baseline justify-center mt-1">
-                      <span className="text-base font-black text-slate-900 dark:text-white leading-none">
+                    <div className="flex items-baseline justify-center mt-0.5">
+                      <span className="text-sm font-black text-slate-900 dark:text-white leading-none">
                         {count}
                       </span>
                     </div>
@@ -1212,13 +1095,36 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               })}
             </div>
 
-            {/* Visual Progress Bar inside sidebar */}
-            <div className="space-y-1.5 pt-3 border-t border-slate-100 dark:border-slate-800/80">
-              <div className="flex justify-between items-center text-[11px] text-slate-500 font-bold">
-                <span>Прогресс освоения (Коробка 5)</span>
+            {/* MOBILE COMPACT BOX ROW (< sm) */}
+            <div className="grid sm:hidden grid-cols-5 gap-1 pt-0.5">
+              {[1, 2, 3, 4, 5].map((boxNum) => {
+                const isActive = selectedBoxFilter === boxNum;
+                const count = boxesCount[boxNum - 1];
+
+                return (
+                  <button
+                    key={boxNum}
+                    onClick={() => setSelectedBoxFilter(isActive ? 'all' : boxNum)}
+                    className={`py-1 px-1 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
+                      isActive 
+                        ? `bg-emerald-600 text-white border-emerald-600 shadow-xs font-black`
+                        : `bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300`
+                    }`}
+                  >
+                    <span className="text-[9px] uppercase font-mono font-bold opacity-80">К{boxNum}</span>
+                    <span className="text-xs font-black">{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Visual Progress Bar */}
+            <div className="space-y-1 pt-1.5">
+              <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold">
+                <span>Освоено (Коробка 5)</span>
                 <span>{masteryPercentage}%</span>
               </div>
-              <div className="w-full bg-slate-100 dark:bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-800">
+              <div className="w-full bg-slate-100 dark:bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-200/50 dark:border-slate-800">
                 <div 
                   className="bg-emerald-600 dark:bg-emerald-500 h-full rounded-full transition-all duration-500" 
                   style={{ width: `${masteryPercentage}%` }}
@@ -1228,79 +1134,195 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
           </div>
 
-          {/* THE LAUNCH CONFIGURATION CARD (STEP 4) */}
-          <div className="bento-card flex flex-col justify-between space-y-5 bg-gradient-to-b from-slate-50 to-slate-100 dark:from-[#121c2c] dark:to-[#0a111c] border-2 border-slate-200 dark:border-emerald-500/30 text-slate-800 dark:text-white rounded-3xl p-6 shadow-xl relative overflow-hidden">
-            
-            <div className="space-y-3 relative z-10">
-              <div className="flex items-center space-x-2">
-                <div className="p-2 rounded-xl bg-emerald-500 text-slate-950 font-black">
-                  <Play className="w-5 h-5 fill-current" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider block">
-                    4. ПОДТВЕРЖДЕНИЕ
-                  </span>
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white">
-                    Запустить сессию
-                  </h3>
-                </div>
-              </div>
-
-              <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                Карточки откроются на весь экран в режиме концентрации без отвлекающих элементов.
-              </p>
-
-              {/* Summary Configuration List */}
-              <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-slate-800/80 text-xs font-medium text-slate-600 dark:text-slate-300">
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Категория:</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400">{selectedCatObj ? selectedCatObj.title : 'Все категории'}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Сложность:</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{selectedDifficulty === 'all' ? 'Все уровни' : selectedDifficulty}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Коробка Лейтнера:</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{selectedBoxFilter === 'all' ? 'Все коробки' : `Коробка ${selectedBoxFilter}`}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Порядок карт:</span>
-                  <span className="font-bold text-slate-900 dark:text-white">{isShuffled ? 'Случайный' : 'По порядку'}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-slate-200 dark:border-slate-800/80 relative z-10 space-y-2">
+          {/* Shuffling & Reset Controls */}
+          <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-2">
+            <div className="flex items-center space-x-2">
               <button
-                onClick={startStudySession}
-                disabled={filteredQuestions.length === 0}
-                className={`w-full py-3.5 px-5 rounded-2xl font-black text-sm flex items-center justify-center space-x-2 shadow-lg transition-all cursor-pointer ${
-                  filteredQuestions.length > 0
-                    ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:scale-[1.02] active:scale-[0.98]'
-                    : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-700'
+                onClick={() => setIsShuffled(!isShuffled)}
+                className={`px-2.5 py-1.5 rounded-xl border text-xs transition-all cursor-pointer flex items-center space-x-1.5 ${
+                  isShuffled 
+                    ? 'bg-emerald-500/10 border-emerald-500 text-emerald-600 dark:text-emerald-400 font-extrabold' 
+                    : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600'
                 }`}
               >
-                <Maximize2 className="w-4 h-4" />
-                <span>
-                  {filteredQuestions.length > 0 
-                    ? `Открыть карточки (${filteredQuestions.length} шт)` 
-                    : 'Нет карточек в фильтре'}
-                </span>
+                <RotateCw className={`w-3.5 h-3.5 ${isShuffled ? 'animate-spin-slow' : ''}`} />
+                <span>Случайно</span>
               </button>
-
-              {filteredQuestions.length === 0 && (
-                <button
-                  onClick={handleClearAllFilters}
-                  className="w-full text-center text-xs text-amber-400 hover:underline font-bold"
-                >
-                  Сбросить фильтры для просмотра карточек
-                </button>
-              )}
             </div>
 
+            <button
+              onClick={handleResetProgress}
+              className={`py-1.5 px-2.5 rounded-xl border text-[11px] font-extrabold transition-all duration-200 flex items-center space-x-1 cursor-pointer ${
+                resetConfirm 
+                  ? 'bg-amber-500 text-white border-amber-500 shadow-md animate-pulse'
+                  : 'bg-slate-50 hover:bg-slate-100 dark:bg-slate-900/50 dark:hover:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 hover:text-rose-500'
+              }`}
+            >
+              <RefreshCw className="w-3 h-3" />
+              <span>{resetConfirm ? 'Подтвердить?' : 'Сброс'}</span>
+            </button>
           </div>
 
+        </div>
+
+        {/* BENTO CARD 3: CATEGORY SELECTION (BOTTOM LEFT - SPAN 9 - EXPANDED & SPACIOUS) */}
+        <div className="lg:col-span-9 bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col justify-between space-y-3">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800/80 pb-2">
+            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center space-x-2">
+              <Sliders className="w-3.5 h-3.5 text-emerald-500" />
+              <span>1. Категория знаний</span>
+            </h3>
+            {selectedCategory !== 'all' && (
+              <button 
+                onClick={() => setSelectedCategory('all')}
+                className="text-xs text-emerald-500 hover:underline font-semibold cursor-pointer"
+              >
+                Сбросить
+              </button>
+            )}
+          </div>
+
+          {/* MOBILE COMPACT VIEW (< sm) */}
+          <div className="block sm:hidden space-y-2">
+            <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-[#0b1120] rounded-xl border border-slate-200/80 dark:border-slate-800 text-xs">
+              <div className="flex items-center space-x-2 min-w-0">
+                <div className="w-5 h-5 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                  {selectedCategory === 'all' 
+                    ? <Award className="w-3 h-3" /> 
+                    : renderCategoryIcon(selectedCatObj?.iconName || '', "w-3 h-3")}
+                </div>
+                <span className="font-extrabold text-slate-800 dark:text-slate-200 truncate text-[11px]">
+                  {selectedCatObj ? selectedCatObj.title : 'Все категории'}
+                </span>
+              </div>
+              <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-black text-[10px] shrink-0">
+                {selectedCategory === 'all' ? questions.length : questions.filter(q => q.category === selectedCategory).length} карт
+              </span>
+            </div>
+
+            <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 pt-0.5 no-scrollbar snap-x scroll-smooth">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`snap-start shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 border cursor-pointer ${
+                  selectedCategory === 'all'
+                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                    : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
+                }`}
+              >
+                <Award className="w-3 h-3" />
+                <span>Все ({questions.length})</span>
+              </button>
+
+              {CATEGORIES.map((cat) => {
+                const isCatActive = selectedCategory === cat.id;
+                const totalInCat = questions.filter(q => q.category === cat.id).length;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`snap-start shrink-0 px-2.5 py-1.5 rounded-xl text-xs font-extrabold transition-all flex items-center space-x-1.5 border cursor-pointer ${
+                      isCatActive
+                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                        : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300'
+                    }`}
+                  >
+                    {renderCategoryIcon(cat.iconName, "w-3 h-3")}
+                    <span>{cat.title}</span>
+                    <span className={`px-1.5 py-0.2 rounded text-[10px] font-mono font-black ${
+                      isCatActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                    }`}>
+                      {totalInCat}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* DESKTOP/TABLET SPACIOUS GRID VIEW (>= sm: 3-4 columns) */}
+          <div className="hidden sm:grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-2">
+            <button
+              onClick={() => { setSelectedCategory('all'); }}
+              className={`px-3 py-2 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${
+                selectedCategory === 'all'
+                  ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                  : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
+              }`}
+            >
+              <div className="flex items-center space-x-2 min-w-0">
+                <div className="w-6 h-6 rounded-md bg-emerald-500/10 flex items-center justify-center text-emerald-500 shrink-0">
+                  <Award className="w-3.5 h-3.5" />
+                </div>
+                <span className="font-extrabold truncate text-xs">Все категории</span>
+              </div>
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-black shrink-0 ${
+                selectedCategory === 'all' ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+              }`}>
+                {questions.length}
+              </span>
+            </button>
+
+            {CATEGORIES.map((cat) => {
+              const isCatActive = selectedCategory === cat.id;
+              const totalInCat = questions.filter(q => q.category === cat.id).length;
+              return (
+                <button
+                  key={cat.id}
+                  onClick={() => { setSelectedCategory(cat.id); }}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold text-left transition-all flex items-center justify-between border cursor-pointer ${
+                    isCatActive
+                      ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                      : 'bg-slate-50/60 dark:bg-slate-900/60 hover:bg-slate-100 dark:hover:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2 min-w-0">
+                    <div className={`w-6 h-6 rounded-md flex items-center justify-center shrink-0 ${
+                      isCatActive ? 'bg-white/10 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
+                    }`}>
+                      {renderCategoryIcon(cat.iconName, "w-3.5 h-3.5")}
+                    </div>
+                    <span className="truncate font-extrabold text-xs">{cat.title}</span>
+                  </div>
+                  <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-black shrink-0 ml-1 ${
+                    isCatActive ? 'bg-emerald-700 text-emerald-100' : 'bg-slate-200 dark:bg-slate-800 text-slate-500'
+                  }`}>
+                    {totalInCat}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* BENTO CARD 4: KEYBOARD SHORTCUTS HELPER (BOTTOM RIGHT - SPAN 3 - ULTRA COMPACT) */}
+        <div className="hidden sm:flex lg:col-span-3 bento-card bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 p-3 sm:p-4 rounded-2xl shadow-xs flex-col justify-between space-y-2">
+          <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest flex items-center space-x-1.5 border-b border-slate-100 dark:border-slate-800/80 pb-1.5">
+            <Keyboard className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            <span className="truncate">Горячие клавиши</span>
+          </span>
+          
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-1.5 px-2 bg-slate-50 dark:bg-slate-900/80 rounded-lg">
+              <span className="text-[10px]">Перевернуть:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px] text-emerald-500 font-black">Space</kbd>
+            </div>
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-1.5 px-2 bg-slate-50 dark:bg-slate-900/80 rounded-lg">
+              <span className="text-[10px]">Забыл:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px] text-rose-500 font-black">1</kbd>
+            </div>
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-1.5 px-2 bg-slate-50 dark:bg-slate-900/80 rounded-lg">
+              <span className="text-[10px]">С трудом:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px] text-amber-500 font-black">2</kbd>
+            </div>
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-1.5 px-2 bg-slate-50 dark:bg-slate-900/80 rounded-lg">
+              <span className="text-[10px]">Отлично:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px] text-emerald-500 font-black">3</kbd>
+            </div>
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-400 font-medium p-1.5 px-2 bg-slate-50 dark:bg-slate-900/80 rounded-lg">
+              <span className="text-[10px]">Выход:</span>
+              <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-mono text-[9px] text-amber-500 font-black">Esc</kbd>
+            </div>
+          </div>
         </div>
 
       </div>
