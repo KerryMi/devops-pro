@@ -139,25 +139,24 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
     8: true,
   });
 
-  // Expand matching stage if initialCategory is passed & scroll to that stage panel block
+  // Expand matching stage if initialCategory is passed & scroll directly to stage panel block
   useEffect(() => {
     if (initialCategory) {
       const matchingStage = STAGES.find(s => s.categoryIds.includes(initialCategory));
       if (matchingStage) {
         setSelectedStageFilter(matchingStage.id);
         setExpandedStages(prev => ({ ...prev, [matchingStage.id]: true }));
-        const timer = setTimeout(() => {
+        requestAnimationFrame(() => {
           const element = document.getElementById(`stage-panel-${matchingStage.id}`);
           if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            element.scrollIntoView({ behavior: 'auto', block: 'start' });
           }
-        }, 120);
-        return () => clearTimeout(timer);
+        });
       }
     } else {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
-  }, [initialCategory, questions]);
+  }, [initialCategory]);
 
   // Scroll to top when selecting a question to read
   useEffect(() => {
@@ -176,12 +175,12 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
   const handleStageClick = (stageId: number) => {
     setSelectedStageFilter(stageId);
     setExpandedStages(prev => ({ ...prev, [stageId]: true }));
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       const element = document.getElementById(`stage-panel-${stageId}`);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    }, 100);
+    });
   };
 
   // Base filtering of questions within a stage
@@ -593,7 +592,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   <div
                     id={`stage-panel-${st.id}`}
                     key={st.id}
-                    className={`bg-white dark:bg-[#121927] border rounded-2xl shadow-xs p-5 sm:p-6 transition-all space-y-4 ${
+                    className={`bg-white dark:bg-[#121927] border rounded-2xl shadow-xs p-5 sm:p-6 transition-all space-y-4 scroll-mt-20 sm:scroll-mt-24 ${
                       isCompleted
                         ? 'border-emerald-500/35 dark:border-emerald-500/20 bg-emerald-500/[0.015]'
                         : 'border-slate-200 dark:border-slate-800/80'
