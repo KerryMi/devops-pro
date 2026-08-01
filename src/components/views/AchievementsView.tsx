@@ -31,13 +31,16 @@ import {
   Box,
   Cloud,
   Globe,
-  Shield
+  Shield,
+  Gift
 } from 'lucide-react';
 
 interface AchievementsViewProps {
   progress: UserProgress;
   questions: Question[];
   onNavigate?: (tab: any, filterCategory?: any) => void;
+  onClaimAchievementXP?: (id: string) => void;
+  onClaimAllXP?: () => void;
 }
 
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -61,16 +64,19 @@ const ICON_MAP: Record<string, React.ElementType> = {
   Cloud,
   Globe,
   Shield,
-  Trophy
+  Trophy,
+  Gift
 };
 
 export const AchievementsView: React.FC<AchievementsViewProps> = ({
   progress,
   questions,
-  onNavigate
+  onNavigate,
+  onClaimAchievementXP,
+  onClaimAllXP
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'unlocked' | 'in_progress'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'claimable' | 'unlocked' | 'in_progress'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showRanksLadder, setShowRanksLadder] = useState<boolean>(false);
 
@@ -82,10 +88,14 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
     currentXPInRank, 
     xpSpanInRank, 
     progressPercent, 
-    unlockedAchievementsCount, 
+    unlockedAchievementsCount,
+    unclaimedAchievementsCount, 
     totalAchievementsCount, 
     achievements 
   } = gamification;
+
+  const unclaimedAchievements = achievements.filter(a => a.isUnlocked && !a.isClaimed);
+  const totalUnclaimedXP = unclaimedAchievements.reduce((sum, a) => sum + (a.xpReward || 0), 0);
 
   // Active Quests / Tasks
   const dailyQuests = [
@@ -150,7 +160,8 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
     const matchesCat = selectedCategory === 'all' || a.category === selectedCategory;
     const matchesStatus = 
       statusFilter === 'all' ? true :
-      statusFilter === 'unlocked' ? a.isUnlocked :
+      statusFilter === 'claimable' ? (a.isUnlocked && !a.isClaimed) :
+      statusFilter === 'unlocked' ? (a.isUnlocked && a.isClaimed) :
       !a.isUnlocked;
     const matchesSearch = 
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -160,6 +171,26 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-16 animate-fadeIn">
+
+      {/* UNCLAIMED XP INFORMATIONAL NOTICE */}
+      {unclaimedAchievementsCount > 0 && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 shadow-xs flex items-center space-x-3">
+          <div className="p-2 rounded-xl bg-amber-500/20 text-amber-500 font-bold shrink-0">
+            <Gift className="w-5 h-5" />
+          </div>
+          <div>
+            <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white flex items-center space-x-2">
+              <span>Доступны награды к зачислению!</span>
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[11px] font-black">
+                +{totalUnclaimedXP} XP
+              </span>
+            </h4>
+            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              Нажмите кнопку «Забрать XP» на каждой карточке ниже, чтобы зачесть опыт.
+            </p>
+          </div>
+        </div>
+      )}
       
       {/* SECTION 1: MAIN GAME RANK & LEVEL CARD */}
       <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-[#121927] dark:to-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-xl relative overflow-hidden space-y-6">
@@ -373,16 +404,17 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
             </div>
 
             {/* Status Filter Tabs */}
-            <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl w-full sm:w-auto">
+            <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl w-full sm:w-auto overflow-x-auto">
               {[
                 { id: 'all', label: 'Все' },
-                { id: 'unlocked', label: 'Открыты' },
+                { id: 'claimable', label: `К зачислению (${unclaimedAchievementsCount})` },
+                { id: 'unlocked', label: 'Забранные' },
                 { id: 'in_progress', label: 'В процессе' }
               ].map(status => (
                 <button
                   key={status.id}
                   onClick={() => setStatusFilter(status.id as any)}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex-1 sm:flex-initial text-center ${
+                  className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer flex-1 sm:flex-initial text-center whitespace-nowrap ${
                     statusFilter === status.id
                       ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs'
                       : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
@@ -407,8 +439,10 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                 key={ach.id}
                 className={`p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between relative group bg-white dark:bg-[#121927] ${
                   ach.isUnlocked
-                    ? 'border-emerald-500/40 shadow-sm hover:border-emerald-500'
-                    : 'border-slate-200 dark:border-slate-800 opacity-80'
+                    ? ach.isClaimed
+                      ? 'border-emerald-500/30 shadow-xs'
+                      : 'border-amber-500/60 ring-1 ring-amber-500/30 shadow-md'
+                    : 'border-slate-200 dark:border-slate-800 opacity-90'
                 }`}
               >
                 {/* Header Row inside card */}
@@ -430,8 +464,12 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                       +{ach.xpReward} XP
                     </span>
                     {ach.isUnlocked ? (
-                      <span className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center">
-                        <Check className="w-3.5 h-3.5" />
+                      <span className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                        ach.isClaimed
+                          ? 'bg-emerald-500/20 text-emerald-500'
+                          : 'bg-amber-500 text-slate-950 font-black text-xs shadow-xs'
+                      }`}>
+                        {ach.isClaimed ? <Check className="w-3.5 h-3.5" /> : '!'}
                       </span>
                     ) : (
                       <span className="text-[10px] font-mono font-bold text-slate-400 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
@@ -454,16 +492,57 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                 </div>
 
                 {/* Progress Bar & Footer */}
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800/80 space-y-1">
-                  <div className="flex justify-between text-[10px] font-mono font-bold text-slate-400">
-                    <span>Прогресс:</span>
-                    <span>{ach.currentValue} / {ach.goalValue} {ach.unit || ''}</span>
+                <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800/80">
+                  <div className="space-y-1">
+                    <div className="flex justify-between text-[10px] font-mono font-bold text-slate-400">
+                      <span>Прогресс:</span>
+                      <span>{ach.currentValue} / {ach.goalValue} {ach.unit || ''}</span>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-300 ${ach.isUnlocked ? 'bg-emerald-500' : 'bg-amber-500'}`}
+                        style={{ width: `${progressPercent}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full transition-all duration-300 ${ach.isUnlocked ? 'bg-emerald-500' : 'bg-amber-500'}`}
-                      style={{ width: `${progressPercent}%` }}
-                    />
+
+                  {/* Quest Action Button */}
+                  <div>
+                    {ach.isUnlocked ? (
+                      ach.isClaimed ? (
+                        <div className="flex items-center justify-between gap-1 pt-1">
+                          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Награда зачислена</span>
+                          </span>
+                          {ach.targetTab && (
+                            <button
+                              onClick={() => onNavigate?.(ach.targetTab, ach.targetCategory)}
+                              className="text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center space-x-0.5 cursor-pointer"
+                            >
+                              <span>Открыть</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => onClaimAchievementXP?.(ach.id)}
+                          className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-400 hover:from-amber-400 hover:to-emerald-300 text-slate-950 text-xs font-black shadow-md hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-1.5 transition-all cursor-pointer"
+                        >
+                          <Gift className="w-4 h-4 fill-amber-950/20 shrink-0" />
+                          <span>Забрать {ach.xpReward} XP</span>
+                        </button>
+                      )
+                    ) : (
+                      <button
+                        onClick={() => onNavigate?.(ach.targetTab, ach.targetCategory)}
+                        className="w-full py-2 px-3 rounded-xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center space-x-1.5 transition-all cursor-pointer"
+                      >
+                        <span>Выполнить квест</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 </div>
 

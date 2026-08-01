@@ -28,6 +28,7 @@ interface SidebarProps {
   totalQuestionsCount: number;
   unlockedAchievementsCount: number;
   totalAchievementsCount: number;
+  unclaimedAchievementsCount?: number;
   unseenAchievementsCount?: number;
   isDarkMode: boolean;
   setIsDarkMode: (val: boolean) => void;
@@ -43,6 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   totalQuestionsCount,
   unlockedAchievementsCount,
   totalAchievementsCount,
+  unclaimedAchievementsCount = 0,
   unseenAchievementsCount = 0,
   isDarkMode,
   setIsDarkMode,
@@ -80,9 +82,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
           id: 'achievements' as TabType, 
           label: 'Достижения', 
           icon: <Trophy className="w-4 h-4 text-amber-500" />, 
-          badge: unseenAchievementsCount > 0 
-            ? `🔥 +${unseenAchievementsCount}` 
-            : `${unlockedAchievementsCount}/${totalAchievementsCount}` 
+          badge: unclaimedAchievementsCount > 0 
+            ? `${unclaimedAchievementsCount} к зачислению` 
+            : `${unlockedAchievementsCount}/${totalAchievementsCount}`,
+          isClaimAlert: unclaimedAchievementsCount > 0
         },
         { id: 'legend' as TabType, label: 'Легенда опыта', icon: <Award className="w-4 h-4" /> },
         { id: 'resume' as TabType, label: 'Резюме', icon: <FileText className="w-4 h-4" /> }
@@ -161,9 +164,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     </div>
                     {item.badge && (
                       <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold shrink-0 ${
-                        isActive
-                          ? 'bg-emerald-500 text-slate-950 dark:bg-emerald-400'
-                          : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
+                        item.isClaimAlert
+                          ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/40'
+                          : isActive
+                            ? 'bg-emerald-500 text-slate-950 dark:bg-emerald-400'
+                            : 'bg-slate-100 dark:bg-slate-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-800'
                       }`}>
                         {item.badge}
                       </span>

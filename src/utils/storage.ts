@@ -15,7 +15,8 @@ export const DEFAULT_PROGRESS: UserProgress = {
   completedInterviewSessionsCount: 0,
   lastDailyBlitzDate: '',
   dailyBlitzHistory: {},
-  seenAchievementIds: []
+  seenAchievementIds: [],
+  claimedAchievementIds: []
 };
 
 export function loadUserProgress(): UserProgress {

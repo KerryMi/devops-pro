@@ -185,8 +185,11 @@ export function calculateUserGamification(progress: UserProgress, questions: Que
   const blitzXP = blitzHistoryValues.reduce((sum, h: any) => sum + ((h.score || 0) * 20), 0);
 
   const achievements = evaluateAchievements(progress, questions);
+  const claimedIds = progress.claimedAchievementIds || [];
   const unlockedAchievements = achievements.filter(a => a.isUnlocked);
-  const achievementsXP = unlockedAchievements.reduce((sum, a) => sum + (a.xpReward || 0), 0);
+  const claimedAchievements = achievements.filter(a => a.isUnlocked && claimedIds.includes(a.id));
+  const unclaimedAchievementsCount = achievements.filter(a => a.isUnlocked && !claimedIds.includes(a.id)).length;
+  const achievementsXP = claimedAchievements.reduce((sum, a) => sum + (a.xpReward || 0), 0);
 
   const totalXP = masteredXP + quizXP + incidentXP + legendXP + blitzXP + achievementsXP;
 
@@ -214,6 +217,7 @@ export function calculateUserGamification(progress: UserProgress, questions: Que
     xpSpanInRank,
     progressPercent,
     unlockedAchievementsCount: unlockedAchievements.length,
+    unclaimedAchievementsCount,
     totalAchievementsCount: achievements.length,
     achievements
   };

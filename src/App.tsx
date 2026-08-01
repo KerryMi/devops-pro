@@ -264,8 +264,49 @@ export default function App() {
   const gamification = calculateUserGamification(progress, questions);
   const achievements = gamification.achievements;
   const unlockedAchievementsCount = gamification.unlockedAchievementsCount;
+  const unclaimedAchievementsCount = gamification.unclaimedAchievementsCount;
   const totalAchievementsCount = gamification.totalAchievementsCount;
   const unseenAchievementsCount = achievements.filter(a => a.isUnlocked && !seenAchievementIds.includes(a.id)).length;
+
+  const handleClaimAchievementXP = (achievementId: string) => {
+    const ach = achievements.find(a => a.id === achievementId);
+    const reward = ach?.xpReward || 50;
+    setProgress(prev => {
+      const currentClaimed = prev.claimedAchievementIds || [];
+      if (currentClaimed.includes(achievementId)) return prev;
+      return {
+        ...prev,
+        claimedAchievementIds: [...currentClaimed, achievementId]
+      };
+    });
+    triggerToast({
+      title: `+${reward} XP Зачислено!`,
+      message: `Награда за квест «${ach?.title || 'Достижение'}» успешно получена.`,
+      type: 'achievement'
+    });
+  };
+
+  const handleClaimAllXP = () => {
+    const unclaimed = achievements.filter(a => a.isUnlocked && !a.isClaimed);
+    if (unclaimed.length === 0) return;
+    const totalReward = unclaimed.reduce((sum, a) => sum + (a.xpReward || 0), 0);
+    const unclaimedIds = unclaimed.map(a => a.id);
+
+    setProgress(prev => {
+      const currentClaimed = prev.claimedAchievementIds || [];
+      const newClaimed = Array.from(new Set([...currentClaimed, ...unclaimedIds]));
+      return {
+        ...prev,
+        claimedAchievementIds: newClaimed
+      };
+    });
+
+    triggerToast({
+      title: `+${totalReward} XP Зачислено!`,
+      message: `Вы забрали награды за все выполненные квесты (${unclaimed.length} шт.)!`,
+      type: 'achievement'
+    });
+  };
 
   // Detect level up & trigger toast notification
   const prevLevelRef = React.useRef<number>(0);
@@ -501,6 +542,7 @@ export default function App() {
         totalQuestionsCount={totalQuestions}
         unlockedAchievementsCount={unlockedAchievementsCount}
         totalAchievementsCount={totalAchievementsCount}
+        unclaimedAchievementsCount={unclaimedAchievementsCount}
         unseenAchievementsCount={unseenAchievementsCount}
         isDarkMode={isDarkMode}
         setIsDarkMode={setIsDarkMode}
@@ -519,6 +561,7 @@ export default function App() {
           totalQuestionsCount={totalQuestions}
           unlockedAchievementsCount={unlockedAchievementsCount}
           totalAchievementsCount={totalAchievementsCount}
+          unclaimedAchievementsCount={unclaimedAchievementsCount}
           unseenAchievementsCount={unseenAchievementsCount}
           isSearchOpen={isSearchOpen}
           setIsSearchOpen={setIsSearchOpen}
@@ -557,6 +600,8 @@ export default function App() {
               progress={progress}
               questions={questions}
               onNavigate={handleNavigate}
+              onClaimAchievementXP={handleClaimAchievementXP}
+              onClaimAllXP={handleClaimAllXP}
             />
           )}
 

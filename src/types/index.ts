@@ -145,7 +145,10 @@ export interface Achievement {
   goalValue: number;
   unit?: string;
   isUnlocked: boolean;
+  isClaimed?: boolean;
   xpReward?: number;
+  targetTab?: string;
+  targetCategory?: string;
 }
 
 export interface UserProgress {
@@ -163,4 +166,5 @@ export interface UserProgress {
   lastDailyBlitzDate?: string;
   dailyBlitzHistory?: Record<string, { score: number; total: number; completedAt: string }>;
   seenAchievementIds?: string[];
+  claimedAchievementIds?: string[];
 }

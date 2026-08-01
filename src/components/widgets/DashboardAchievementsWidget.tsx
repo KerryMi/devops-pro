@@ -5,7 +5,7 @@ import { RankAvatar } from './RankAvatar';
 import { 
   Trophy, 
   ArrowRight, 
-  Zap 
+  Gift 
 } from 'lucide-react';
 
 interface DashboardAchievementsWidgetProps {
@@ -18,13 +18,22 @@ interface DashboardAchievementsWidgetProps {
 export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetProps> = ({
   progress,
   questions,
-  onNavigate,
-  unseenAchievementsCount = 0
+  onNavigate
 }) => {
   const gamification = calculateUserGamification(progress, questions);
-  const { rank, totalXP, currentXPInRank, xpSpanInRank, progressPercent, achievements } = gamification;
+  const { 
+    rank, 
+    totalXP, 
+    currentXPInRank, 
+    xpSpanInRank, 
+    progressPercent, 
+    achievements,
+    unclaimedAchievementsCount 
+  } = gamification;
 
   const unlocked = achievements.filter(a => a.isUnlocked);
+  const unclaimedItems = achievements.filter(a => a.isUnlocked && !a.isClaimed);
+  const totalUnclaimedXP = unclaimedItems.reduce((acc, item) => acc + (item.xpReward || 0), 0);
 
   return (
     <div className="h-full flex flex-col bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-[#121927] dark:to-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
@@ -52,9 +61,9 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
             <span className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 font-mono">
               {totalXP} XP
             </span>
-            {unseenAchievementsCount > 0 && (
-              <span className="px-1.5 py-0.5 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-500 dark:text-rose-400 text-[9px] md:text-[10px] font-black animate-pulse">
-                +{unseenAchievementsCount}
+            {unclaimedAchievementsCount > 0 && (
+              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
+                +{totalUnclaimedXP} XP готово
               </span>
             )}
           </div>
@@ -69,11 +78,21 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
         </div>
       </div>
 
+      {/* Unclaimed XP Alert Banner Indicator */}
+      {unclaimedAchievementsCount > 0 && (
+        <div className="my-3 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center space-x-2 text-xs text-amber-700 dark:text-amber-300 relative z-10">
+          <Gift className="w-4 h-4 text-amber-500 shrink-0" />
+          <span className="leading-snug">
+            <strong className="font-extrabold text-amber-600 dark:text-amber-400">+{totalUnclaimedXP} XP</strong> за {unclaimedAchievementsCount} квест(а). Заберите награды во вкладке «Все достижения».
+          </span>
+        </div>
+      )}
+
       {/* Push progress bar down on desktop to fill empty space and place it closer to footer */}
       <div className="flex-grow hidden md:block" />
 
       {/* Progress Bar */}
-      <div className="mt-6 md:mt-0 md:mb-5 space-y-1.5 relative z-10">
+      <div className="mt-4 md:mt-0 md:mb-5 space-y-1.5 relative z-10">
         <div className="flex items-center justify-between text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400">
           <span>Прогресс уровня</span>
           <span className="font-mono text-slate-600 dark:text-slate-300">

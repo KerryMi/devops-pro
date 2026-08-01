@@ -11,6 +11,8 @@ export interface AchievementDefinition {
   goalValue: number;
   unit?: string;
   xpReward: number;
+  targetTab: string;
+  targetCategory?: string;
   getValue: (progress: UserProgress, questions: Question[]) => number;
 }
 
@@ -26,6 +28,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 1,
     unit: 'вопрос',
     xpReward: 20,
+    targetTab: 'questions',
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -39,6 +42,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 10,
     unit: 'вопросов',
     xpReward: 40,
+    targetTab: 'questions',
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -52,6 +56,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 30,
     unit: 'вопросов',
     xpReward: 60,
+    targetTab: 'questions',
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -65,6 +70,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 60,
     unit: 'вопросов',
     xpReward: 80,
+    targetTab: 'questions',
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -78,6 +84,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 100,
     unit: 'вопросов',
     xpReward: 100,
+    targetTab: 'questions',
     getValue: (p) => p.masteredQuestionIds.length,
   },
   {
@@ -91,6 +98,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 7,
     unit: 'дней',
     xpReward: 40,
+    targetTab: 'dashboard',
     getValue: (p) => p.dailyStreak,
   },
   {
@@ -104,6 +112,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 14,
     unit: 'дней',
     xpReward: 80,
+    targetTab: 'dashboard',
     getValue: (p) => p.dailyStreak,
   },
   {
@@ -117,6 +126,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 3,
     unit: 'тестов',
     xpReward: 50,
+    targetTab: 'quizzes',
     getValue: (p) => p.quizResults.filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.8).length,
   },
   {
@@ -130,6 +140,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 10,
     unit: 'тестов',
     xpReward: 100,
+    targetTab: 'quizzes',
     getValue: (p) => p.quizResults.filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.8).length,
   },
   {
@@ -143,6 +154,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 1,
     unit: 'авария',
     xpReward: 50,
+    targetTab: 'incidents',
     getValue: (p) => p.solvedIncidentIds ? p.solvedIncidentIds.length : 0,
   },
   {
@@ -156,6 +168,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 3,
     unit: 'аварий',
     xpReward: 100,
+    targetTab: 'incidents',
     getValue: (p) => p.solvedIncidentIds ? p.solvedIncidentIds.length : 0,
   },
   {
@@ -169,6 +182,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 1,
     unit: 'легенда',
     xpReward: 50,
+    targetTab: 'legend',
     getValue: (p) => p.savedLegend ? 1 : 0,
   },
   {
@@ -182,6 +196,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'карточек',
     xpReward: 40,
+    targetTab: 'flashcards',
     getValue: (p) => Object.values(p.flashcardBoxes || {}).filter(box => box >= 3).length,
   },
   {
@@ -195,6 +210,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 15,
     unit: 'карточек',
     xpReward: 80,
+    targetTab: 'flashcards',
     getValue: (p) => Object.values(p.flashcardBoxes || {}).filter(box => box >= 3).length,
   },
   {
@@ -208,6 +224,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'закладок',
     xpReward: 20,
+    targetTab: 'questions',
     getValue: (p) => p.bookmarkedQuestionIds.length,
   },
   {
@@ -221,6 +238,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 1,
     unit: 'спринт',
     xpReward: 20,
+    targetTab: 'quizzes',
     getValue: (p) => Object.keys(p.dailyBlitzHistory || {}).length,
   },
   {
@@ -234,6 +252,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'спринтов',
     xpReward: 60,
+    targetTab: 'quizzes',
     getValue: (p) => Object.keys(p.dailyBlitzHistory || {}).length,
   },
   {
@@ -247,6 +266,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 1,
     unit: 'тест',
     xpReward: 40,
+    targetTab: 'quizzes',
     getValue: (p) => {
       const perfectQuizzes = (p.quizResults || []).filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 1.0).length;
       const totalPassed = (p.quizResults || []).filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.7).length;
@@ -264,6 +284,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'linux',
     getValue: (p, questions) => {
       const linuxIds = new Set(questions.filter(q => q.category === 'linux').map(q => q.id));
       return p.masteredQuestionIds.filter(id => linuxIds.has(id)).length;
@@ -280,6 +302,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 40,
+    targetTab: 'questions',
+    targetCategory: 'k8s',
     getValue: (p, questions) => {
       const k8sIds = new Set(questions.filter(q => q.category === 'k8s').map(q => q.id));
       return p.masteredQuestionIds.filter(id => k8sIds.has(id)).length;
@@ -296,6 +320,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'docker',
     getValue: (p, questions) => {
       const dockerIds = new Set(questions.filter(q => q.category === 'docker').map(q => q.id));
       return p.masteredQuestionIds.filter(id => dockerIds.has(id)).length;
@@ -312,6 +338,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'cicd',
     getValue: (p, questions) => {
       const cicdIds = new Set(questions.filter(q => q.category === 'cicd').map(q => q.id));
       return p.masteredQuestionIds.filter(id => cicdIds.has(id)).length;
@@ -328,6 +356,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'terraform',
     getValue: (p, questions) => {
       const tfIds = new Set(questions.filter(q => q.category === 'terraform').map(q => q.id));
       return p.masteredQuestionIds.filter(id => tfIds.has(id)).length;
@@ -344,6 +374,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'cloud',
     getValue: (p, questions) => {
       const cloudIds = new Set(questions.filter(q => q.category === 'cloud').map(q => q.id));
       return p.masteredQuestionIds.filter(id => cloudIds.has(id)).length;
@@ -360,6 +392,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'monitoring',
     getValue: (p, questions) => {
       const monitoringIds = new Set(questions.filter(q => q.category === 'monitoring').map(q => q.id));
       return p.masteredQuestionIds.filter(id => monitoringIds.has(id)).length;
@@ -376,6 +410,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'ansible',
     getValue: (p, questions) => {
       const ansibleIds = new Set(questions.filter(q => q.category === 'ansible').map(q => q.id));
       return p.masteredQuestionIds.filter(id => ansibleIds.has(id)).length;
@@ -392,6 +428,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     goalValue: 5,
     unit: 'вопросов',
     xpReward: 30,
+    targetTab: 'questions',
+    targetCategory: 'networking',
     getValue: (p, questions) => {
       const netIds = new Set(questions.filter(q => q.category === 'networking').map(q => q.id));
       return p.masteredQuestionIds.filter(id => netIds.has(id)).length;
@@ -400,6 +438,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
 ];
 
 export function evaluateAchievements(progress: UserProgress, questions: Question[]): Achievement[] {
+  const claimed = progress.claimedAchievementIds || [];
+
   return ACHIEVEMENT_DEFINITIONS.map(def => {
     const rawVal = def.getValue(progress, questions);
     const currentValue = Math.min(rawVal, def.goalValue);
@@ -417,7 +457,10 @@ export function evaluateAchievements(progress: UserProgress, questions: Question
       goalValue: def.goalValue,
       unit: def.unit,
       isUnlocked,
+      isClaimed: claimed.includes(def.id),
       xpReward: def.xpReward,
+      targetTab: def.targetTab,
+      targetCategory: def.targetCategory
     };
   });
 }
