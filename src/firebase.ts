@@ -150,7 +150,7 @@ export async function saveProgressToFirestore(userId: string, progress: Partial<
       'email', 'masteredQuestionIds', 'bookmarkedQuestionIds', 'flashcardBoxes',
       'flashcardLastReview', 'quizResults', 'dailyStreak', 'lastActiveDate',
       'customNotes', 'savedLegend', 'solvedIncidentIds', 'completedInterviewSessionsCount',
-      'lastDailyBlitzDate', 'dailyBlitzHistory', 'seenAchievementIds'
+      'lastDailyBlitzDate', 'dailyBlitzHistory', 'seenAchievementIds', 'claimedAchievementIds'
     ];
 
     whitelistedKeys.forEach(key => {

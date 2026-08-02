@@ -76,7 +76,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
   onClaimAllXP
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'claimable' | 'unlocked' | 'in_progress'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'unlocked' | 'in_progress'>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showRanksLadder, setShowRanksLadder] = useState<boolean>(false);
 
@@ -160,8 +160,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
     const matchesCat = selectedCategory === 'all' || a.category === selectedCategory;
     const matchesStatus = 
       statusFilter === 'all' ? true :
-      statusFilter === 'claimable' ? (a.isUnlocked && !a.isClaimed) :
-      statusFilter === 'unlocked' ? (a.isUnlocked && a.isClaimed) :
+      statusFilter === 'unlocked' ? a.isUnlocked :
       !a.isUnlocked;
     const matchesSearch = 
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -171,26 +170,6 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-16 animate-fadeIn">
-
-      {/* UNCLAIMED XP INFORMATIONAL NOTICE */}
-      {unclaimedAchievementsCount > 0 && (
-        <div className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 shadow-xs flex items-center space-x-3">
-          <div className="p-2 rounded-xl bg-amber-500/20 text-amber-500 font-bold shrink-0">
-            <Gift className="w-5 h-5" />
-          </div>
-          <div>
-            <h4 className="text-xs sm:text-sm font-extrabold text-slate-900 dark:text-white flex items-center space-x-2">
-              <span>Доступны награды к зачислению!</span>
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[11px] font-black">
-                +{totalUnclaimedXP} XP
-              </span>
-            </h4>
-            <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-              Нажмите кнопку «Забрать XP» на каждой карточке ниже, чтобы зачесть опыт.
-            </p>
-          </div>
-        </div>
-      )}
       
       {/* SECTION 1: MAIN GAME RANK & LEVEL CARD */}
       <div className="bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-[#121927] dark:to-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 p-6 sm:p-8 rounded-2xl shadow-xl relative overflow-hidden space-y-6">
@@ -407,8 +386,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
             <div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl w-full sm:w-auto overflow-x-auto">
               {[
                 { id: 'all', label: 'Все' },
-                { id: 'claimable', label: `К зачислению (${unclaimedAchievementsCount})` },
-                { id: 'unlocked', label: 'Забранные' },
+                { id: 'unlocked', label: 'Полученные' },
                 { id: 'in_progress', label: 'В процессе' }
               ].map(status => (
                 <button
@@ -439,9 +417,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                 key={ach.id}
                 className={`p-5 rounded-2xl border transition-all duration-200 flex flex-col justify-between relative group bg-white dark:bg-[#121927] ${
                   ach.isUnlocked
-                    ? ach.isClaimed
-                      ? 'border-emerald-500/30 shadow-xs'
-                      : 'border-amber-500/60 ring-1 ring-amber-500/30 shadow-md'
+                    ? 'border-emerald-500/30 shadow-xs'
                     : 'border-slate-200 dark:border-slate-800 opacity-90'
                 }`}
               >
@@ -464,12 +440,8 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                       +{ach.xpReward} XP
                     </span>
                     {ach.isUnlocked ? (
-                      <span className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                        ach.isClaimed
-                          ? 'bg-emerald-500/20 text-emerald-500'
-                          : 'bg-amber-500 text-slate-950 font-black text-xs shadow-xs'
-                      }`}>
-                        {ach.isClaimed ? <Check className="w-3.5 h-3.5" /> : '!'}
+                      <span className="w-6 h-6 rounded-full flex items-center justify-center bg-emerald-500/20 text-emerald-500 shrink-0">
+                        <Check className="w-3.5 h-3.5" />
                       </span>
                     ) : (
                       <span className="text-[10px] font-mono font-bold text-slate-400 px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800">
@@ -506,34 +478,24 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({
                     </div>
                   </div>
 
-                  {/* Quest Action Button */}
+                  {/* Quest Action Footer */}
                   <div>
                     {ach.isUnlocked ? (
-                      ach.isClaimed ? (
-                        <div className="flex items-center justify-between gap-1 pt-1">
-                          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
-                            <CheckCircle2 className="w-3.5 h-3.5" />
-                            <span>Награда зачислена</span>
-                          </span>
-                          {ach.targetTab && (
-                            <button
-                              onClick={() => onNavigate?.(ach.targetTab, ach.targetCategory)}
-                              className="text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center space-x-0.5 cursor-pointer"
-                            >
-                              <span>Открыть</span>
-                              <ArrowRight className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => onClaimAchievementXP?.(ach.id)}
-                          className="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-emerald-400 hover:from-amber-400 hover:to-emerald-300 text-slate-950 text-xs font-black shadow-md hover:scale-[1.01] active:scale-[0.99] flex items-center justify-center space-x-1.5 transition-all cursor-pointer"
-                        >
-                          <Gift className="w-4 h-4 fill-amber-950/20 shrink-0" />
-                          <span>Забрать {ach.xpReward} XP</span>
-                        </button>
-                      )
+                      <div className="flex items-center justify-between gap-1 pt-1">
+                        <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 flex items-center space-x-1">
+                          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                          <span>Получено</span>
+                        </span>
+                        {ach.targetTab && (
+                          <button
+                            onClick={() => onNavigate?.(ach.targetTab, ach.targetCategory)}
+                            className="text-[10px] font-extrabold text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center space-x-0.5 cursor-pointer"
+                          >
+                            <span>Открыть</span>
+                            <ArrowRight className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
                     ) : (
                       <button
                         onClick={() => onNavigate?.(ach.targetTab, ach.targetCategory)}

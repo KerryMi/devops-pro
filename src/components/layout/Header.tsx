@@ -123,10 +123,8 @@ export const Header: React.FC<HeaderProps> = ({
           id: 'achievements' as TabType, 
           label: 'Достижения', 
           icon: <Trophy className="w-4 h-4 text-amber-500" />, 
-          badge: unclaimedAchievementsCount > 0 
-            ? `${unclaimedAchievementsCount} к зачислению` 
-            : `${unlockedAchievementsCount}/${totalAchievementsCount}`,
-          isClaimAlert: unclaimedAchievementsCount > 0
+          badge: `${unlockedAchievementsCount}/${totalAchievementsCount}`,
+          hasDot: unseenAchievementsCount > 0
         },
         { id: 'legend' as TabType, label: 'Легенда опыта', icon: <Award className="w-4 h-4" /> },
         { id: 'resume' as TabType, label: 'Резюме', icon: <FileText className="w-4 h-4" /> }
@@ -328,6 +326,9 @@ export const Header: React.FC<HeaderProps> = ({
                         <div className="flex items-center space-x-3">
                           {item.icon}
                           <span>{item.label}</span>
+                          {(item as any).hasDot && (
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" title="Новые достижения" />
+                          )}
                         </div>
                         {item.badge && (
                           <span className="px-2 py-0.5 rounded-md text-[10px] bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-800">

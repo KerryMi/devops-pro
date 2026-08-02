@@ -18,7 +18,8 @@ interface DashboardAchievementsWidgetProps {
 export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetProps> = ({
   progress,
   questions,
-  onNavigate
+  onNavigate,
+  unseenAchievementsCount = 0
 }) => {
   const gamification = calculateUserGamification(progress, questions);
   const { 
@@ -27,13 +28,10 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
     currentXPInRank, 
     xpSpanInRank, 
     progressPercent, 
-    achievements,
-    unclaimedAchievementsCount 
+    achievements
   } = gamification;
 
   const unlocked = achievements.filter(a => a.isUnlocked);
-  const unclaimedItems = achievements.filter(a => a.isUnlocked && !a.isClaimed);
-  const totalUnclaimedXP = unclaimedItems.reduce((acc, item) => acc + (item.xpReward || 0), 0);
 
   return (
     <div className="h-full flex flex-col bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-[#121927] dark:to-slate-900 text-slate-800 dark:text-white border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm relative overflow-hidden">
@@ -61,11 +59,6 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
             <span className="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 font-mono">
               {totalXP} XP
             </span>
-            {unclaimedAchievementsCount > 0 && (
-              <span className="px-2 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
-                +{totalUnclaimedXP} XP готово
-              </span>
-            )}
           </div>
           
           <h3 className="text-lg md:text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight mt-0.5">
@@ -77,16 +70,6 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
           </p>
         </div>
       </div>
-
-      {/* Unclaimed XP Alert Banner Indicator */}
-      {unclaimedAchievementsCount > 0 && (
-        <div className="my-3 p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center space-x-2 text-xs text-amber-700 dark:text-amber-300 relative z-10">
-          <Gift className="w-4 h-4 text-amber-500 shrink-0" />
-          <span className="leading-snug">
-            <strong className="font-extrabold text-amber-600 dark:text-amber-400">+{totalUnclaimedXP} XP</strong> за {unclaimedAchievementsCount} квест(а). Заберите награды во вкладке «Все достижения».
-          </span>
-        </div>
-      )}
 
       {/* Push progress bar down on desktop to fill empty space and place it closer to footer */}
       <div className="flex-grow hidden md:block" />
@@ -116,6 +99,9 @@ export const DashboardAchievementsWidget: React.FC<DashboardAchievementsWidgetPr
         <span className="flex items-center gap-1.5">
           <Trophy className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0" />
           <span>Все достижения ({unlocked.length}/{achievements.length})</span>
+          {unseenAchievementsCount > 0 && (
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0 ml-1" title="Есть новые достижения!" />
+          )}
         </span>
         <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" />
       </button>

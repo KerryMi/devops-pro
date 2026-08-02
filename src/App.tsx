@@ -117,6 +117,11 @@ function mergeProgress(local: UserProgress, cloud: any): UserProgress {
     ? cloud.lastDailyBlitzDate
     : (safeLocal.lastDailyBlitzDate || '');
 
+  const claimedAchievementIds = Array.from(new Set([
+    ...(safeLocal.claimedAchievementIds || []),
+    ...(cloud.claimedAchievementIds || [])
+  ]));
+
   return {
     masteredQuestionIds,
     bookmarkedQuestionIds,
@@ -131,7 +136,8 @@ function mergeProgress(local: UserProgress, cloud: any): UserProgress {
     completedInterviewSessionsCount,
     lastDailyBlitzDate,
     dailyBlitzHistory,
-    seenAchievementIds
+    seenAchievementIds,
+    claimedAchievementIds
   };
 }
 
@@ -230,12 +236,6 @@ export default function App() {
               message: 'Ваш текущий локальный прогресс успешно сохранен в ваш новый аккаунт!',
               type: 'info'
             });
-          } else {
-            triggerToast({
-              title: 'Вход выполнен',
-              message: 'Прогресс успешно синхронизирован с облаком.',
-              type: 'info'
-            });
           }
         } catch (err) {
           console.error('Error syncing progress with Firestore on auth:', err);
@@ -267,6 +267,22 @@ export default function App() {
   const unclaimedAchievementsCount = gamification.unclaimedAchievementsCount;
   const totalAchievementsCount = gamification.totalAchievementsCount;
   const unseenAchievementsCount = achievements.filter(a => a.isUnlocked && !seenAchievementIds.includes(a.id)).length;
+
+  // Auto-claim unlocked achievements so XP is credited automatically and saved permanently
+  useEffect(() => {
+    const unclaimed = achievements.filter(a => a.isUnlocked && !a.isClaimed);
+    if (unclaimed.length > 0) {
+      const unclaimedIds = unclaimed.map(a => a.id);
+      setProgress(prev => {
+        const currentClaimed = prev.claimedAchievementIds || [];
+        const newClaimed = Array.from(new Set([...currentClaimed, ...unclaimedIds]));
+        return {
+          ...prev,
+          claimedAchievementIds: newClaimed
+        };
+      });
+    }
+  }, [achievements]);
 
   const handleClaimAchievementXP = (achievementId: string) => {
     const ach = achievements.find(a => a.id === achievementId);
