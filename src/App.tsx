@@ -162,6 +162,8 @@ export default function App() {
 
   // Toast notifications & Gamification trackers
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const toastTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   const [seenAchievementIds, setSeenAchievementIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('devops_pro_seen_achievements');
@@ -174,16 +176,25 @@ export default function App() {
   const triggerToast = (toast: Omit<ToastItem, 'id'>) => {
     const id = Date.now().toString() + Math.random().toString().slice(2, 6);
     const newToast: ToastItem = { ...toast, id };
-    setToasts(prev => [...prev, newToast]);
+    
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
 
-    // Auto dismiss after 4.5s
-    setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
-    }, 4500);
+    // Replace previous notification so toasts don't stack like a ladder
+    setToasts([newToast]);
+
+    // Auto dismiss after 4 seconds
+    toastTimeoutRef.current = setTimeout(() => {
+      setToasts([]);
+    }, 4000);
   };
 
   const handleDismissToast = (id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+    }
+    setToasts([]);
   };
 
   const handleSetIsAdmin = (val: boolean) => {
