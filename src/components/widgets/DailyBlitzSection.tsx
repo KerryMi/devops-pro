@@ -366,16 +366,16 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
             </div>
 
             {/* Topics Pills */}
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1 sm:gap-1.5">
               {todayQuestions.map((q, i) => {
                 const catBadge = getCategoryBadge(q.category);
                 return (
                   <div
                     key={q.id || i}
-                    className="px-2 py-1 rounded-lg text-[10px] font-extrabold flex items-center space-x-1.5 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 shadow-2xs"
+                    className="px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-md sm:rounded-lg text-[9px] sm:text-[10px] font-extrabold flex items-center space-x-1 sm:space-x-1.5 bg-white dark:bg-[#121927] border border-slate-200 dark:border-slate-800 shadow-2xs shrink-0"
                   >
-                    <span className="opacity-60 text-[9px] font-mono">#{i + 1}</span>
-                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase ${catBadge.bg}`}>
+                    <span className="opacity-60 text-[8px] sm:text-[9px] font-mono">#{i + 1}</span>
+                    <span className={`px-1 py-0.5 sm:px-1.5 sm:py-0.5 rounded text-[8px] sm:text-[9px] font-black uppercase ${catBadge.bg}`}>
                       {q.category}
                     </span>
                   </div>

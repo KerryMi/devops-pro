@@ -123,6 +123,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteText, setNoteText] = useState('');
   const topRef = useRef<HTMLDivElement>(null);
+  const questionsBlockRef = useRef<HTMLDivElement>(null);
 
   // Active filter for single-stage vs all-stages view
   const [selectedStageFilter, setSelectedStageFilter] = useState<number | 'all'>('all');
@@ -168,7 +169,13 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
   const handleStageClick = (stageId: number) => {
     setSelectedStageFilter(stageId);
     setExpandedStages(prev => ({ ...prev, [stageId]: true }));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      if (questionsBlockRef.current) {
+        const yOffset = -75;
+        const y = questionsBlockRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+        window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   // Base filtering of questions within a stage
@@ -297,7 +304,16 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
                   <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
                     {selectedStageFilter !== 'all' && (
                       <button
-                        onClick={() => setSelectedStageFilter('all')}
+                        onClick={() => {
+                          setSelectedStageFilter('all');
+                          setTimeout(() => {
+                            if (questionsBlockRef.current) {
+                              const yOffset = -75;
+                              const y = questionsBlockRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                              window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+                            }
+                          }, 50);
+                        }}
                         className="text-[11px] font-extrabold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all flex items-center space-x-1 bg-emerald-500/10 px-2.5 py-1.5 rounded-xl border border-emerald-500/20 shadow-xs cursor-pointer"
                       >
                         <span>Показать все</span>
@@ -462,7 +478,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
             </div>
 
             {/* ================= 3. STICKY FILTER & SEARCH HUB ================= */}
-            <div className="sticky top-14 sm:top-16 z-30 bg-white/95 dark:bg-[#121927]/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-md space-y-3 transition-colors duration-200">
+            <div ref={questionsBlockRef} className="sticky top-14 sm:top-16 z-30 bg-white/95 dark:bg-[#121927]/95 backdrop-blur-md p-4 rounded-2xl border border-slate-200 dark:border-slate-800/80 shadow-md space-y-3 transition-colors duration-200">
               
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
                 
