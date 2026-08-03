@@ -1,5 +1,10 @@
 # 🛠️ DevOps Pro — Enterprise DevOps & SRE Interview Preparation Platform
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-10b981.svg)](LICENSE.md)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178c6.svg)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18.0-61dafb.svg)](https://react.dev/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8.svg)](https://tailwindcss.com/)
+
 **DevOps Pro** — это профессиональная геймифицированная платформа для подготовки к собеседованиям, тестирования знаний и развития практических компетенций DevOps, SRE и Cloud-инженеров.
 
 Платформа включает в себя интерактивную базу вопросов с подробными разборами, симулятор инцидентов в продакшене, тренировочные тесты, CLI-шпаргалки, конструктор формулировок опыта (STAR-метод) и автоматическую синхронизацию прогресса.
@@ -153,6 +158,17 @@ npm start
 
 ---
 
-## 📄 Лицензия и права
+## 📄 Лицензия (License)
 
-Распространяется в соответствии с лицензией MIT. Подробности см. в файле `LICENSE`.
+Этот проект распространяется под открытой лицензией **[MIT License](LICENSE.md)**.
+
+```text
+Copyright (c) 2026 DevOps Pro
+
+Данное программное обеспечение предоставляется «как есть» (AS IS), без каких-либо гарантий.
+Вы можете свободно использовать, модифицировать, копировать, распространять и интегрировать 
+его в коммерческие и некоммерческие проекты.
+```
+
+Полный текст лицензионного соглашения находится в файле **[LICENSE.md](LICENSE.md)**.
+
