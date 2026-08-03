@@ -705,5 +705,386 @@ export const QUIZZES: Quiz[] = [
         explanation: 'Anycast анонсирует один префикс через BGP от множества независимых Edge серверов. Сетевые провайдеры отправляют трафик по кратчайшему пути (AS-Path / IGP cost) к ближайшему датацентру.'
       }
     ]
+  },
+
+  {
+    id: 'quiz-ansible-deepdrive',
+    title: 'Ansible & Управление Конфигурацией',
+    category: 'ansible',
+    difficulty: 'Middle',
+    description: 'Практический тест по Ansible: Идемпотентность, Playbooks, Roles, Jinja2 шаблоны, Handlers, Vault и оптимизация выполнения.',
+    timeLimitMinutes: 10,
+    questions: [
+      {
+        id: 'q-ans-1',
+        category: 'ansible',
+        question: 'Как изменить поведение Ansible, чтобы при выполнении таски на множестве серверов ошибки на отдельных хостах не останавливали выполнение на остальных?',
+        options: [
+          'Свойство `ignore_errors: yes` для таски или настройка `ignore_unreachable: yes`',
+          'Параметр `serial: 100%`',
+          'Флаг `--skip-broken` в CLI',
+          'Параметр `fail_fast: false`'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Использование `ignore_errors: yes` позволяет продолжить выполнение плейбука на хосте, даже если конкретная таска завершилась с ошибкой.'
+      },
+      {
+        id: 'q-ans-2',
+        category: 'ansible',
+        question: 'Что гарантирует концепция Идемпотентности (Idempotency) в Ansible?',
+        options: [
+          'Повторный запуск плейбука с теми же параметрами не вносит повторных изменений и приводит систему к тому же целевому состоянию',
+          'Плейбук выполняется параллельно со скоростью C++',
+          'Пароли автоматически шифруются при передаче',
+          'Результат выполнения сохраняется в базу данных'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Идемпотентность означает, что запуск модуля один или сто раз гарантирует одинаковое итоговое состояние хоста без дублирования конфигураций.'
+      },
+      {
+        id: 'q-ans-3',
+        category: 'ansible',
+        question: 'В какой момент времени по умолчанию запускается блок `handlers` в Ansible?',
+        options: [
+          'Сразу после вызова таски notify',
+          'В самом начале выполнения плейбука',
+          'В конце секции tasks (или всей игры/play), только если вызывающая таска вернула статус changed',
+          'Каждые 5 минут по таймеру'
+        ],
+        correctAnswerIndex: 2,
+        explanation: 'Handlers откладываются и выполняются в конце текущего плея, если хотя бы одна таска с `notify` реально внесла изменения (changed: true).'
+      },
+      {
+        id: 'q-ans-4',
+        category: 'ansible',
+        question: 'Для чего используется команда `ansible-vault encrypt_string`?',
+        options: [
+          'Шифрует весь файл плейбука целиком',
+          'Зашифровывает отдельное значение переменной в виде блока `!vault | ...` для безопасного хранения в Git',
+          'Генерирует SSH-ключи для хостов',
+          'Создает SSL-сертификаты'
+        ],
+        correctAnswerIndex: 1,
+        explanation: '`ansible-vault encrypt_string` зашифровывает конкретный секрет или пароль и позволяет вставить зашифрованную строку прямо в yaml-файл.'
+      },
+      {
+        id: 'q-ans-5',
+        category: 'ansible',
+        question: 'Какая утилита позволяет тестировать роли Ansible в изолированных контейнерах с автоматической проверкой идемпотентности?',
+        options: [
+          'AWX',
+          'Molecule',
+          'Terraform',
+          'Packer'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Molecule — стандартный фреймворк для тестирования ролей Ansible. Он поднимает тестовые контейнеры, прогоняет роль и проверяет идемпотентность.'
+      }
+    ]
+  },
+
+  {
+    id: 'quiz-terraform-iac',
+    title: 'IaC & Terraform Advanced Practice',
+    category: 'terraform',
+    difficulty: 'Middle',
+    description: 'Продвинутое управление инфраструктурой через Terraform: State Locking, Terragrunt, Drift Detection, Dynamic Blocks и импорт ресурсов.',
+    timeLimitMinutes: 12,
+    questions: [
+      {
+        id: 'q-tf-1',
+        category: 'terraform',
+        question: 'Какую функцию выполняет таблица AWS DynamoDB (или её аналог) при использовании S3 в качестве remote backend в Terraform?',
+        options: [
+          'Хранит бэкапы кода инфраструктуры',
+          'Обеспечивает блокировку состояния (State Locking) для предотвращения одновременных изменений разными инженерами',
+          'Шифрует пароли',
+          'Ускоряет команду `terraform plan` в 10 раз'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'При вызове `terraform plan/apply` Terraform записывает замок (lock) в DynamoDB. Если другой инженер попытается выполнить apply одновременно, операция заблокируется.'
+      },
+      {
+        id: 'q-tf-2',
+        category: 'terraform',
+        question: 'Что происходит при фазе refresh в процессе работы `terraform plan`?',
+        options: [
+          'Terraform удаляет все ресурсы и создает заново',
+          'Terraform опрашивает облачные API и обновляет локальное состояние `.tfstate` актуальными значениями ресурсов (Drift Detection)',
+          'Скачивает свежие провайдеры',
+          'Очищает кэш модуля'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Фаза refresh сопоставляет текущую конфигурацию `.tfstate` с реальным состоянием инфраструктуры у провайдера, выявляя ручные изменения (Drift).'
+      },
+      {
+        id: 'q-tf-3',
+        category: 'terraform',
+        question: 'С помощью какого блока в Terraform 1.5+ можно декларативно импортировать существующий в облаке ресурс в код без ручного CLI метода?',
+        options: [
+          'Блок `import { to = ... id = ... }`',
+          'Блок `resource "import" {}`',
+          'Блок `external {}`',
+          'Блок `provider "import" {}`'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'В Terraform 1.5+ добавлен встроенный блок `import { to = aws_s3_bucket.my_bucket, id = "my-bucket-name" }`, генерирующий код и добавляющий ресурс в state.'
+      },
+      {
+        id: 'q-tf-4',
+        category: 'terraform',
+        question: 'Как предотвратить случайное удаление критической базы данных при выполнении `terraform destroy` или изменении параметров ресурса?',
+        options: [
+          'Использовать мета-аргумент `lifecycle { prevent_destroy = true }`',
+          'Переименовать файл в `.bak`',
+          'Запретить доступ к файлу state',
+          'Флаг `--no-destroy` в CLI'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Блок `lifecycle { prevent_destroy = true }` вызывает ошибку Terraform при любой попытке уничтожить данный ресурс.'
+      },
+      {
+        id: 'q-tf-5',
+        category: 'terraform',
+        question: 'Какую главную задачу решает инструмент Terragrunt поверх Terraform?',
+        options: [
+          'Генерирует документацию',
+          'Сокращает дублирование кода (DRY) за счет наследования backend-конфигураций и управления зависимостями между модулями',
+          'Заменяет язык HCL на Python',
+          'Автоматически оплачивает счета за облако'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Terragrunt помогает держать Terraform код DRY (Don\'t Repeat Yourself), убирая дублирование блоков backend и упрощая мульти-окружения (dev/stage/prod).'
+      }
+    ]
+  },
+
+  {
+    id: 'quiz-observability-prometheus',
+    title: 'Observability: Prometheus, Grafana & Tracing',
+    category: 'monitoring',
+    difficulty: 'Middle',
+    description: 'Сбор метрик, составление PromQL запросов, расчет SLI/SLO, трассировка OpenTelemetry и обработка логов в Loki.',
+    timeLimitMinutes: 12,
+    questions: [
+      {
+        id: 'q-prom-1',
+        category: 'monitoring',
+        question: 'В чем принципиальное отличие функции `rate(http_requests_total[5m])` от `increase(http_requests_total[5m])` в PromQL?',
+        options: [
+          '`rate` считает среднее количество событий в секунду за период 5 минут, а `increase` считает суммарный прирост количества событий за 5 минут',
+          'Никакого различия, это синонимы',
+          '`increase` используется для Gauge, а `rate` для Counter',
+          '`rate` работает только с логами Loki'
+        ],
+        correctAnswerIndex: 0,
+        explanation: '`rate` вычисляет секундовую интенсивность роста Counter за интервал (событий/сек). `increase` вычисляет абсолютный прирост счетчика (событий) за этот интервал.'
+      },
+      {
+        id: 'q-prom-2',
+        category: 'monitoring',
+        question: 'Какой тип метрики Prometheus идеален для измерения задержек сетевых запросов (latency) или размеров HTTP ответов?',
+        options: [
+          'Counter',
+          'Gauge',
+          'Histogram (или Summary)',
+          'String'
+        ],
+        correctAnswerIndex: 2,
+        explanation: 'Histogram распределяет измерения по корзинам (buckets) и позволяет с помощью `histogram_quantile()` точно рассчитывать 95-й и 99-й перцентили (p95/p99) задержки.'
+      },
+      {
+        id: 'q-prom-3',
+        category: 'monitoring',
+        question: 'Что такое Trace ID и Span ID в концепции Distributed Tracing (OpenTelemetry / Jaeger)?',
+        options: [
+          'Номер порта и IP-адрес сервера',
+          'Trace ID объединяет весь сквозной путь пользовательского запроса через микросервисы, а Span ID идентифицирует конкретную единицу работы внутри сервиса',
+          'Пароль для доступа к базе данных',
+          'Идентификатор контейнера в Docker'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Trace ID сохраняется неизменным при прохождении запроса через цепочку микросервисов, а каждый сервис создает свой Span ID для детального хронометража операции.'
+      },
+      {
+        id: 'q-prom-4',
+        category: 'monitoring',
+        question: 'Как рассчитывается показатель SLO (Service Level Objective) на основе метрик SLI?',
+        options: [
+          'SLO = Количество серверов / Общий бюджет',
+          'SLO определяет целевой процент успешных операций за период (например, 99.9% запросов ответили со статусом < 500 и задержкой < 200мс)',
+          'SLO = Время работы без перезагрузки сервера',
+          'SLO = Количество строк кода в сервисе'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'SLI (Service Level Indicator) — фактическая метрика. SLO — согласованный целевой процент качества работы сервиса за учетный период.'
+      },
+      {
+        id: 'q-prom-5',
+        category: 'monitoring',
+        question: 'Какая функция в Alertmanager позволяет автоматически подавить алерты от сервисов, если упал основной коммутатор датацентра?',
+        options: [
+          'Inhibit Rules (Правила ингибирования)',
+          'Grouping',
+          'Silences',
+          'Routing Tree'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'Inhibit rules автоматически подавляют (mute) алерты определенного уровня или узлов, если уже активен корневой критический алерт-источник.'
+      }
+    ]
+  },
+
+  {
+    id: 'quiz-system-design-devops',
+    title: 'System Design & DevOps Architecture',
+    category: 'sysdesign',
+    difficulty: 'Senior',
+    description: 'Проектирование отказоустойчивых архитектур, Patroni PostgreSQL HA, Disaster Recovery, Kafka и балансировка нагрузки.',
+    timeLimitMinutes: 15,
+    questions: [
+      {
+        id: 'q-sd-1',
+        category: 'sysdesign',
+        question: 'Как утилита Patroni обеспечивает защиту от ситуации Split-Brain в отказоустойчивом кластере PostgreSQL?',
+        options: [
+          'Использует двухфакторную аутентификацию',
+          'Использует распределенное хранилище DCS (etcd, Consul) с TTL ключами и алгоритмами консенсуса для выбора Leader',
+          'Перезагружает сервер каждые 5 минут',
+          'Запрещает записи во все реплики навсегда'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Patroni держит замок лидера в etcd/Consul через удержание ключа с TTL. Если нода-лидер теряет связь с etcd, замок истекает, и оставшиеся ноды выбирают нового лидера.'
+      },
+      {
+        id: 'q-sd-2',
+        category: 'sysdesign',
+        question: 'В чем разница между метриками RTO (Recovery Time Objective) и RPO (Recovery Point Objective) в плане Disaster Recovery?',
+        options: [
+          'RTO — допустимое время простоя системы до восстановления, RPO — допустимый объем потерянных данных (в единицах времени) при аварии',
+          'RTO меряет нагрузку процессора, RPO меряет память',
+          'RTO для дисков, RPO для сети',
+          'Это взаимоисключающие стандарты'
+        ],
+        correctAnswerIndex: 0,
+        explanation: 'RTO = "Как быстро система должна возобновить работу". RPO = "За какой период данные могут быть утеряны при сбое".'
+      },
+      {
+        id: 'q-sd-3',
+        category: 'sysdesign',
+        question: 'Какое ключевое преимущество использования Apache Kafka перед классическими брокерами сообщений в высоконагруженных системах?',
+        options: [
+          'Kafka проще в настройке',
+          'Kafka сохраняет сообщения на диск как упорядоченный append-only лог, позволяя читать данные со смещением (offset) множеству Consumer Groups с высокой пропускной способностью',
+          'Kafka не требует оперативной памяти',
+          'Сообщения хранятся только в сети'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Kafka спроектирована как распределенный журнал событий с высокой пропускной способностью за счет последовательной записи на диск (sequential I/O) и механизма Zero-Copy.'
+      },
+      {
+        id: 'q-sd-4',
+        category: 'sysdesign',
+        question: 'Какой метод балансировки нагрузки на уровне L4 обеспечивает закрепление пользователя за определенным сервером без хранения состояния сессий на балансировщике?',
+        options: [
+          'Round Robin',
+          'Consistent Hashing по IP клиента (IP Hash)',
+          'Least Connections',
+          'Random'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'IP Hash хэширует IP адрес клиента и отправляет его всегда на один и тот же бэкенд без необходимости внешней распределенной базы сессий.'
+      },
+      {
+        id: 'q-sd-5',
+        category: 'sysdesign',
+        question: 'Какая стратегия репликации базы данных обеспечивает нулевую потерю данных (RPO = 0), но может увеличивать задержку (latency) для операций записи?',
+        options: [
+          'Асинхронная репликация',
+          'Синхронная репликация (Synchronous Replication)',
+          'Периодическое копирование через rsync',
+          'Логический дамп раз в час'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'При синхронной репликации транзакция считается завершенной только после подтверждения изменения хотя бы одной репликой, что исключает потерю данных при сбое мастера.'
+      }
+    ]
+  },
+
+  {
+    id: 'quiz-linux-internals-troubleshooting',
+    title: 'Linux Kernel Internals & Performance Tuning',
+    category: 'linux',
+    difficulty: 'Senior',
+    description: 'Глубокие знания ядра Linux: Cgroups v2, Namespaces, eBPF, управление памятью, swap, sysctl и подсистема I/O.',
+    timeLimitMinutes: 15,
+    questions: [
+      {
+        id: 'q-lin-1',
+        category: 'linux',
+        question: 'Какое ключевое архитектурное улучшение появилось в cgroups v2 по сравнению с cgroups v1?',
+        options: [
+          'Удалена поддержка Docker',
+          'Единая иерархия процессов (single unified hierarchy) вместо независимых деревьев подсистем, что исключает состязание за ресурсы между контроллерами',
+          'Память больше не ограничивается',
+          'Поддержка только 32-битных систем'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'В cgroups v1 каждый контроллер имел свое дерево. cgroups v2 объединяет все контроллеры в единую единую иерархию процессов.'
+      },
+      {
+        id: 'q-lin-2',
+        category: 'linux',
+        question: 'Какой Namespace Linux обеспечивает изоляцию сетевых интерфейсов, таблиц маршрутизации, правил iptables и сокетов?',
+        options: [
+          'PID Namespace',
+          'Net (Network) Namespace',
+          'MNT (Mount) Namespace',
+          'UTS Namespace'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'Network Namespace создает полностью независимый сетевой стек для процесса или контейнера с собственными интерфейсами, IP и файрволом.'
+      },
+      {
+        id: 'q-lin-3',
+        category: 'linux',
+        question: 'Что из перечисленного является главным преимуществом eBPF (Extended Berkeley Packet Filter) для SRE и DevOps?',
+        options: [
+          'Заменяет Bash скрипты',
+          'Позволяет безопасно выполнять байткод внутри ядра Linux на лету без пересборки ядра и без загрузки нестабильных модулей ядра',
+          'Увеличивает объем оперативной памяти',
+          'Заменяет собой дисковые накопители'
+        ],
+        correctAnswerIndex: 1,
+        explanation: 'eBPF позволяет внедрять программы в хуки ядра с проверкой верификатором безопасности, давая глубокую видимость системных событий без риска краша ядра.'
+      },
+      {
+        id: 'q-lin-4',
+        category: 'linux',
+        question: 'Что произойдет, если значение `vm.swappiness` установить в 0 на современном ядре Linux?',
+        options: [
+          'Swap полностью отключится',
+          'Ядро будет избегать вытеснения страниц памяти (anonymous memory) в swap до тех пор, пока память полностью не исчерпается',
+          'Память очистится мгновенно',
+          'Система уйдет в Kernel Panic'
+        ],
+        correctAnswerIndex: 1,
+        explanation: '`swappiness=0` заставляет ядро отдавать приоритет кэшу страниц (page cache) и сбрасывать в swap анонимную память только при крайнем дефиците во избежание OOM.'
+      },
+      {
+        id: 'q-lin-5',
+        category: 'linux',
+        question: 'Какая утилита позволяет отследить все системные вызовы (syscalls), совершаемые запущенным процессом Linux?',
+        options: [
+          'lsof',
+          'strace',
+          'tcpdump',
+          'journalctl'
+        ],
+        correctAnswerIndex: 1,
+        explanation: '`strace` перехватывает и записывает системные вызовы (open, read, write, connect, futex и т.д.), совершаемые процессом в реальном времени.'
+      }
+    ]
   }
 ];
+
