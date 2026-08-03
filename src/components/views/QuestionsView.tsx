@@ -1047,7 +1047,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
               </div>
 
               {/* Action Buttons: Bookmarks & Mastered toggle */}
-              <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+              <div className="flex items-center space-x-2 w-full sm:w-auto justify-center sm:justify-end">
                 <button
                   onClick={() => onToggleBookmark(selectedQuestion.id)}
                   className={`flex items-center space-x-1.5 px-4 py-2.5 rounded-xl text-xs font-bold border transition-all cursor-pointer ${

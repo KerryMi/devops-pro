@@ -309,7 +309,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({
                   </span>
                   <span className="text-[9px] text-slate-400 dark:text-slate-500">STDERR</span>
                 </div>
-                <div className="text-slate-700 dark:text-slate-300 overflow-x-auto whitespace-pre-wrap max-h-24 scrollbar-thin text-[11px] leading-tight">
+                <div className="text-slate-700 dark:text-slate-300 overflow-x-auto whitespace-pre max-h-24 scrollbar-thin text-[11px] leading-tight max-w-full">
                   {currentScenario.initialLogs}
                 </div>
               </div>
@@ -416,9 +416,9 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({
                       
                       {/* Command Row */}
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-200/50 dark:bg-slate-900/90 p-2.5 sm:p-3 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <div className="flex items-center space-x-2 text-slate-800 dark:text-slate-200 overflow-x-auto min-w-0">
-                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">$</span>
-                          <span className="font-bold text-slate-900 dark:text-white selection:bg-amber-500/30 text-xs sm:text-xs truncate">{step.command}</span>
+                        <div className="flex items-center space-x-2 text-slate-800 dark:text-slate-200 overflow-x-auto min-w-0 max-w-full scrollbar-thin pb-1 sm:pb-0">
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold shrink-0">$</span>
+                          <span className="font-bold text-slate-900 dark:text-white selection:bg-amber-500/30 text-xs sm:text-xs whitespace-nowrap">{step.command}</span>
                         </div>
 
                         <div className="flex items-center space-x-1.5 shrink-0 self-end sm:self-auto">
@@ -478,7 +478,7 @@ export const IncidentsView: React.FC<IncidentsViewProps> = ({
 
                       {/* Command Terminal Output Stream */}
                       {isExecuted ? (
-                        <div className="p-3 sm:p-4 rounded-xl bg-slate-950 dark:bg-[#04070d] border border-slate-200 dark:border-slate-800 text-emerald-600 dark:text-emerald-400 leading-relaxed overflow-x-auto whitespace-pre-wrap animate-fadeIn text-[11px] sm:text-xs max-h-48 sm:max-h-64 scrollbar-thin shadow-inner">
+                        <div className="p-3 sm:p-4 rounded-xl bg-slate-950 dark:bg-[#04070d] border border-slate-200 dark:border-slate-800 text-emerald-600 dark:text-emerald-400 leading-relaxed overflow-x-auto whitespace-pre animate-fadeIn text-[11px] sm:text-xs max-h-48 sm:max-h-64 scrollbar-thin shadow-inner max-w-full">
                           <div className="text-[9px] text-slate-500 mb-1 font-sans">--- OUTPUT (CODE 0) ---</div>
                           {step.output}
                         </div>
