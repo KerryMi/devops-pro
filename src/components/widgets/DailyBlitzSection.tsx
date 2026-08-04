@@ -421,7 +421,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
                   Состав вопросов
                 </div>
                 <div className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
-                  {difficultyCounts.Junior} Jr • {difficultyCounts.Middle} Mid • {difficultyCounts.Senior} Sr
+                  {difficultyCounts.Junior} Junior • {difficultyCounts.Middle} Middle • {difficultyCounts.Senior} Senior
                 </div>
               </div>
             </div>
