@@ -19,7 +19,7 @@
 
 ### 1. Клонирование и установка зависимостей
 ```bash
-git clone <repository-url>
+git clone https://github.com/KerryMi/devops-pro
 cd devops-pro
 npm install
 ```

@@ -929,7 +929,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
         
         {/* BENTO CARD 1: SESSION LAUNCH WIDGET (TOP LEFT - SPAN 5 - COMPACT HERO) */}
-        <div className="lg:col-span-5 bento-card flex flex-col justify-between bg-gradient-to-br from-slate-900 via-[#121c2c] to-slate-950 border-2 border-slate-200 dark:border-emerald-500/30 text-white rounded-2xl p-4 shadow-lg relative overflow-hidden space-y-3">
+        <div className="lg:col-span-5 bento-card flex flex-col justify-between bg-white dark:bg-gradient-to-br dark:from-slate-900 dark:via-[#121c2c] dark:to-slate-950 border border-slate-200 dark:border-emerald-500/30 text-slate-900 dark:text-white rounded-2xl p-4 shadow-xs dark:shadow-lg relative overflow-hidden space-y-3 transition-colors duration-200">
           
           <div className="space-y-2.5 relative z-10">
             <div className="flex items-center justify-between">
@@ -938,44 +938,44 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   <Play className="w-4 h-4 fill-current" />
                 </div>
                 <div>
-                  <span className="text-[9px] font-black uppercase text-emerald-400 tracking-wider block">
+                  <span className="text-[9px] font-black uppercase text-emerald-600 dark:text-emerald-400 tracking-wider block">
                     БЫСТРЫЙ СТАРТ
                   </span>
-                  <h3 className="text-sm sm:text-base font-black text-white leading-tight">
+                  <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
                     Запустить сессию
                   </h3>
                 </div>
               </div>
 
-              <div className="hidden sm:flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold">
+              <div className="hidden sm:flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">
                 <Brain className="w-3 h-3" />
                 <span>Концентрация</span>
               </div>
             </div>
 
             {/* Inline 4-column summary of active parameters */}
-            <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-800/80 text-xs">
-              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
-                <span className="text-[9px] text-slate-400 block font-bold">Категория</span>
-                <span className="font-extrabold text-emerald-400 truncate block text-[11px]">
+            <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-slate-200 dark:border-slate-800/80 text-xs">
+              <div className="bg-slate-50 dark:bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-200/80 dark:border-slate-700/50">
+                <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-bold">Категория</span>
+                <span className="font-extrabold text-emerald-600 dark:text-emerald-400 truncate block text-[11px]">
                   {selectedCatObj ? selectedCatObj.title : 'Все'}
                 </span>
               </div>
-              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
-                <span className="text-[9px] text-slate-400 block font-bold">Сложность</span>
-                <span className="font-extrabold text-white block text-[11px]">
+              <div className="bg-slate-50 dark:bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-200/80 dark:border-slate-700/50">
+                <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-bold">Сложность</span>
+                <span className="font-extrabold text-slate-900 dark:text-white block text-[11px]">
                   {selectedDifficulty === 'all' ? 'Все' : selectedDifficulty}
                 </span>
               </div>
-              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
-                <span className="text-[9px] text-slate-400 block font-bold">Коробка</span>
-                <span className="font-extrabold text-white block text-[11px]">
+              <div className="bg-slate-50 dark:bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-200/80 dark:border-slate-700/50">
+                <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-bold">Коробка</span>
+                <span className="font-extrabold text-slate-900 dark:text-white block text-[11px]">
                   {selectedBoxFilter === 'all' ? 'Все (1-5)' : `К${selectedBoxFilter}`}
                 </span>
               </div>
-              <div className="bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-700/50">
-                <span className="text-[9px] text-slate-400 block font-bold">Порядок</span>
-                <span className="font-extrabold text-white block text-[11px]">
+              <div className="bg-slate-50 dark:bg-slate-800/60 p-1.5 px-2 rounded-lg border border-slate-200/80 dark:border-slate-700/50">
+                <span className="text-[9px] text-slate-500 dark:text-slate-400 block font-bold">Порядок</span>
+                <span className="font-extrabold text-slate-900 dark:text-white block text-[11px]">
                   {isShuffled ? 'Случайный' : 'Прямой'}
                 </span>
               </div>
@@ -989,7 +989,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               className={`w-full py-2.5 px-3 rounded-xl font-black text-xs flex items-center justify-center space-x-2 shadow-md transition-all cursor-pointer ${
                 filteredQuestions.length > 0
                   ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-emerald-500/20 hover:scale-[1.01] active:scale-[0.99]'
-                  : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                  : 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-200 dark:border-slate-700'
               }`}
             >
               <Maximize2 className="w-3.5 h-3.5" />
@@ -1003,7 +1003,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             {filteredQuestions.length === 0 && (
               <button
                 onClick={handleClearAllFilters}
-                className="w-full text-center text-[10px] text-amber-400 hover:underline font-bold"
+                className="w-full text-center text-[10px] text-amber-600 dark:text-amber-400 hover:underline font-bold"
               >
                 Сбросить фильтры для просмотра карточек
               </button>

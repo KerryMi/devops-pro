@@ -162,6 +162,18 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
   const todayResult = progress.dailyBlitzHistory?.[todayStr];
   const isCompletedToday = Boolean(todayResult);
 
+  const difficultyCounts = useMemo(() => {
+    const counts = { Junior: 0, Middle: 0, Senior: 0 };
+    todayQuestions.forEach(q => {
+      if (q.difficulty && counts[q.difficulty] !== undefined) {
+        counts[q.difficulty]++;
+      } else {
+        counts.Middle++;
+      }
+    });
+    return counts;
+  }, [todayQuestions]);
+
   const [mode, setMode] = useState<'idle' | 'active' | 'summary'>('idle');
   const [currentIdx, setCurrentIdx] = useState<number>(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
@@ -356,7 +368,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
 
       {/* IDLE STATE */}
       {mode === 'idle' && (
-        <div className="bg-slate-50 dark:bg-[#0b1120] p-4 rounded-xl space-y-3 my-auto flex flex-col justify-between">
+        <div className="flex-1 bg-slate-50 dark:bg-[#0b1120] p-4 sm:p-5 rounded-xl flex flex-col justify-between gap-3 sm:gap-4 transition-all">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 flex-wrap gap-1">
               <div className="flex items-center space-x-1.5">
@@ -384,13 +396,44 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
             </div>
           </div>
 
+          {/* Desktop Only Extra Info: Reward & Question Composition */}
+          <div className="hidden md:grid grid-cols-2 gap-3 my-auto">
+            <div className="p-3 rounded-xl bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-slate-800/80 flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[10px] font-extrabold uppercase text-slate-400 font-mono tracking-wider">
+                  Награда за блиц
+                </div>
+                <div className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                  +50 XP и стрик
+                </div>
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl bg-white dark:bg-[#121927] border border-slate-200/80 dark:border-slate-800/80 flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                <BarChart2 className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <div className="text-[10px] font-extrabold uppercase text-slate-400 font-mono tracking-wider">
+                  Состав вопросов
+                </div>
+                <div className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+                  {difficultyCounts.Junior} Jr • {difficultyCounts.Middle} Mid • {difficultyCounts.Senior} Sr
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* CTA Button / Disabled State */}
           <div className="pt-1">
             {isCompletedToday ? (
               <button
                 type="button"
                 disabled
-                className="w-full px-4 py-2.5 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-extrabold text-xs flex items-center justify-center space-x-1.5 cursor-not-allowed border border-emerald-500/20"
+                className="w-full px-4 py-2.5 sm:py-3 rounded-xl bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-extrabold text-xs flex items-center justify-center space-x-1.5 cursor-not-allowed border border-emerald-500/20"
               >
                 <CheckCircle className="w-4 h-4 text-emerald-500" />
                 <span>Пройдено сегодня ({todayResult?.score}/{todayResult?.total})</span>
@@ -399,7 +442,7 @@ export const DailyBlitzSection: React.FC<DailyBlitzSectionProps> = ({
               <button
                 type="button"
                 onClick={handleStartBlitz}
-                className="w-full px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs tracking-wide transition-colors flex items-center justify-center space-x-2 cursor-pointer group"
+                className="w-full px-5 py-2.5 sm:py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs tracking-wide transition-colors flex items-center justify-center space-x-2 cursor-pointer group"
               >
                 <Play className="w-4 h-4 fill-slate-950" />
                 <span>Начать ежедневный блиц</span>
