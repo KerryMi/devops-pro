@@ -10,7 +10,6 @@ import {
   Bookmark, 
   Code,
   Trophy,
-  Search,
   Sun,
   Moon,
   User,
@@ -32,7 +31,7 @@ interface SidebarProps {
   unseenAchievementsCount?: number;
   isDarkMode: boolean;
   setIsDarkMode: (val: boolean) => void;
-  onOpenSearch: () => void;
+  onOpenSearch?: () => void;
   currentUser: FirebaseUser | null;
   isAdmin?: boolean;
 }
@@ -116,22 +115,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">База знаний DevOps & SRE</p>
           </div>
         </div>
-      </div>
-
-      {/* Search Input in Sidebar */}
-      <div className="px-4 pt-4 pb-2">
-        <button
-          onClick={onOpenSearch}
-          className="w-full flex items-center justify-between px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 text-xs transition-all shadow-inner group hover:border-emerald-500/40"
-        >
-          <div className="flex items-center space-x-2">
-            <Search className="w-3.5 h-3.5 text-emerald-500 group-hover:scale-110 transition-transform" />
-            <span className="truncate">Поиск по сайту...</span>
-          </div>
-          <kbd className="px-1.5 py-0.5 text-[9px] font-semibold text-slate-400 bg-white dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700">
-            ⌘K
-          </kbd>
-        </button>
       </div>
 
       {/* Navigation Group Items */}

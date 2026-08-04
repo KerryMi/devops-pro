@@ -49,7 +49,7 @@ export const Footer: React.FC<FooterProps> = ({ onNavigate }) => {
           </a>
 
           <a
-            href="https://github.com/KerryMi"
+            href="https://github.com/KerryMi/devops-pro"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all font-medium text-xs group"
