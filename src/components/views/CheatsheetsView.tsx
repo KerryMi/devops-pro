@@ -9,10 +9,20 @@ import {
   X
 } from 'lucide-react';
 
-export const CheatsheetsView: React.FC = () => {
+interface CheatsheetsViewProps {
+  initialCategory?: string;
+}
+
+export const CheatsheetsView: React.FC<CheatsheetsViewProps> = ({ initialCategory }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [category, setCategory] = useState<string>('all');
+  const [category, setCategory] = useState<string>(initialCategory || 'all');
   const [copiedCmd, setCopiedCmd] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    if (initialCategory) {
+      setCategory(initialCategory);
+    }
+  }, [initialCategory]);
 
   const filteredCommands = CHEATSHEET_COMMANDS.filter((item) => {
     const matchesSearch = 

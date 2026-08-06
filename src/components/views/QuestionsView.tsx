@@ -149,6 +149,7 @@ export const QuestionsView: React.FC<QuestionsViewProps> = ({
         setExpandedStages(prev => ({ ...prev, [matchingStage.id]: true }));
       }
     }
+    setSelectedQuestion(null);
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, [initialCategory]);
 

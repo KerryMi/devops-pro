@@ -681,7 +681,7 @@ export default function App() {
           )}
 
           {activeTab === 'cheatsheet' && (
-            <CheatsheetsView />
+            <CheatsheetsView initialCategory={selectedCategoryFilter} />
           )}
 
           {activeTab === 'profile' && (

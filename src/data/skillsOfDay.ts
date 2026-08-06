@@ -1,12 +1,12 @@
 export interface SkillOfDay {
   id: string;
   title: string;
-  category: 'docker' | 'k8s' | 'linux' | 'cicd' | 'terraform' | 'networks' | 'monitoring';
+  category: 'docker' | 'k8s' | 'linux' | 'cicd' | 'terraform' | 'networking' | 'monitoring';
   categoryLabel: string;
   code?: string;
   description: string;
   whyImportant: string;
-  targetTab: 'questions' | 'flashcards' | 'cheatsheets' | 'incidents';
+  targetTab: 'questions' | 'flashcards' | 'cheatsheet' | 'incidents';
   targetCategoryFilter?: string;
 }
 
@@ -55,7 +55,7 @@ readinessProbe:
     code: `kubectl run tmp-shell --rm -i --tty --image=nicolaka/netshoot -- bash`,
     description: 'Запуск одноразового пода с утилитами curl, tcpdump, dig, iproute2 и mtr прямо в кластере для мгновенной проверки сетевой связности.',
     whyImportant: 'Незаменимый инструмент SRE-инженера для поиска заблокированных портов, DNS-сбоев и проблем с CNI.',
-    targetTab: 'cheatsheets',
+    targetTab: 'cheatsheet',
     targetCategoryFilter: 'kubectl'
   },
   {
@@ -116,13 +116,13 @@ exec java -jar /app/service.jar`,
   {
     id: 'skill-net-timewait',
     title: 'Борьба с сокетами в состоянии TIME_WAIT',
-    category: 'networks',
+    category: 'networking',
     categoryLabel: 'Networks',
     code: `ss -s && netstat -an | grep TIME_WAIT | wc -l`,
     description: 'Множество сокетов в TIME_WAIT возникает при частых коротких TCP-соединениях. Включение HTTP Keep-Alive позволяет переиспользовать сокеты под высокой нагрузкой.',
     whyImportant: 'Фундаментальная тема при отладке высоких нагрузок (Highload) и микросервисного взаимодействия.',
     targetTab: 'questions',
-    targetCategoryFilter: 'networks'
+    targetCategoryFilter: 'networking'
   }
 ];
 
