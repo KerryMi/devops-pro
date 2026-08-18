@@ -127,7 +127,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     unit: 'тестов',
     xpReward: 50,
     targetTab: 'quizzes',
-    getValue: (p) => p.quizResults.filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.8).length,
+    getValue: (p) => p.quizResults.filter(r => (r.score >= 80 || (r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.8))).length,
   },
   {
     id: 'quiz_legend',
@@ -141,7 +141,7 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     unit: 'тестов',
     xpReward: 100,
     targetTab: 'quizzes',
-    getValue: (p) => p.quizResults.filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.8).length,
+    getValue: (p) => p.quizResults.filter(r => (r.score >= 80 || (r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.8))).length,
   },
   {
     id: 'bug_hunter',
@@ -268,8 +268,8 @@ export const ACHIEVEMENT_DEFINITIONS: AchievementDefinition[] = [
     xpReward: 40,
     targetTab: 'quizzes',
     getValue: (p) => {
-      const perfectQuizzes = (p.quizResults || []).filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 1.0).length;
-      const totalPassed = (p.quizResults || []).filter(r => r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.7).length;
+      const perfectQuizzes = (p.quizResults || []).filter(r => (r.score >= 100 || (r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 1.0))).length;
+      const totalPassed = (p.quizResults || []).filter(r => (r.score >= 70 || (r.totalQuestions > 0 && (r.score / r.totalQuestions) >= 0.7))).length;
       return perfectQuizzes > 0 ? 1 : (totalPassed >= 2 ? 1 : 0);
     },
   },

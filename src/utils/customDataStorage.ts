@@ -59,13 +59,21 @@ export function loadQuizzes(): Quiz[] {
     if (!raw) return DEFAULT_QUIZZES;
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed) && parsed.length > 0) {
-      // Ensure all default quizzes are included if missing in storage
-      const storedIds = new Set(parsed.map((q: Quiz) => q.id));
-      const missingDefaults = DEFAULT_QUIZZES.filter(q => !storedIds.has(q.id));
-      if (missingDefaults.length > 0) {
-        return [...parsed, ...missingDefaults];
-      }
-      return parsed;
+      const defaultMap = new Map(DEFAULT_QUIZZES.map((q: Quiz) => [q.id, q]));
+      const customQuizzes = parsed.filter((q: Quiz) => !defaultMap.has(q.id));
+      
+      // For default quizzes, use latest version from code if updated
+      const mergedDefaults = DEFAULT_QUIZZES.map((defQuiz) => {
+        const stored = parsed.find((q: Quiz) => q.id === defQuiz.id);
+        if (!stored) return defQuiz;
+        // If default quiz in code has more questions or updated content, prefer code version
+        if (defQuiz.questions.length >= stored.questions.length) {
+          return defQuiz;
+        }
+        return stored;
+      });
+
+      return [...mergedDefaults, ...customQuizzes];
     }
     return DEFAULT_QUIZZES;
   } catch (e) {
